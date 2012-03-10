@@ -21,11 +21,16 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     /// <summary>
     /// Interaction logic for MyControl.xaml
     /// </summary>
+    /// 
+
     public partial class MyControl : UserControl
     {
+       public static MyControl mc;
+
         public MyControl()
         {
             InitializeComponent();
+            mc = this;
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
@@ -48,20 +53,27 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         public static void RegisterEventHandlers(VersionControlServer versionControl)
         {            
-            // Listen for the Source Control events
+            
             versionControl.BeforeCheckinPendingChange += OnBeforeCheckinPendingChange;            
             versionControl.NewPendingChange += OnNewPendingChange;
         }
 
         public static void OnBeforeCheckinPendingChange(Object sender, ProcessingChangeEventArgs e)
         {
-            
-            MessageBox.Show("Checking in " + e.PendingChange.FileName);
+            //mc.beforeCheckIn(e);
+            if (mc.ignoreList.Items.Contains(e.PendingChange.FileName))
+            {
+                MessageBox.Show("Do you want to Check in " + e.PendingChange.FileName);
+            }
+            else
+            {
+                MessageBox.Show("The file is not in the ignore list. " + e.PendingChange.FileName);
+            }
+            //MessageBox.Show("Checking in " + e.PendingChange.FileName);      
         }
         public void beforeCheckIn(ProcessingChangeEventArgs e)
         {
-            
-            
+            MessageBox.Show(ignoreList.Items.Count.ToString());
             if (ignoreList.Items.Contains(e.PendingChange.FileName))
             {
                 MessageBox.Show("Do you want to Check in " + e.PendingChange.FileName);
@@ -112,10 +124,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 {
                     var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
 
-                    //var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
+                    var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
 
-                    // if there are no team projects in this collection, skip it
-                    //if (teamProjects.Count < 1) continue;
+                    //if there are no team projects in this collection, skip it
+                    if (teamProjects.Count < 1) continue;
 
                     RegisterEventHandlers(versionControl);  
 
