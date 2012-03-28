@@ -4,15 +4,47 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
-             mc:Ignorable="d"              
-             d:DesignHeight="300" d:DesignWidth="300"
-             x:Name="MyToolWindow"
-             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" Loaded="MyToolWindow_Loaded" DataContext="{Binding}">
-    <StackPanel Height="282" x:Name="stackPanel1" Width="281">
-        <StackPanel Height="54" x:Name="stackPanel2" Width="264" Orientation="Horizontal" Margin="0">
-            <TextBox Height="23" x:Name="ignoreListTextBox" Width="120" MinWidth="150" Margin="10" />
-            <Button Content="Add" Height="23" x:Name="ignoreListAddButton" Width="75" Margin="10" IsManipulationEnabled="False" Click="ignoreListAddButton_Click" IsDefault="True" />
+             mc:Ignorable="d" x:Name="MyToolWindow"
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" DataContext="{Binding}" Loaded="MyToolWindow_Loaded" d:DesignHeight="300" d:DesignWidth="844">
+    <StackPanel Height="280" Name="stackPanel1" Width="800" Orientation="Horizontal">
+        <StackPanel Height="280" Name="stackPanel2" Width="600">
+            <ToolBar Height="26" Name="toolBar1" Width="600" FontSize="9">
+                <Button Name="button1" Click="button1_Click">Checkin</Button>
+                <Separator/>
+                <Button Name="button3" Click="button3_Click">Ignore</Button>
+                <Button Name="unshelve">Unshelve</Button>
+                <Separator/>
+                <Button Name="hideShowComment">h</Button>
+                <Button Name="folderView">f</Button>
+                <Button Name="lView">l</Button>
+                <Separator/>
+                <Button Name="compare">c</Button>
+                <Button Name="viewFile">v</Button>
+                <Button Name="undo">
+                    <Image Source="/SeniorCapstoneIgnoreList;component/images/Undo_Redo.png"></Image>
+                </Button>
+                <Separator/>
+                <Button Name="refresh">r</Button>
+                <Separator/>
+                <Button Name="filterBySolution">f</Button>
+                <Separator/>
+                <Label FontSize="9">Workspace: </Label>
+                <ComboBox Name="workSpaces">
+                    <ComboBoxItem>Workspace names</ComboBoxItem>
+                </ComboBox>
+            </ToolBar>
+            <Label Content="Comment:" Height="Auto" Name="label1" FontSize="9" Width="600" BorderThickness="1" />
+            <TextBox Height="30" Name="textBox1" Width="600" FontSize="9" />
+            <ListView Name="pendingChangesList">
+            </ListView>
         </StackPanel>
-        <ListView Height="209" x:Name="ignoreList" Width="262" AllowDrop="False" BorderThickness="0" />
+        <StackPanel Height="280" Name="stackPanel3" Width="200">
+            <Label Content="Ignore List" Height="28" Name="label2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+            <StackPanel Height="33" Name="stackPanel4" Width="165" Orientation="Horizontal">
+                <TextBox Height="23" Name="textBox2" Width="120" />
+                <Button Content="Add" Height="23" Name="button2" Width="40" />
+            </StackPanel>
+            <ListView Height="219" Name="ignoreList" Width="165" />
+        </StackPanel>
     </StackPanel>
 </UserControl>

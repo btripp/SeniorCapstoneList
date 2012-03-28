@@ -161,6 +161,11 @@
     <None Include="Resources\Images_24bit.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\Add.png" />
+    <Resource Include="images\Comment.png" />
+    <Resource Include="images\Copy.png" />
+    <Resource Include="images\Refresh.png" />
+    <Resource Include="images\Undo_Redo.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
