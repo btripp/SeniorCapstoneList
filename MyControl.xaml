@@ -41,8 +41,8 @@
         <StackPanel Height="280" Name="stackPanel3" Width="200">
             <Label Content="Ignore List" Height="28" Name="label2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             <StackPanel Height="33" Name="stackPanel4" Width="165" Orientation="Horizontal">
-                <TextBox Height="23" Name="textBox2" Width="120" />
-                <Button Content="Add" Height="23" Name="button2" Width="40" />
+                <TextBox Height="23" Name="ignoreTextBox" Width="120" />
+                <Button Content="Add" Height="23" Name="button2" Width="45" Click="button2_Click" />
             </StackPanel>
             <ListView Height="219" Name="ignoreList" Width="165" />
         </StackPanel>

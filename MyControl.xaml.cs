@@ -177,6 +177,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         public void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
+
+
             //MessageBox.Show("it got into the load");
             //MessageBox.Show("k its loaded now");
             List<RegisteredProjectCollection> projectCollections;
@@ -242,7 +244,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                             }
                         }
                     }
+
                 }
+
+
                 finally
                 {
                     
@@ -364,6 +369,19 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 message += change.FileName + "\n";
             }
             MessageBox.Show(message);
+        }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            if (ignoreTextBox != null && ignoreTextBox.Text != "")
+            {
+                ignoreList.Items.Add(ignoreTextBox.Text);
+                ignoreTextBox.Text = "";
+            }
+            else
+            {
+                MessageBox.Show("You must enter something to ignore.");
+            }
         }
     }
 }
