@@ -177,8 +177,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         public void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
-
-
             //MessageBox.Show("it got into the load");
             //MessageBox.Show("k its loaded now");
             List<RegisteredProjectCollection> projectCollections;
@@ -382,6 +380,31 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 MessageBox.Show("You must enter something to ignore.");
             }
+        }
+        private void loadButton_Click(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            dlg.FileName = ""; // Default file name
+            dlg.DefaultExt = ".txt"; // Default file extension
+            dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+
+            // Show open file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process open file dialog box results
+            if (result == true)
+            {
+                // Open document
+
+
+                string filename = dlg.FileName;
+                MessageBox.Show(filename);
+            }
+        }
+
+        private void saveButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Not implemented yet. Basically will save list in a .txt line by line or maybe comma delimited");
         }
     }
 }

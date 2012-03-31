@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
              mc:Ignorable="d" x:Name="MyToolWindow"
-             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" DataContext="{Binding}" Loaded="MyToolWindow_Loaded" d:DesignHeight="300" d:DesignWidth="844">
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" DataContext="{Binding}" Loaded="MyToolWindow_Loaded" d:DesignHeight="287" d:DesignWidth="840">
     <StackPanel Height="280" Name="stackPanel1" Width="800" Orientation="Horizontal">
         <StackPanel Height="280" Name="stackPanel2" Width="600">
             <ToolBar Height="26" Name="toolBar1" Width="600" FontSize="9">
@@ -38,13 +38,17 @@
             <ListView Name="pendingChangesList">
             </ListView>
         </StackPanel>
-        <StackPanel Height="280" Name="stackPanel3" Width="200">
+        <StackPanel Height="279" Name="stackPanel3" Width="201">
             <Label Content="Ignore List" Height="28" Name="label2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             <StackPanel Height="33" Name="stackPanel4" Width="165" Orientation="Horizontal">
                 <TextBox Height="23" Name="ignoreTextBox" Width="120" />
                 <Button Content="Add" Height="23" Name="button2" Width="45" Click="button2_Click" />
             </StackPanel>
-            <ListView Height="219" Name="ignoreList" Width="165" />
+            <ListView Height="193" Name="ignoreList" Width="163" Unloaded="ignoreList_Unloaded" Loaded="ignoreList_Loaded" />
+            <StackPanel Orientation="Horizontal">
+                <Button Content="Load List" Height="23" Name="loadButton" Width="103" Click="loadButton_Click" HorizontalContentAlignment="Center" />
+                <Button Content="Save List" Height="23" Name="saveButton" Width="96" Click="saveButton_Click" />
+            </StackPanel>
         </StackPanel>
     </StackPanel>
 </UserControl>
