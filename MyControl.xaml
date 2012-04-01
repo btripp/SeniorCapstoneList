@@ -38,16 +38,18 @@
             <ListView Name="pendingChangesList">
             </ListView>
         </StackPanel>
-        <StackPanel Height="279" Name="stackPanel3" Width="201">
+        <StackPanel Height="279" Name="stackPanel3" Width="200">
             <Label Content="Ignore List" Height="28" Name="label2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
             <StackPanel Height="33" Name="stackPanel4" Width="165" Orientation="Horizontal">
                 <TextBox Height="23" Name="ignoreTextBox" Width="120" />
                 <Button Content="Add" Height="23" Name="button2" Width="45" Click="button2_Click" />
             </StackPanel>
-            <ListView Height="193" Name="ignoreList" Width="163" Unloaded="ignoreList_Unloaded" Loaded="ignoreList_Loaded" />
+            <ListView Height="193" Name="ignoreList" Width="163" SelectionMode="Single"/>
             <StackPanel Orientation="Horizontal">
-                <Button Content="Load List" Height="23" Name="loadButton" Width="103" Click="loadButton_Click" HorizontalContentAlignment="Center" />
-                <Button Content="Save List" Height="23" Name="saveButton" Width="96" Click="saveButton_Click" />
+                <Button Content="Remove" Height="23" Width="48" FontSize="10" Name="RemoveButton" Click="RemoveButton_Click"/>
+                <Button Content="Clear" Height="23" Width="48" FontSize="10" Name="ClearButton" Click="ClearButton_Click"/>
+                <Button Content="Load List" Height="23" Width="48" FontSize="10" Name="loadButton" Click="loadButton_Click"/>
+                <Button Content="Save List" Height="23" Width="48" FontSize="10" Name="saveButton" Click="saveButton_Click"/>
             </StackPanel>
         </StackPanel>
     </StackPanel>

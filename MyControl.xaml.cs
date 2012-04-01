@@ -387,24 +387,57 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             dlg.FileName = ""; // Default file name
             dlg.DefaultExt = ".txt"; // Default file extension
             dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
-
+            dlg.Title = "Load Ignore List";
             // Show open file dialog box
             Nullable<bool> result = dlg.ShowDialog();
 
             // Process open file dialog box results
             if (result == true)
             {
-                // Open document
-
-
+                ignoreList.Items.Clear();
+                string[] ignoreListItems;                
                 string filename = dlg.FileName;
-                MessageBox.Show(filename);
+                ignoreListItems = System.IO.File.ReadAllLines(filename);
+
+                foreach (string s in ignoreListItems)
+                {
+                    ignoreList.Items.Add(s);
+                }
             }
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Not implemented yet. Basically will save list in a .txt line by line or maybe comma delimited");
+            // Configure save file dialog box
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "ignoreList"; // Default file name
+            dlg.DefaultExt = ".text"; // Default file extension
+            dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
+
+            // Show save file dialog box
+            Nullable<bool> result = dlg.ShowDialog();
+
+            // Process save file dialog box results
+            if (result == true)
+            {
+                // Save document
+                string filename = dlg.FileName;
+                string[] ignoreListItems = new string[ignoreList.Items.Count];
+                ignoreList.Items.CopyTo(ignoreListItems, 0);
+                System.IO.File.WriteAllLines(filename, ignoreListItems);
+            }
+        }
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ignoreList.SelectedIndex != -1)
+            {
+                ignoreList.Items.RemoveAt(ignoreList.SelectedIndex);
+            }
+        }
+
+        private void ClearButton_Click(object sender, RoutedEventArgs e)
+        {
+            ignoreList.Items.Clear();
         }
     }
 }
