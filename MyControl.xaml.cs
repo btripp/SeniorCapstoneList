@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -31,9 +32,14 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private List<RegisteredProjectCollection> projects;
         public MyControl()
         {
+            
             InitializeComponent();
+            this.DataContext = this;
             mc = this;
         }
+        public ObservableCollection<int> test { get; set; }
+        ObservableCollection<changeItem> _changesCollection = new ObservableCollection<changeItem>();
+        public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
 
@@ -75,7 +81,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             versionControl.CommitCheckin += (versionControl_CommitCheckin);
             versionControl.BeforeCheckinPendingChange += beforeCheckIn;
             versionControl.NewPendingChange += OnNewPendingChange;
+            versionControl.OperationFinished += new OperationEventHandler(afterUpdate);
             versionControl.Getting += versionControl_GetCompleted;
+        }
+
+        public static void afterUpdate(Object sender, OperationEventArgs e)
+        {
+            mc.loadPendingChangesList();
         }
         public static void versionControl_GetCompleted(Object sender, GettingEventArgs e)
         {
@@ -83,13 +95,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         public static void versionControl_CommitCheckin (Object sender,CommitCheckinEventArgs e)
         {
-            MessageBox.Show("thiss is the commit checkin stuff");
+            //MessageBox.Show("thiss is the commit checkin stuff");
             IEnumerable<PendingChange> test = e.Workspace.GetPendingChangesEnumerable();
             foreach (PendingChange change in test)
             {
-                MessageBox.Show("changeType = " + change.ChangeType + "\n" +
-                                "changeTypeName = " + change.ChangeTypeName + "\n" +
-                                "filename = " + change.FileName);
+                //MessageBox.Show("changeType = " + change.ChangeType + "\n" +
+                  //              "changeTypeName = " + change.ChangeTypeName + "\n" +
+                    //            "filename = " + change.FileName);
             }
         }
         public static void OnBeforeCheckinPendingChange(Object sender, ProcessingChangeEventArgs e)
@@ -123,15 +135,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
             items = itemsList.ToArray();
-            MessageBox.Show("the new list is");
+            //MessageBox.Show("the new list is");
             foreach (string item in items)
             {
-                MessageBox.Show(item);
+                //MessageBox.Show(item);
             }
             changes = e.Workspace.GetPendingChanges(items, RecursionType.Full);
             foreach (PendingChange change in changes)
             {
-                MessageBox.Show(change.FileName);
+                //MessageBox.Show(change.FileName);
             }
             //List<PendingChange> newChanges = new List<PendingChange>();
             //foreach (PendingChange change in changes)
@@ -149,9 +161,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //{
             //    e.Workspace.EvaluateCheckin(CheckinEvaluationOptions.All, , changes, "comment", c
             //}
-            MessageBox.Show(e.Workspace.Name + ","+ e.Workspace.OwnerName + "," + e.Workspace.Computer);
-            MessageBox.Show("this is the beforeCheckIn");
-            MessageBox.Show(e.PendingChange.FileName);
+            //MessageBox.Show(e.Workspace.Name + ","+ e.Workspace.OwnerName + "," + e.Workspace.Computer);
+            //MessageBox.Show("this is the beforeCheckIn");
+            //MessageBox.Show(e.PendingChange.FileName);
             //PendingChange[] changes = e.PendingChange.g
 
             if (mc.ignoreList.Items.Contains(e.PendingChange.FileName))
@@ -174,8 +186,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //MessageBox.Show("*****  Pending " + PendingChange.GetLocalizedStringForChangeType(e.PendingChange.ChangeType) +
                               //" on " + e.PendingChange.LocalItem);
         }
-
-        public void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
+        public void loadPendingChangesList()
         {
             //MessageBox.Show("it got into the load");
             //MessageBox.Show("k its loaded now");
@@ -212,7 +223,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     if (teamProjects.Count < 1) continue;
                     //MessageBox.Show(versionControl.ToString());
                     //MessageBox.Show("the next line registers events");
-                    
+
                     //Workspace test = versionControl.QueryWorkspaces(
                     //MessageBox.Show(teamProjects[0].Name);
                     //PendingChange[] pendingChanges = test.GetPendingChanges();
@@ -224,7 +235,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
                     // TODO : maybe hook up with a collection load rather than load? that way once you connect to tfs
                     // this will load up. rather than possibly missing the on load stuff
-                    Workspace[] workSpaces = versionControl.QueryWorkspaces(null, null, null);
+                    Workspace[] workSpaces = versionControl.QueryWorkspaces(null, null, System.Environment.MachineName);
+                    //MessageBox.Show("machine name: " + System.Environment.MachineName);
+                    this.changesCollection.Clear();
                     foreach (Workspace workspace in workSpaces)
                     {
                         PendingChange[] pendingChanges = workspace.GetPendingChanges();
@@ -238,9 +251,18 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                             // dynamically add the checkboxes as well. in order to get it to look like the VS window
                             if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName))
                             {
-                                mc.pendingChangesList.Items.Add(pendingChange.FileName);
+                                //mc.pendingChangesList.Items.Add(pendingChange.FileName);
+                                this.changesCollection.Add(new changeItem(pendingChange));
+                                //mc.pendingChangesList.Items.Add(pendingChange);
                             }
                         }
+                        string message = "";
+                        foreach (changeItem item in changesCollection)
+                        {
+                            message += (item.fileName) + "\n";
+                        }
+                        // DEBUG - this shows what the collection contains that the list is bound to
+                        //MessageBox.Show(message);
                     }
 
                 }
@@ -248,13 +270,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
                 finally
                 {
-                    
 
-                    
+
+
                 }
 
                 break;
             }
+        }
+        public void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            loadPendingChangesList();
            
         }
 
@@ -354,24 +380,35 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                             }
                         }
                     }
+                    PendingChange[] arrayChanges = myChanges.ToArray();
+                    string message = "These are the files that are to be checked in: \n";
+                    foreach (PendingChange change in arrayChanges)
+                    {
+                        message += change.FileName + "\n";
+                    }
+                    // TODO when i check this in here it says that these things are not part of my workspace... is it because when we 
+                    // run the experimental instance of VS that it isnt in the same place as my files? 
+                    // TODO replace all the workspace queries with a query using the machine name and username or let the user pick
+                    // through the workspaces if there is more than one using the dropdown but make the default one the machine/username WS
+                    MessageBox.Show(message);
+                    //MessageBox.Show(System.Environment.MachineName+","+ System.Environment.UserName);
+                    Workspace activeWorkspace = versionControl.GetWorkspace(System.Environment.MachineName, System.Environment.UserName);
+                    activeWorkspace.GetPendingChanges();
+                    activeWorkspace.CheckIn(arrayChanges, "");
 
                 }
                 finally { }
                 break;
             }
             // ================================================================
-            PendingChange[] arrayChanges = myChanges.ToArray();
-            string message = "These are the files that would be checked in: \n";
-            foreach (PendingChange change in arrayChanges)
-            {
-                message += change.FileName + "\n";
-            }
-            MessageBox.Show(message);
+            
+            
+
         }
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            if (ignoreTextBox != null && ignoreTextBox.Text != "")
+            if (ignoreTextBox.Text != null && ignoreTextBox.Text != "")
             {
                 ignoreList.Items.Add(ignoreTextBox.Text);
                 ignoreTextBox.Text = "";
@@ -439,5 +476,23 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             ignoreList.Items.Clear();
         }
+    }
+    public class changeItem
+    {
+        public changeItem()
+        {
+            fileName = "test name";
+            changeType = "test type";
+            folder = "test folder";
+        }
+        public changeItem(PendingChange change)
+        {
+            fileName = change.FileName;
+            changeType = change.ChangeType.ToString();
+            folder = "dunno";
+        }
+        public string fileName { get; set; }
+        public string changeType { get; set; }
+        public string folder { get; set; }
     }
 }
