@@ -48,24 +48,19 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
 
-        private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
-        {
-            
 
-        }
+        #region Tool window functions
         public static void RegisterEventHandlers(VersionControlServer versionControl)
         {
             // DEBUG 
             //MessageBox.Show("registering event handlers");
             versionControl.OperationFinished += afterUpdate;
         }
-
         public static void afterUpdate(Object sender, OperationEventArgs e)
         {
             mc.loadPendingChangesList();
         }
-
-        public void loadPendingChangesList()
+        public void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
             // DEBUG
             //MessageBox.Show("it got into the load");
@@ -90,6 +85,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 Environment.Exit(1);
             }
             // find a project collection with at least one team project
+            // is it going to act differently if there is more than one online collection?
             foreach (var registeredProjectCollection in onlineCollections)
             {
                 var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
@@ -101,8 +97,63 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
                     //if there are no team projects in this collection, skip it
                     if (teamProjects.Count < 1) continue;
+                    Workspace workspace = versionControl.GetWorkspace(System.Environment.MachineName, System.Environment.UserName);
+                    Workspace[] workspaces = versionControl.QueryWorkspaces(null, null, null);
+                    loadWorkspaces(workspaces);
+                    workSpaces.SelectedItem = workspace.Name;
 
                     RegisterEventHandlers(versionControl);
+                }
+                finally { }
+                break;
+            }
+            loadPendingChangesList();
+        }
+        // do we use onLoad or onInitialize?
+        private void MyToolWindow_Init(object sender, EventArgs e)
+        {
+            //this alone will not work anymore.
+            //loadPendingChangesList();
+        }
+
+        #endregion
+
+        #region pending Changes Section
+        public void loadWorkspaces(Workspace[] workspaces)
+        {
+            foreach (Workspace workspace in workspaces)
+            {
+                workSpaces.Items.Add(workspace.Name);
+            }
+        }
+        public void loadPendingChangesList()
+        {
+            // filter down to only those collections that are currently on-line
+            var onlineCollections =
+                from collection in this.projects
+                where collection.Offline == false
+                select collection;
+            // DEBUG
+            //MessageBox.Show(onlineCollections.Count().ToString());
+            // fail if there are no registered collections that are currently on-line
+            if (onlineCollections.Count() < 1)
+            {
+                Console.Error.WriteLine("Error: There are no on-line registered project collections");
+                Environment.Exit(1);
+            }
+            // find a project collection with at least one team project
+            // is it going to act differently if there is more than one online collection?
+            foreach (var registeredProjectCollection in onlineCollections)
+            {
+                var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
+                try
+                {
+                    // DEBUG
+                    //MessageBox.Show("finding workspaces");
+                    var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
+                    var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
+                    //if there are no team projects in this collection, skip it
+                    if (teamProjects.Count < 1) continue;
 
                     // TODO : maybe hook up with a collection load rather than load? that way once you connect to tfs
                     // this will load up. rather than possibly missing the on load stuff
@@ -133,28 +184,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                         // DEBUG - this shows what the collection contains that the list is bound to
                         //MessageBox.Show(message);
                     }
-
                 }
                 finally { }
                 break;
             }
         }
-        public void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            loadPendingChangesList();
-        }
-        // do we use onLoad or onInitialize?
-        private void MyToolWindow_Init(object sender, EventArgs e)
-        {
-            loadPendingChangesList();
-        }
-
-        // not sure if this guy is going to stay around
-        // yea i see what your saying. The pending changes list should show everyfile that is checked out.....
-        // then they just put in what they want to ignore via the other little window. 
-        // I do like the idea of having a button that will add that item to the ignore list though in case they already have it selected...
         private void ignore_Click(object sender, RoutedEventArgs e)
         {
+            // not sure if this guy is going to stay around
+            // yea i see what your saying. The pending changes list should show everyfile that is checked out.....
+            // then they just put in what they want to ignore via the other little window. 
+            // I do like the idea of having a button that will add that item to the ignore list though in case they already have it selected...
             //object item = this.pendingChangesList.SelectedItem;
             //this.ignoreList.Items.Add(item);
             //this.pendingChangesList.Items.Remove(item);
@@ -165,16 +205,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 //ignoreList.Items.Add(item.fileName);
                 addToIgnoreList(item.fileName);
             }
-            
-            
-        }
 
+
+        }
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
-            // going to have to change this to just checkin for the current workspace that the user has selected from the drop down
-            // this might also solve the problem of not checking in from the right workspace as well
-            // ================================================================
-            var onlineCollections = 
+            // TODO is there someway to abstract this part where you drill down to online collections and then go through each registered collection?
+            // im not sure how all the collections and stuff work? can you have multiple collections in one workspace? 
+            // i think a workspace is just the specific computer/username that you are using
+            var onlineCollections =
                 from collection in this.projects
                 where collection.Offline == false
                 select collection;
@@ -191,46 +230,42 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 try
                 {
                     var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
-                    Workspace[] workSpaces = versionControl.QueryWorkspaces(null, null, null);
-                    foreach (Workspace workspace in workSpaces)
-                    {
-                        PendingChange[] pendingChanges = workspace.GetPendingChanges();
 
-                        foreach (PendingChange pendingChange in pendingChanges)
+                    // the following code gets the workspace based on the workspace dropwdown
+
+                    Workspace workSpace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
+                    PendingChange[] pendingChanges = workSpace.GetPendingChanges();
+                    foreach (PendingChange pendingChange in pendingChanges)
+                    {
+                        if (!this.ignoreList.Items.Contains(pendingChange.FileName))
                         {
-                            if (!this.ignoreList.Items.Contains(pendingChange.FileName))
-                            {
-                                myChanges.Add(pendingChange);
-                            }
+                            myChanges.Add(pendingChange);
                         }
                     }
                     PendingChange[] arrayChanges = myChanges.ToArray();
+                    // DEBUG
                     string message = "These are the files that are to be checked in: \n";
                     foreach (PendingChange change in arrayChanges)
                     {
                         message += change.FileName + "\n";
                     }
-                    // TODO when i check this in here it says that these things are not part of my workspace... is it because when we 
-                    // run the experimental instance of VS that it isnt in the same place as my files? 
-                    // TODO replace all the workspace queries with a query using the machine name and username or let the user pick
-                    // through the workspaces if there is more than one using the dropdown but make the default one the machine/username WS
                     MessageBox.Show(message);
-                    //MessageBox.Show(System.Environment.MachineName+","+ System.Environment.UserName);
-                    Workspace activeWorkspace = versionControl.GetWorkspace(System.Environment.MachineName, System.Environment.UserName);
-                    activeWorkspace.GetPendingChanges();
-                    activeWorkspace.CheckIn(arrayChanges, "");
+                    workSpace.GetPendingChanges();
+                    workSpace.CheckIn(arrayChanges, "");
 
                 }
                 finally { }
                 break;
             }
-            // ================================================================
-            
-            
+
+
 
         }
 
-        private void button2_Click(object sender, RoutedEventArgs e)
+        #endregion
+
+        #region ignore list section
+        private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
         {
             if (ignoreTextBox.Text != null && ignoreTextBox.Text != "")
             {
@@ -242,6 +277,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 MessageBox.Show("You must enter something to ignore.");
             }
+
         }
         private void loadButton_Click(object sender, RoutedEventArgs e)
         {
@@ -257,7 +293,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             if (result == true)
             {
                 ignoreList.Items.Clear();
-                string[] ignoreListItems;                
+                string[] ignoreListItems;
                 string filename = dlg.FileName;
                 ignoreListItems = System.IO.File.ReadAllLines(filename);
 
@@ -268,7 +304,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
             // Configure save file dialog box
@@ -297,19 +332,24 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 ignoreList.Items.RemoveAt(ignoreList.SelectedIndex);
             }
         }
-
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
             ignoreList.Items.Clear();
         }
-        
         public void addToIgnoreList(string fileName)
         {
-            if(!ignoreList.Items.Contains(fileName))
+            if (!ignoreList.Items.Contains(fileName))
             {
                 ignoreList.Items.Add(fileName);
             }
         }
+
+        #endregion
+
+        
+
+        
+        
     }
     public class changeItem
     {
