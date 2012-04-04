@@ -39,6 +39,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public static MyControl mc;
         private List<RegisteredProjectCollection> projects;
         public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } }
+        public Workspace activeWorkspace { get; set; }
         #endregion
 
         #region Private Vars
@@ -98,6 +99,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     //if there are no team projects in this collection, skip it
                     if (teamProjects.Count < 1) continue;
                     Workspace workspace = versionControl.GetWorkspace(System.Environment.MachineName, System.Environment.UserName);
+                    activeWorkspace = workspace;
                     Workspace[] workspaces = versionControl.QueryWorkspaces(null, null, null);
                     loadWorkspaces(workspaces);
                     workSpaces.SelectedItem = workspace.Name;
@@ -128,66 +130,30 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         public void loadPendingChangesList()
         {
-            // filter down to only those collections that are currently on-line
-            var onlineCollections =
-                from collection in this.projects
-                where collection.Offline == false
-                select collection;
-            // DEBUG
-            //MessageBox.Show(onlineCollections.Count().ToString());
-            // fail if there are no registered collections that are currently on-line
-            if (onlineCollections.Count() < 1)
+            // because i pass the workspace... this will only have pending changes for the current workspace
+
+            // this clear is to clear the observableCollection
+            this.changesCollection.Clear();
+
+            PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
+            foreach (PendingChange pendingChange in pendingChanges)
             {
-                Console.Error.WriteLine("Error: There are no on-line registered project collections");
-                Environment.Exit(1);
-            }
-            // find a project collection with at least one team project
-            // is it going to act differently if there is more than one online collection?
-            foreach (var registeredProjectCollection in onlineCollections)
-            {
-                var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
-                try
+                // i have this next thing there to make sure that you dont add the same file twice if we keep this
+                // onload
+                // TODO we are going to have to add something to the list in a different way so that we can
+                // dynamically add the checkboxes as well. in order to get it to look like the VS window
+                if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName))
                 {
-                    // DEBUG
-                    //MessageBox.Show("finding workspaces");
-                    var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
-                    var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
-                    //if there are no team projects in this collection, skip it
-                    if (teamProjects.Count < 1) continue;
-
-                    // TODO : maybe hook up with a collection load rather than load? that way once you connect to tfs
-                    // this will load up. rather than possibly missing the on load stuff
-                    Workspace[] workSpaces = versionControl.QueryWorkspaces(null, null, System.Environment.MachineName);
-
-                    // this clear is to clear the observableCollection
-                    this.changesCollection.Clear();
-
-                    foreach (Workspace workspace in workSpaces)
-                    {
-                        PendingChange[] pendingChanges = workspace.GetPendingChanges();
-                        foreach (PendingChange pendingChange in pendingChanges)
-                        {
-                            // i have this next thing there to make sure that you dont add the same file twice if we keep this
-                            // onload
-                            // TODO we are going to have to add something to the list in a different way so that we can
-                            // dynamically add the checkboxes as well. in order to get it to look like the VS window
-                            if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName))
-                            {
-                                this.changesCollection.Add(new changeItem(pendingChange));
-                            }
-                        }
-                        string message = "";
-                        foreach (changeItem item in changesCollection)
-                        {
-                            message += (item.fileName) + "\n";
-                        }
-                        // DEBUG - this shows what the collection contains that the list is bound to
-                        //MessageBox.Show(message);
-                    }
+                    this.changesCollection.Add(new changeItem(pendingChange));
                 }
-                finally { }
-                break;
             }
+            string message = "";
+            foreach (changeItem item in changesCollection)
+            {
+                message += (item.fileName) + "\n";
+            }
+            // DEBUG - this shows what the collection contains that the list is bound to
+            //MessageBox.Show(message);
         }
         private void ignore_Click(object sender, RoutedEventArgs e)
         {
@@ -210,53 +176,25 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
-            // TODO is there someway to abstract this part where you drill down to online collections and then go through each registered collection?
-            // im not sure how all the collections and stuff work? can you have multiple collections in one workspace? 
-            // i think a workspace is just the specific computer/username that you are using
-            var onlineCollections =
-                from collection in this.projects
-                where collection.Offline == false
-                select collection;
-            if (onlineCollections.Count() < 1)
-            {
-                Console.Error.WriteLine("Error: There are no on-line registered project collections");
-                Environment.Exit(1);
-            }
             List<PendingChange> myChanges = new List<PendingChange>();
-            foreach (var registeredProjectCollection in onlineCollections)
+            PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
+            foreach (PendingChange pendingChange in pendingChanges)
             {
-                var projectCollection =
-                    TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
-                try
+                if (!this.ignoreList.Items.Contains(pendingChange.FileName))
                 {
-                    var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
-
-                    // the following code gets the workspace based on the workspace dropwdown
-
-                    Workspace workSpace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
-                    PendingChange[] pendingChanges = workSpace.GetPendingChanges();
-                    foreach (PendingChange pendingChange in pendingChanges)
-                    {
-                        if (!this.ignoreList.Items.Contains(pendingChange.FileName))
-                        {
-                            myChanges.Add(pendingChange);
-                        }
-                    }
-                    PendingChange[] arrayChanges = myChanges.ToArray();
-                    // DEBUG
-                    string message = "These are the files that are to be checked in: \n";
-                    foreach (PendingChange change in arrayChanges)
-                    {
-                        message += change.FileName + "\n";
-                    }
-                    MessageBox.Show(message);
-                    workSpace.GetPendingChanges();
-                    workSpace.CheckIn(arrayChanges, "");
-
+                    myChanges.Add(pendingChange);
                 }
-                finally { }
-                break;
             }
+            PendingChange[] arrayChanges = myChanges.ToArray();
+            // DEBUG
+            string message = "These are the files that are to be checked in: \n";
+            foreach (PendingChange change in arrayChanges)
+            {
+                message += change.FileName + "\n";
+            }
+            MessageBox.Show(message);
+            activeWorkspace.GetPendingChanges();
+            activeWorkspace.CheckIn(arrayChanges, "");
 
 
 
@@ -363,7 +301,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             fileName = change.FileName;
             changeType = change.ChangeType.ToString();
-            folder = "dunno";
+            folder = "I dont know how to get this.";
         }
         public string fileName { get; set; }
         public string changeType { get; set; }
@@ -404,4 +342,52 @@ return pendingchanges;
 //    MessageBox.Show("You must enter something in the textbox.", "Nothing Added");
 //}
 //=============================================================================================================
+// this was taken from the checkin method
+// TODO is there someway to abstract this part where you drill down to online collections and then go through each registered collection?
+// im not sure how all the collections and stuff work? can you have multiple collections in one workspace? 
+// i think a workspace is just the specific computer/username that you are using
+//var onlineCollections =
+//    from collection in this.projects
+//    where collection.Offline == false
+//    select collection;
+//if (onlineCollections.Count() < 1)
+//{
+//    Console.Error.WriteLine("Error: There are no on-line registered project collections");
+//    Environment.Exit(1);
+//}
+//List<PendingChange> myChanges = new List<PendingChange>();
+//foreach (var registeredProjectCollection in onlineCollections)
+//{
+//    var projectCollection =
+//        TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
+//    try
+//    {
+//        var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
+
+//        // the following code gets the workspace based on the workspace dropwdown
+
+//        Workspace workSpace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
+//        PendingChange[] pendingChanges = workSpace.GetPendingChanges();
+//        foreach (PendingChange pendingChange in pendingChanges)
+//        {
+//            if (!this.ignoreList.Items.Contains(pendingChange.FileName))
+//            {
+//                myChanges.Add(pendingChange);
+//            }
+//        }
+//        PendingChange[] arrayChanges = myChanges.ToArray();
+//        // DEBUG
+//        string message = "These are the files that are to be checked in: \n";
+//        foreach (PendingChange change in arrayChanges)
+//        {
+//            message += change.FileName + "\n";
+//        }
+//        MessageBox.Show(message);
+//        workSpace.GetPendingChanges();
+//        workSpace.CheckIn(arrayChanges, "");
+
+//    }
+//    finally { }
+//    break;
+//}
 #endregion
