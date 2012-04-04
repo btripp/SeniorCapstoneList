@@ -150,11 +150,23 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
 
         // not sure if this guy is going to stay around
+        // yea i see what your saying. The pending changes list should show everyfile that is checked out.....
+        // then they just put in what they want to ignore via the other little window. 
+        // I do like the idea of having a button that will add that item to the ignore list though in case they already have it selected...
         private void ignore_Click(object sender, RoutedEventArgs e)
         {
-            object item = this.pendingChangesList.SelectedItem;
-            this.ignoreList.Items.Add(item);
-            this.pendingChangesList.Items.Remove(item);
+            //object item = this.pendingChangesList.SelectedItem;
+            //this.ignoreList.Items.Add(item);
+            //this.pendingChangesList.Items.Remove(item);
+
+            if (pendingChangesList.SelectedItem != null)
+            {
+                changeItem item = (changeItem)pendingChangesList.SelectedItem;
+                //ignoreList.Items.Add(item.fileName);
+                addToIgnoreList(item.fileName);
+            }
+            
+            
         }
 
         private void checkin_Click(object sender, RoutedEventArgs e)
@@ -222,7 +234,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             if (ignoreTextBox.Text != null && ignoreTextBox.Text != "")
             {
-                ignoreList.Items.Add(ignoreTextBox.Text);
+                //ignoreList.Items.Add(ignoreTextBox.Text);
+                addToIgnoreList(ignoreTextBox.Text);
                 ignoreTextBox.Text = "";
             }
             else
@@ -250,7 +263,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
                 foreach (string s in ignoreListItems)
                 {
-                    ignoreList.Items.Add(s);
+                    addToIgnoreList(s);
+                    //ignoreList.Items.Add(s);
                 }
             }
         }
@@ -288,7 +302,14 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             ignoreList.Items.Clear();
         }
-
+        
+        public void addToIgnoreList(string fileName)
+        {
+            if(!ignoreList.Items.Contains(fileName))
+            {
+                ignoreList.Items.Add(fileName);
+            }
+        }
     }
     public class changeItem
     {
@@ -308,6 +329,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public string changeType { get; set; }
         public string folder { get; set; }
     }
+   
 }
 
 #region commented out stuff

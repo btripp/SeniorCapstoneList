@@ -13,9 +13,9 @@
     <StackPanel Height="280" Name="stackPanel1" Width="800" Orientation="Horizontal">
         <StackPanel Height="280" Name="stackPanel2" Width="600">
             <ToolBar Height="26" Name="toolBar1" Width="600" FontSize="9">
-                <Button Name="button1" Click="button1_Click">Checkin</Button>
+                <Button Name="button1" Click="checkin_Click">Checkin</Button>
                 <Separator/>
-                <Button Name="button3" Click="button3_Click">Ignore</Button>
+                <Button Name="button3" Click="ignore_Click">Ignore</Button>
                 <Button Name="unshelve">Unshelve</Button>
                 <Separator/>
                 <Button Name="hideShowComment">h</Button>
