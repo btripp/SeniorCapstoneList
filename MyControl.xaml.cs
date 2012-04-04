@@ -284,6 +284,45 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         #endregion
 
+        private void changeWorkspace(object sender, SelectionChangedEventArgs e)
+        {
+            // TODO abstract this so its not so messy
+
+            var onlineCollections =
+                from collection in projects
+                where collection.Offline == false
+                select collection;
+            // fail if there are no registered collections that are currently on-line
+            if (onlineCollections.Count() < 1)
+            {
+                Console.Error.WriteLine("Error: There are no on-line registered project collections");
+                Environment.Exit(1);
+            }
+            // find a project collection with at least one team project
+            // is it going to act differently if there is more than one online collection?
+            // TODO is there ever going to be more than one project collection? if there is. i dont think that my way of finding the current workspace would work
+            // or maybe it would work but we dont need to have a version control for each registered project collection... if we dont need to foreach through this
+            // then we could have versioncontrol be a property as well.. if versioncontrol was a property we could switch between workspace much easier
+            foreach (var registeredProjectCollection in onlineCollections)
+            {
+                var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
+                try
+                {
+                    var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
+                    var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
+                    //if there are no team projects in this collection, skip it
+                    if (teamProjects.Count < 1) continue;
+// ----------------> all of that was just to get at this versioncontrol in order to get the workspace with the dropdowns selected items name
+                    Workspace workspace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
+                    activeWorkspace = workspace;
+                }
+                finally { }
+                break;
+            }
+            // once the workspace is changed, load the pending changes list for that workspace
+            loadPendingChangesList();
+        }
+
         
 
         
