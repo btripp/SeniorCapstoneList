@@ -212,11 +212,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         #region ignore list section
         private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO just so i dont think about it we need to check to make sure that what the person is adding isnt already on the ignore list
-            // it might not matter but if there if we try to make a list or something that matches the ignore list, having 2 of the same thing might f
-            // it up and it would just be easier to catch that here
-            
-            //Solved. The addToIgnoreList function only adds the name to the list if it is not already on it. 
             if (ignoreTextBox.Text != null && ignoreTextBox.Text != "")
             {
                 addToIgnoreList(ignoreTextBox.Text);
@@ -224,7 +219,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             else
             {
-                MessageBox.Show("You must enter something to ignore.");
+                MessageBox.Show("You must enter something to ignore.", "Add to list", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
         private void loadButton_Click(object sender, RoutedEventArgs e)
@@ -281,13 +276,33 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
-            ignoreList.Items.Clear();
+            if (ignoreList.Items.Count > 0)
+            {
+                var result = MessageBox.Show("Are you sure you want to clear the ignore list?", "Clear List", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Yes)
+                {
+                    ignoreList.Items.Clear();
+                }
+            }
+            
         }
         public void addToIgnoreList(string fileName)
         {
-            if (!ignoreList.Items.Contains(fileName))
+            if(fileName.Contains("*")) //regex or wildcard dont ignore case
             {
-                ignoreList.Items.Add(fileName);
+                if (!ignoreList.Items.Contains(fileName))
+                {
+                    ignoreList.Items.Add(fileName);
+                }
+            }
+            else   //ignore case when adding filenames
+            {
+                string [] ignoreListArray = new string[ignoreList.Items.Count];
+                ignoreList.Items.CopyTo(ignoreListArray ,0);
+                if (!ignoreListArray.Contains(fileName, StringComparer.OrdinalIgnoreCase))
+                {
+                    ignoreList.Items.Add(fileName);
+                }
             }
         }
         #endregion
