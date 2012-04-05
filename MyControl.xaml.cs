@@ -15,21 +15,12 @@ using System.Windows.Shapes;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 
-
-
 namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 {
-    /// <summary>
-    /// Interaction logic for MyControl.xaml
-    /// </summary>
-    /// 
-
     public partial class MyControl : UserControl
     {
-        
         public MyControl()
         {
-            
             InitializeComponent();
             this.DataContext = this;
             mc = this;
@@ -41,15 +32,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } }
         public Workspace activeWorkspace { get; set; }
         #endregion
-
         #region Private Vars
         // do we need this?
         ObservableCollection<changeItem> _changesCollection = new ObservableCollection<changeItem>();
         #endregion
-
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
-
-
         #region Tool window functions
         public static void RegisterEventHandlers(VersionControlServer versionControl)
         {
@@ -67,7 +54,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //MessageBox.Show("it got into the load");
             List<RegisteredProjectCollection> projectCollections;
 
-
             // get all registered project collections (previously connected to from Team Explorer)
             projectCollections = new List<RegisteredProjectCollection>((RegisteredTfsConnections.GetProjectCollections()));
             this.projects = projectCollections;
@@ -77,6 +63,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 from collection in projectCollections
                 where collection.Offline == false
                 select collection;
+
             // DEBUG
             //MessageBox.Show(onlineCollections.Count().ToString());
             // fail if there are no registered collections that are currently on-line
@@ -117,9 +104,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //this alone will not work anymore.
             //loadPendingChangesList();
         }
-
         #endregion
-
         #region pending Changes Section
         public void loadWorkspaces(Workspace[] workspaces)
         {
@@ -131,10 +116,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public void loadPendingChangesList()
         {
             // because i pass the workspace... this will only have pending changes for the current workspace
-
             // this clear is to clear the observableCollection
             this.changesCollection.Clear();
-
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             foreach (PendingChange pendingChange in pendingChanges)
             {
@@ -155,23 +138,14 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // DEBUG - this shows what the collection contains that the list is bound to
             //MessageBox.Show(message);
         }
+        //I would say that we keep this guy. I think its a nice feature to have.
         private void ignore_Click(object sender, RoutedEventArgs e)
         {
-            // not sure if this guy is going to stay around
-            // yea i see what your saying. The pending changes list should show everyfile that is checked out.....
-            // then they just put in what they want to ignore via the other little window. 
-            // I do like the idea of having a button that will add that item to the ignore list though in case they already have it selected...
-            //object item = this.pendingChangesList.SelectedItem;
-            //this.ignoreList.Items.Add(item);
-            //this.pendingChangesList.Items.Remove(item);
-
             if (pendingChangesList.SelectedItem != null)
             {
                 changeItem item = (changeItem)pendingChangesList.SelectedItem;
                 addToIgnoreList(item.fileName);
             }
-
-
         }
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
@@ -184,7 +158,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 {
                     myChanges.Add(pendingChange);
                 }
-                
             }
             PendingChange[] arrayChanges = myChanges.ToArray();
             // DEBUG
@@ -197,14 +170,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             activeWorkspace.GetPendingChanges();
             activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
             commentBox.Clear();
-
-
-
         }
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
         {
             // TODO abstract this so its not so messy
-
             var onlineCollections =
                 from collection in projects
                 where collection.Offline == false
@@ -239,9 +208,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // once the workspace is changed, load the pending changes list for that workspace
             loadPendingChangesList();
         }
-
         #endregion
-
         #region ignore list section
         private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
         {
@@ -323,9 +290,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 ignoreList.Items.Add(fileName);
             }
         }
-
         #endregion
-
     }
     public class changeItem
     {
@@ -352,7 +317,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public string changeType { get; set; }
         public string folder { get; set; }
     }
-   
 }
 
 #region commented out stuff
