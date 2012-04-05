@@ -37,7 +37,7 @@
                 </ComboBox>
             </ToolBar>
             <Label Content="Comment:" Height="Auto" Name="label1" FontSize="9" Width="600" BorderThickness="1" />
-            <TextBox Height="30" Name="textBox1" Width="600" FontSize="9" />
+            <TextBox Height="30" Name="commentBox" Width="600" FontSize="9" />
             <ListView ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" >
                 <ListView.View>
                     <GridView>

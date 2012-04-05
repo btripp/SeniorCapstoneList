@@ -168,7 +168,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             if (pendingChangesList.SelectedItem != null)
             {
                 changeItem item = (changeItem)pendingChangesList.SelectedItem;
-                //ignoreList.Items.Add(item.fileName);
                 addToIgnoreList(item.fileName);
             }
 
@@ -176,6 +175,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
+            //TODO need to add stuff to figure out regex stuff for .exe etc
             List<PendingChange> myChanges = new List<PendingChange>();
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             foreach (PendingChange pendingChange in pendingChanges)
@@ -184,6 +184,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 {
                     myChanges.Add(pendingChange);
                 }
+                
             }
             PendingChange[] arrayChanges = myChanges.ToArray();
             // DEBUG
@@ -194,7 +195,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             MessageBox.Show(message);
             activeWorkspace.GetPendingChanges();
-            activeWorkspace.CheckIn(arrayChanges, "");
+            activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
+            commentBox.Clear();
 
 
 
@@ -246,9 +248,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // TODO just so i dont think about it we need to check to make sure that what the person is adding isnt already on the ignore list
             // it might not matter but if there if we try to make a list or something that matches the ignore list, having 2 of the same thing might f
             // it up and it would just be easier to catch that here
+            
+            //Solved. The addToIgnoreList function only adds the name to the list if it is not already on it. 
             if (ignoreTextBox.Text != null && ignoreTextBox.Text != "")
             {
-                //ignoreList.Items.Add(ignoreTextBox.Text);
                 addToIgnoreList(ignoreTextBox.Text);
                 ignoreTextBox.Text = "";
             }
@@ -256,7 +259,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 MessageBox.Show("You must enter something to ignore.");
             }
-
         }
         private void loadButton_Click(object sender, RoutedEventArgs e)
         {
@@ -279,7 +281,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 foreach (string s in ignoreListItems)
                 {
                     addToIgnoreList(s);
-                    //ignoreList.Items.Add(s);
                 }
             }
         }
@@ -325,12 +326,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         #endregion
 
-        
-
-        
-
-        
-        
     }
     public class changeItem
     {
@@ -344,7 +339,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             fileName = change.FileName;
             changeType = change.ChangeType.ToString();
-            folder = "I dont know how to get this.";
+            folder = change.LocalOrServerFolder;
         }
         // TODO 
         // maybe add another property for a checkbox?
