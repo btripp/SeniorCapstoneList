@@ -199,12 +199,53 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
 
         }
+        private void changeWorkspace(object sender, SelectionChangedEventArgs e)
+        {
+            // TODO abstract this so its not so messy
+
+            var onlineCollections =
+                from collection in projects
+                where collection.Offline == false
+                select collection;
+            // fail if there are no registered collections that are currently on-line
+            if (onlineCollections.Count() < 1)
+            {
+                Console.Error.WriteLine("Error: There are no on-line registered project collections");
+                Environment.Exit(1);
+            }
+            // find a project collection with at least one team project
+            // is it going to act differently if there is more than one online collection?
+            // TODO is there ever going to be more than one project collection? if there is. i dont think that my way of finding the current workspace would work
+            // or maybe it would work but we dont need to have a version control for each registered project collection... if we dont need to foreach through this
+            // then we could have versioncontrol be a property as well.. if versioncontrol was a property we could switch between workspace much easier
+            foreach (var registeredProjectCollection in onlineCollections)
+            {
+                var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
+                try
+                {
+                    var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
+                    var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
+                    //if there are no team projects in this collection, skip it
+                    if (teamProjects.Count < 1) continue;
+                    // ----------------> all of that was just to get at this versioncontrol in order to get the workspace with the dropdowns selected items name
+                    Workspace workspace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
+                    activeWorkspace = workspace;
+                }
+                finally { }
+                break;
+            }
+            // once the workspace is changed, load the pending changes list for that workspace
+            loadPendingChangesList();
+        }
 
         #endregion
 
         #region ignore list section
         private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
         {
+            // TODO just so i dont think about it we need to check to make sure that what the person is adding isnt already on the ignore list
+            // it might not matter but if there if we try to make a list or something that matches the ignore list, having 2 of the same thing might f
+            // it up and it would just be easier to catch that here
             if (ignoreTextBox.Text != null && ignoreTextBox.Text != "")
             {
                 //ignoreList.Items.Add(ignoreTextBox.Text);
@@ -284,44 +325,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         #endregion
 
-        private void changeWorkspace(object sender, SelectionChangedEventArgs e)
-        {
-            // TODO abstract this so its not so messy
-
-            var onlineCollections =
-                from collection in projects
-                where collection.Offline == false
-                select collection;
-            // fail if there are no registered collections that are currently on-line
-            if (onlineCollections.Count() < 1)
-            {
-                Console.Error.WriteLine("Error: There are no on-line registered project collections");
-                Environment.Exit(1);
-            }
-            // find a project collection with at least one team project
-            // is it going to act differently if there is more than one online collection?
-            // TODO is there ever going to be more than one project collection? if there is. i dont think that my way of finding the current workspace would work
-            // or maybe it would work but we dont need to have a version control for each registered project collection... if we dont need to foreach through this
-            // then we could have versioncontrol be a property as well.. if versioncontrol was a property we could switch between workspace much easier
-            foreach (var registeredProjectCollection in onlineCollections)
-            {
-                var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
-                try
-                {
-                    var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
-                    var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
-                    //if there are no team projects in this collection, skip it
-                    if (teamProjects.Count < 1) continue;
-// ----------------> all of that was just to get at this versioncontrol in order to get the workspace with the dropdowns selected items name
-                    Workspace workspace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
-                    activeWorkspace = workspace;
-                }
-                finally { }
-                break;
-            }
-            // once the workspace is changed, load the pending changes list for that workspace
-            loadPendingChangesList();
-        }
+        
 
         
 
@@ -342,6 +346,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             changeType = change.ChangeType.ToString();
             folder = "I dont know how to get this.";
         }
+        // TODO 
+        // maybe add another property for a checkbox?
+        // if that happens i can have a template for the grid that has a checkbox that is checked based on the checkbox property
+        // if there is a property like that, when checking in i can just run through the observable collection to make a newpendingchanges list that
+        // moves everything over that has a checked checkbox
+        // similarly, when we add something to the ignore list (if it doesnt exist already) we can find the element in the observable collection that 
+        // shares the same name and change that changeItem checkbox property to false.
         public string fileName { get; set; }
         public string changeType { get; set; }
         public string folder { get; set; }

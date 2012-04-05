@@ -33,7 +33,7 @@
                 <Button Name="filterBySolution">f</Button>
                 <Separator/>
                 <Label FontSize="9">Workspace: </Label>
-                <ComboBox Name="workSpaces">
+                <ComboBox Name="workSpaces" SelectionChanged="changeWorkspace">
                 </ComboBox>
             </ToolBar>
             <Label Content="Comment:" Height="Auto" Name="label1" FontSize="9" Width="600" BorderThickness="1" />
