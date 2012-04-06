@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using System.Text.RegularExpressions;
 
 namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 {
@@ -147,18 +148,59 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 addToIgnoreList(item.fileName);
             }
         }
+        //added regex stuff
+        //added stuff to make sure a change isnt added twice... not sure if it ever can.
+        //TODO Need to add logic to make sure we dont try to check in nothing
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
-            //TODO need to add stuff to figure out regex stuff for .exe etc
+            string[] ignoreListArray = new string[ignoreList.Items.Count];
+            ignoreList.Items.CopyTo(ignoreListArray,0);
+            var filters = from f in ignoreListArray
+                          where f.Contains("*")
+                          select f;
+            
             List<PendingChange> myChanges = new List<PendingChange>();
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             foreach (PendingChange pendingChange in pendingChanges)
             {
-                if (!this.ignoreList.Items.Contains(pendingChange.FileName))
+                // if not on ignore list
+                if (!ignoreList.Items.Contains(pendingChange.FileName))//filename
                 {
-                    myChanges.Add(pendingChange);
+                    //file not in ignore list check to see if it matches any filters
+                    if (filters.Count() > 0)
+                    {
+                        foreach (var filter in filters)
+                        {
+                            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+                            //if it doesnt match any filters add it to be checked in.
+                            if (!wildcard.IsMatch(pendingChange.FileName))
+                            {
+                                if (!myChanges.Contains(pendingChange))
+                                {
+                                    myChanges.Add(pendingChange);
+                                }
+                            }
+                            else
+                            {
+                                // it matches a filter maybe put a filter here if they want to ignore the ignored file ;)
+                            }
+                        }
+                    }
+                    else
+                    {//no filters and it is not on the ignore list so we have to add it.
+                        if (!myChanges.Contains(pendingChange))
+                        {
+                            myChanges.Add(pendingChange);
+                        }
+                    }
+                }
+                else
+                {
+                   //do nothing... its on the ignore list... maybe put confirmation here if they want it 
+                    //if they say they want to add it you cna add it here.
                 }
             }
+
             PendingChange[] arrayChanges = myChanges.ToArray();
             // DEBUG
             string message = "These are the files that are to be checked in: \n";
@@ -168,7 +210,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             MessageBox.Show(message);
             activeWorkspace.GetPendingChanges();
-            activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
+            if (arrayChanges.Count() > 0)
+            {
+                activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
+                MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                MessageBox.Show("0 Files checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
             commentBox.Clear();
         }
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
@@ -332,8 +382,23 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public string changeType { get; set; }
         public string folder { get; set; }
     }
-}
+    public class Wildcard : Regex
+    {
+        public Wildcard(string pattern)
+            : base(WildcardToRegex(pattern)){}
 
+        public Wildcard(string pattern, RegexOptions options)
+            : base(WildcardToRegex(pattern), options){}
+
+        //Converts wildcard to regex
+        public static string WildcardToRegex(string pattern)
+        {
+            return "^" + Regex.Escape(pattern).
+             Replace("\\*", ".*").
+             Replace("\\?", ".") + "$";
+        }
+    }
+}
 #region commented out stuff
 //=============================================================================================================
 //this was commented out from ---  private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
