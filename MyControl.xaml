@@ -16,7 +16,8 @@
                 <Button Name="button1" Click="checkin_Click">Checkin</Button>
                 <Separator/>
                 <Button Name="button3" Click="ignore_Click">Ignore</Button>
-                <Button Name="unshelve">Unshelve</Button>
+                <Button Name="shelve" Click="shelve_Click">Shelve</Button>
+                <Button Name="unshelve" Click="unshelve_Click">Unshelve</Button>
                 <Separator/>
                 <Button Name="hideShowComment">h</Button>
                 <Button Name="folderView">f</Button>
@@ -55,11 +56,11 @@
                 <Button Content="Add" Height="23" Name="button2" Width="45" Click="ignoreListAddButton_Click" />
             </StackPanel>
             <ListView Height="193" Name="ignoreList" Width="163" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" MinHeight="50" MinWidth="50" />
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Remove" Height="23" Width="48" FontSize="10" Name="RemoveButton" Click="RemoveButton_Click"/>
-                <Button Content="Clear" Height="23" Width="48" FontSize="10" Name="ClearButton" Click="ClearButton_Click"/>
-                <Button Content="Load List" Height="23" Width="48" FontSize="10" Name="loadButton" Click="loadButton_Click"/>
-                <Button Content="Save List" Height="23" Width="48" FontSize="10" Name="saveButton" Click="saveButton_Click"/>
+            <StackPanel Orientation="Horizontal" Name="buttonPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Content="Remove" FontSize="10" Name="RemoveButton" Click="RemoveButton_Click" VerticalAlignment="Stretch" />
+                <Button Content="Clear" FontSize="10" Name="ClearButton" Click="ClearButton_Click"/>
+                <Button Content="Load" FontSize="10" Name="loadButton" Click="loadButton_Click"/>
+                <Button Content="Save" FontSize="10" Name="saveButton" Click="saveButton_Click"/>
             </StackPanel>
         </StackPanel>
     </DockPanel>

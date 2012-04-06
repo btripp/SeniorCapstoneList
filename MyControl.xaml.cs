@@ -140,14 +140,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //MessageBox.Show(message);
         }
         //I would say that we keep this guy. I think its a nice feature to have.
-        private void ignore_Click(object sender, RoutedEventArgs e)
-        {
-            if (pendingChangesList.SelectedItem != null)
-            {
-                changeItem item = (changeItem)pendingChangesList.SelectedItem;
-                addToIgnoreList(item.fileName);
-            }
-        }
+        
         //added regex stuff
         //added stuff to make sure a change isnt added twice... not sure if it ever can.
         //TODO Need to add logic to make sure we dont try to check in nothing
@@ -220,6 +213,26 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 MessageBox.Show("0 Files checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             commentBox.Clear();
+        }
+        private void ignore_Click(object sender, RoutedEventArgs e)
+        {
+            if (pendingChangesList.SelectedItem != null)
+            {
+                changeItem item = (changeItem)pendingChangesList.SelectedItem;
+                addToIgnoreList(item.fileName);
+            }
+        }
+        private void shelve_Click(object sender, RoutedEventArgs e)
+        {
+            List<PendingChange> myChanges = new List<PendingChange>();
+            PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
+            
+            
+        }
+
+        private void unshelve_Click(object sender, RoutedEventArgs e)
+        {
+
         }
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
         {
