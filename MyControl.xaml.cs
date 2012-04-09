@@ -213,6 +213,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 MessageBox.Show("0 Files checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             commentBox.Clear();
+            //commentBox.Text = "";
         }
         private void ignore_Click(object sender, RoutedEventArgs e)
         {
@@ -226,13 +227,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             List<PendingChange> myChanges = new List<PendingChange>();
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
-            
-            
+            // im going to read up about shelving.. the shelve function needs a shelvset, pendingchanges[], comment
+            // it seems to pretty much the same and i think i get the idea but i want to ready up on it some before i write this
         }
 
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
-
+            // this one will be easy once i fully understand the shelve method
         }
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
         {
