@@ -373,6 +373,25 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
         #endregion
+
+        private void newButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void hideShowComment_Click(object sender, RoutedEventArgs e)
+        {
+            if (commentBox.IsVisible)
+            {
+                commentBox.Visibility = Visibility.Collapsed;
+                commentLabel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                commentBox.Visibility = Visibility.Visible;
+                commentLabel.Visibility = Visibility.Visible;
+            }
+        }
     }
     public class changeItem
     {
