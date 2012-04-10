@@ -29,7 +29,7 @@
             <Button Name="shelve" Click="shelve_Click">Shelve</Button>
             <Button Name="unshelve" Click="unshelve_Click">Unshelve</Button>
             <Separator/>
-            <Button Name="hideShowComment" Click="hideShowComment_Click">
+            <Button ToolTip="Hide/Show Comments" Name="hideShowComment" Click="hideShowComment_Click">
                 <Image Width="16" Height="12">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Comment.png" SourceRect="8,10,16,12"/>
@@ -62,6 +62,9 @@
             <Label FontSize="9">Workspace:</Label>
             <ComboBox Name="workSpaces" SelectionChanged="changeWorkspace">
             </ComboBox>         
+            <Button Name="hideShowIgnoreList" ToolTip="Hide/Show Ignore List" Click="hideShowIgnoreList_Click" >
+                <Image Source="Resources/hideShowIgnoreList.png"/>
+            </Button>
         </ToolBar>
         <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="commentLabel" FontSize="9"  BorderThickness="1" />
         <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" FontSize="9" Margin="4,4,4,4"/>
@@ -74,7 +77,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <ToolBar Grid.Column="1" Grid.Row="0">
+        <ToolBar Name="ignoreListToolbar" Grid.Column="1" Grid.Row="0">
             <Button ToolTip="New Ignore List" Name="newButton" Click="newButton_Click">
                 <Image Source="Resources/newDocument.png"/>
             </Button>
@@ -94,12 +97,12 @@
         </ToolBar>
         <StackPanel Grid.Column="1" Grid.Row="1">
             <StackPanel Name="stackPanel4" Orientation="Horizontal" Background="{x:Null}">
-                <TextBox Height="23" Name="ignoreTextBox" Width="120" />
-                <Button Height="23" Name="button2" Width="28" Click="ignoreListAddButton_Click" BorderBrush="{x:Null}" Background="{x:Null}">
+                <TextBox Height="23" Name="ignoreTextBox" Width="120" KeyDown="ignoreTextBox_KeyDown" />
+                <Button ToolTip="Add Item" Height="23" Name="button2" Width="28" Click="ignoreListAddButton_Click" BorderBrush="{x:Null}" Background="{x:Null}">
                     <Image Source="Resources/addFile.ico"/>
                 </Button>
             </StackPanel>
-        </StackPanel>        
+        </StackPanel>
         <ListView Margin="0,4,4,4" Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" Name="ignoreList" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" />
         
     </Grid>

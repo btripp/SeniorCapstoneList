@@ -331,7 +331,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 string filename = dlg.FileName;
                 string[] ignoreListItems = new string[ignoreList.Items.Count];
                 ignoreList.Items.CopyTo(ignoreListItems, 0);
-                System.IO.File.WriteAllLines(filename, ignoreListItems);
+                System.IO.File.WriteAllLines(filename, ignoreListItems);                
             }
         }
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
@@ -376,7 +376,19 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         private void newButton_Click(object sender, RoutedEventArgs e)
         {
-
+            if (ignoreList.Items.Count > 0)
+            {
+                var result = MessageBox.Show("Do you want to save first?", "Unsaved List", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (result == MessageBoxResult.No)
+                {
+                    ignoreList.Items.Clear();
+                }
+                else
+                {
+                    saveButton_Click(this, e);
+                    ignoreList.Items.Clear();
+                }
+            }
         }
 
         private void hideShowComment_Click(object sender, RoutedEventArgs e)
@@ -390,6 +402,32 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 commentBox.Visibility = Visibility.Visible;
                 commentLabel.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void ignoreTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                ignoreListAddButton_Click(this, e);
+            }
+        }
+
+        private void hideShowIgnoreList_Click(object sender, RoutedEventArgs e)
+        {
+            if (ignoreListToolbar.IsVisible)
+            {
+                ignoreListToolbar.Visibility = Visibility.Collapsed;
+                button2.Visibility = Visibility.Collapsed;
+                ignoreList.Visibility = Visibility.Collapsed;
+                ignoreTextBox.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                ignoreListToolbar.Visibility = Visibility.Visible;
+                button2.Visibility = Visibility.Visible;
+                ignoreList.Visibility = Visibility.Visible;
+                ignoreTextBox.Visibility = Visibility.Visible;
             }
         }
     }
