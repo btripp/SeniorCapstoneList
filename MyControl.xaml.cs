@@ -146,6 +146,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         //TODO Need to add logic to make sure we dont try to check in nothing
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
+            bool found;
             string[] ignoreListArray = new string[ignoreList.Items.Count];
             ignoreList.Items.CopyTo(ignoreListArray,0);
             var filters = from f in ignoreListArray
@@ -154,43 +155,45 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             
             List<PendingChange> myChanges = new List<PendingChange>();
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
+
+            //build changes to be checked in.
             foreach (PendingChange pendingChange in pendingChanges)
             {
-                // if not on ignore list
-                if (!ignoreList.Items.Contains(pendingChange.FileName))//filename
+                found = false;
+                if (filters.Count() > 0)
                 {
-                    //file not in ignore list check to see if it matches any filters
-                    if (filters.Count() > 0)
+                    foreach (var filter in filters)
                     {
-                        foreach (var filter in filters)
+                        Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+                        
+                        if (wildcard.IsMatch(pendingChange.FileName))
                         {
-                            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
-                            //if it doesnt match any filters add it to be checked in.
-                            if (!wildcard.IsMatch(pendingChange.FileName))
-                            {
-                                if (!myChanges.Contains(pendingChange))
-                                {
-                                    myChanges.Add(pendingChange);
-                                }
-                            }
-                            else
-                            {
-                                // it matches a filter maybe put a filter here if they want to ignore the ignored file ;)
-                            }
+                            found = true;
+                            break;
                         }
                     }
-                    else
-                    {//no filters and it is not on the ignore list so we have to add it.
-                        if (!myChanges.Contains(pendingChange))
+                    if (found == false)
+                    {
+                        if (ignoreList.Items.Contains(pendingChange.FileName) == false)
                         {
-                            myChanges.Add(pendingChange);
+                            //add if not already added
+                            if (myChanges.Contains(pendingChange) == false)
+                            {
+                                myChanges.Add(pendingChange);
+                            }
                         }
                     }
                 }
                 else
                 {
-                   //do nothing... its on the ignore list... maybe put confirmation here if they want it 
-                    //if they say they want to add it you cna add it here.
+                    if (ignoreList.Items.Contains(pendingChange.FileName) == false)
+                    {
+                        //add if not already added
+                        if (myChanges.Contains(pendingChange) == false)
+                        {
+                            myChanges.Add(pendingChange);
+                        }
+                    }
                 }
             }
 

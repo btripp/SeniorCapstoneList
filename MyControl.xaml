@@ -65,8 +65,8 @@
             </ComboBox>         
         </ToolBar>
         <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="label1" FontSize="9"  BorderThickness="1" />
-        <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" FontSize="9"/>
-        <ListView Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" FontSize="9" Margin="4,4,4,4"/>
+        <ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="140" Header="Name" DisplayMemberBinding="{Binding fileName}"  />
@@ -84,7 +84,7 @@
                 <Button Content="Add" Height="23" Name="button2" Width="45" Click="ignoreListAddButton_Click" />
             </StackPanel>
         </StackPanel>        
-        <ListView Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" Name="ignoreList" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <ListView Margin="0,4,4,4" Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" Name="ignoreList" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" />
         <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal" Name="buttonPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Button Content="Remove" FontSize="10" Name="RemoveButton" Click="RemoveButton_Click" VerticalAlignment="Stretch" />
             <Button Content="Clear" FontSize="10" Name="ClearButton" Click="ClearButton_Click"/>
