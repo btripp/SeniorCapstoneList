@@ -9,75 +9,87 @@
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}"
              Loaded="MyToolWindow_Loaded" 
              d:DesignHeight="287" 
-             d:DesignWidth="807" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" ScrollViewer.CanContentScroll="True">
-    <DockPanel Height="280" Name="stackPanel1" Width="800" DockPanel.Dock="Left">
-        <StackPanel Height="280" Name="stackPanel2" Width="600" CanHorizontallyScroll="True" CanVerticallyScroll="True">
-            <ToolBar Height="26" Name="toolBar1" Width="600" FontSize="9">
-                <Button Name="button1" Click="checkin_Click">Checkin</Button>
-                <Separator/>
-                <Button Name="button3" Click="ignore_Click">Ignore</Button>
-                <Button Name="shelve" Click="shelve_Click">Shelve</Button>
-                <Button Name="unshelve" Click="unshelve_Click">Unshelve</Button>
-                <Separator/>
-                <Button Name="hideShowComment">
-                    <Image Width="16" Height="12">
-                        <Image.Source>
-                            <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Comment.png" SourceRect="8,10,16,12"/>
-                        </Image.Source>
-                    </Image>
-                </Button>
-                <Button Name="folderView">f</Button>
-                <Button Name="lView">l</Button>
-                <Separator/>
-                <Button Name="compare">c</Button>
-                <Button Name="viewFile">v</Button>
-                <Button Name="undo">
-                    <Image Width="13" Height="13">
-                        <Image.Source>
-                            <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Undo_Redo.png" SourceRect="87,6,13,13"/>
-                        </Image.Source>
-                    </Image>
-                </Button>
-                <Separator/>
-                <Button Name="refresh">
-                    <Image Width="13" Height="15">
-                        <Image.Source>
-                            <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Refresh.png" SourceRect="11,7,13,15"/>
-                        </Image.Source>
-                    </Image>
-                </Button>
-                <Separator/>
-                <Button Name="filterBySolution">f</Button>
-                <Separator/>
-                <Label FontSize="9">Workspace: </Label>
-                <ComboBox Name="workSpaces" SelectionChanged="changeWorkspace">
-                </ComboBox>
-            </ToolBar>
-            <Label Content="Comment:" Height="Auto" Name="label1" FontSize="9" Width="600" BorderThickness="1" />
-            <TextBox Height="30" Name="commentBox" Width="600" FontSize="9"/>
-            <ListView ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" Height="173" Width="599" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Width="140" Header="File Name" DisplayMemberBinding="{Binding fileName}"  />
-                        <GridViewColumn Width="140" Header="Change" DisplayMemberBinding="{Binding changeType}" />
-                        <GridViewColumn Width="140" Header="Folder" DisplayMemberBinding="{Binding folder}" />
-                    </GridView>
-                </ListView.View>
-            </ListView>
+             d:DesignWidth="807" MinHeight="150" MinWidth="600">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="28"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="28"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <ToolBar Grid.Row="0" Grid.Column="0" Name="toolBar1" FontSize="9">
+            <Button Name="button1" Click="checkin_Click">Checkin</Button>
+            <Separator/>
+            <Button Name="button3" Click="ignore_Click">Ignore</Button>
+            <Button Name="shelve" Click="shelve_Click">Shelve</Button>
+            <Button Name="unshelve" Click="unshelve_Click">Unshelve</Button>
+            <Separator/>
+            <Button Name="hideShowComment">
+                <Image Width="16" Height="12">
+                    <Image.Source>
+                        <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Comment.png" SourceRect="8,10,16,12"/>
+                    </Image.Source>
+                </Image>
+            </Button>
+            <Button Name="folderView">f</Button>
+            <Button Name="lView">l</Button>
+            <Separator/>
+            <Button Name="compare">c</Button>
+            <Button Name="viewFile">v</Button>
+            <Button Name="undo">
+                <Image Width="13" Height="13">
+                    <Image.Source>
+                        <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Undo_Redo.png" SourceRect="87,6,13,13"/>
+                    </Image.Source>
+                </Image>
+            </Button>
+            <Separator/>
+            <Button Name="refresh">
+                <Image Width="13" Height="15">
+                    <Image.Source>
+                        <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Refresh.png" SourceRect="11,7,13,15"/>
+                    </Image.Source>
+                </Image>
+            </Button>
+            <Separator/>
+            <Button Name="filterBySolution">f</Button>
+            <Separator/>
+            <Label FontSize="9">Workspace:</Label>
+            <ComboBox Name="workSpaces" SelectionChanged="changeWorkspace">
+            </ComboBox>         
+        </ToolBar>
+        <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="label1" FontSize="9"  BorderThickness="1" />
+        <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" FontSize="9"/>
+        <ListView Grid.Column="0" Grid.Row="3" Grid.RowSpan="2" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="140" Header="Name" DisplayMemberBinding="{Binding fileName}"  />
+                    <GridViewColumn Width="140" Header="Change" DisplayMemberBinding="{Binding changeType}" />
+                    <GridViewColumn Width="280" Header="Folder" DisplayMemberBinding="{Binding folder}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <StackPanel Grid.Column="1" Grid.Row="0">
+            <Label Content="Ignore List" Name="label2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
         </StackPanel>
-        <StackPanel Height="279" Name="stackPanel3" Width="200">
-            <Label Content="Ignore List" Height="28" Name="label2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
-            <StackPanel Height="33" Name="stackPanel4" Width="165" Orientation="Horizontal">
+        <StackPanel Grid.Column="1" Grid.Row="1">
+            <StackPanel Name="stackPanel4" Orientation="Horizontal">
                 <TextBox Height="23" Name="ignoreTextBox" Width="120" />
                 <Button Content="Add" Height="23" Name="button2" Width="45" Click="ignoreListAddButton_Click" />
             </StackPanel>
-            <ListView Height="193" Name="ignoreList" Width="163" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" MinHeight="50" MinWidth="50" />
-            <StackPanel Orientation="Horizontal" Name="buttonPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Button Content="Remove" FontSize="10" Name="RemoveButton" Click="RemoveButton_Click" VerticalAlignment="Stretch" />
-                <Button Content="Clear" FontSize="10" Name="ClearButton" Click="ClearButton_Click"/>
-                <Button Content="Load" FontSize="10" Name="loadButton" Click="loadButton_Click"/>
-                <Button Content="Save" FontSize="10" Name="saveButton" Click="saveButton_Click"/>
-            </StackPanel>
+        </StackPanel>        
+        <ListView Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" Name="ignoreList" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <StackPanel Grid.Column="1" Grid.Row="4" Orientation="Horizontal" Name="buttonPanel" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Content="Remove" FontSize="10" Name="RemoveButton" Click="RemoveButton_Click" VerticalAlignment="Stretch" />
+            <Button Content="Clear" FontSize="10" Name="ClearButton" Click="ClearButton_Click"/>
+            <Button Content="Load" FontSize="10" Name="loadButton" Click="loadButton_Click"/>
+            <Button Content="Save" FontSize="10" Name="saveButton" Click="saveButton_Click"/>
         </StackPanel>
-    </DockPanel>
+    </Grid>
 </UserControl>
