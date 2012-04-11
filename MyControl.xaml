@@ -71,9 +71,9 @@
         <ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="140" Header="Name" DisplayMemberBinding="{Binding fileName}"  />
-                    <GridViewColumn Width="140" Header="Change" DisplayMemberBinding="{Binding changeType}" />
-                    <GridViewColumn Width="280" Header="Folder" DisplayMemberBinding="{Binding folder}" />
+                    <GridViewColumn Width="Auto" Header="Name" DisplayMemberBinding="{Binding fileName}"  />
+                    <GridViewColumn Width="Auto" Header="Change" DisplayMemberBinding="{Binding changeType}" />
+                    <GridViewColumn Header="Folder" DisplayMemberBinding="{Binding folder}" />
                 </GridView>
             </ListView.View>
         </ListView>

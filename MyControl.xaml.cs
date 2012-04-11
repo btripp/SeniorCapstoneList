@@ -174,7 +174,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     }
                     if (found == false)
                     {
-                        if (ignoreList.Items.Contains(pendingChange.FileName) == false)
+                        if (ignoreListArray.Contains(pendingChange.FileName,StringComparer.OrdinalIgnoreCase) == false)
                         {
                             //add if not already added
                             if (myChanges.Contains(pendingChange) == false)
@@ -186,7 +186,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
                 else
                 {
-                    if (ignoreList.Items.Contains(pendingChange.FileName) == false)
+                    if (ignoreListArray.Contains(pendingChange.FileName, StringComparer.OrdinalIgnoreCase) == false)
                     {
                         //add if not already added
                         if (myChanges.Contains(pendingChange) == false)
