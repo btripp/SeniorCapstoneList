@@ -421,6 +421,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 button2.Visibility = Visibility.Collapsed;
                 ignoreList.Visibility = Visibility.Collapsed;
                 ignoreTextBox.Visibility = Visibility.Collapsed;
+                title.Visibility = Visibility.Collapsed;
             }
             else
             {
@@ -428,6 +429,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 button2.Visibility = Visibility.Visible;
                 ignoreList.Visibility = Visibility.Visible;
                 ignoreTextBox.Visibility = Visibility.Visible;
+                title.Visibility = Visibility.Visible;
             }
         }
     }

@@ -66,7 +66,7 @@
                 <Image Source="Resources/hideShowIgnoreList.png"/>
             </Button>
         </ToolBar>
-        <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="commentLabel" FontSize="9"  BorderThickness="1" />
+        <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="commentLabel" FontSize="9"  BorderThickness="1" VerticalContentAlignment="Bottom" />
         <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" FontSize="9" Margin="4,4,4,4"/>
         <ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.View>
@@ -96,6 +96,7 @@
             
         </ToolBar>
         <StackPanel Grid.Column="1" Grid.Row="1">
+            <Label Name="title" HorizontalContentAlignment="Center">Ignore List</Label>
             <StackPanel Name="stackPanel4" Orientation="Horizontal" Background="{x:Null}">
                 <TextBox Height="23" Name="ignoreTextBox" Width="120" KeyDown="ignoreTextBox_KeyDown" />
                 <Button ToolTip="Add Item" Height="23" Name="button2" Width="28" Click="ignoreListAddButton_Click" BorderBrush="{x:Null}" Background="{x:Null}">
