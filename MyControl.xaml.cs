@@ -372,7 +372,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-        #endregion
 
         private void newButton_Click(object sender, RoutedEventArgs e)
         {
@@ -433,6 +432,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
     }
+    #endregion
+
     public class changeItem
     {
         public changeItem()
