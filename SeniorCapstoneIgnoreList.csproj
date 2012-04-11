@@ -131,6 +131,12 @@
     <Compile Include="SeniorCapstoneIgnoreListPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PkgCmdID.cs" />
+    <Compile Include="ShelveWindow.xaml.cs">
+      <DependentUpon>ShelveWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UnshelveWindow.xaml.cs">
+      <DependentUpon>UnshelveWindow.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
@@ -178,6 +184,14 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="MyControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ShelveWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UnshelveWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

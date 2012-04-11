@@ -25,6 +25,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             InitializeComponent();
             this.DataContext = this;
             mc = this;
+            shelvewindow = new ShelveWindow();
+            unshelvewindow = new UnshelveWindow();
         }
         #region Properties
         // TODO : does the mycontrol class need a copy of itself as a property?
@@ -32,6 +34,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private List<RegisteredProjectCollection> projects;
         public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } }
         public Workspace activeWorkspace { get; set; }
+        public ShelveWindow shelvewindow { get; set; }
+        public UnshelveWindow unshelvewindow { get; set; }
         #endregion
         #region Private Vars
         // do we need this?
@@ -228,14 +232,19 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void shelve_Click(object sender, RoutedEventArgs e)
         {
-            List<PendingChange> myChanges = new List<PendingChange>();
-            PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
+            //List<PendingChange> myChanges = new List<PendingChange>();
+            //PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             // im going to read up about shelving.. the shelve function needs a shelvset, pendingchanges[], comment
             // it seems to pretty much the same and i think i get the idea but i want to ready up on it some before i write this
+            shelvewindow.ShowDialog();
+            // any code after show dialog will not execute until the dialog has been closed, we can still you the things that belong
+            // to that window
+            //shelvewindow.shelvesetName.Text
         }
 
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
+            unshelvewindow.ShowDialog();
             // this one will be easy once i fully understand the shelve method
         }
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
@@ -431,8 +440,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 title.Visibility = Visibility.Visible;
             }
         }
+        #endregion
+        #region shelve window
+
+        #endregion
     }
-    #endregion
+    
+        
 
     public class changeItem
     {
