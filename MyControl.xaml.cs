@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -118,30 +119,87 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 workSpaces.Items.Add(workspace.Name);
             }
         }
+        public void checkIgnoreList()
+        {
+            bool found;
+            string[] ignoreListArray = new string[ignoreList.Items.Count];
+            ignoreList.Items.CopyTo(ignoreListArray, 0);
+            var filters = from f in ignoreListArray
+                          where f.Contains("*")
+                          select f;
+
+
+            //build changes to be checked in.
+            foreach (changeItem item in changesCollection)
+            {
+                found = false;
+                if (filters.Count() > 0)
+                {
+                    foreach (var filter in filters)
+                    {
+                        Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+
+                        // found in the filter so false
+                        if (wildcard.IsMatch(item.fileName))
+                        {
+                            found = true;
+                            item.selected = false;
+                            break;
+                        }
+                    }
+                    if (found == false)
+                    {
+                        // not in filter and not in the ignore list
+                        if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
+                        {
+                            ;
+                        }
+                        else
+                            item.selected = false;
+                    }
+                }
+                else
+                {
+                    // no filters and they are not in the ignore list
+                    if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
+                    {
+                        ;
+                    }
+                    else
+                        item.selected = false;
+                }
+            }
+        }
         public void loadPendingChangesList()
         {
             // because i pass the workspace... this will only have pending changes for the current workspace
             // this clear is to clear the observableCollection
-            this.changesCollection.Clear();
+            // TODO work on this
+            // this.changesCollection.Clear();
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             foreach (PendingChange pendingChange in pendingChanges)
             {
                 // i have this next thing there to make sure that you dont add the same file twice if we keep this
                 // onload
-                // TODO we are going to have to add something to the list in a different way so that we can
-                // dynamically add the checkboxes as well. in order to get it to look like the VS window
-                if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName))
+                if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName)) 
                 {
-                    this.changesCollection.Add(new changeItem(pendingChange));
+                    // this is an ugly way to make sure that the same changeItem is not added a second time
+                    changeItem temp = new changeItem(pendingChange);
+                    if (!changesCollection.Contains(temp))
+                    {
+                        MessageBox.Show("adding " + pendingChange.FileName);
+                        this.changesCollection.Add(new changeItem(pendingChange));
+                    }
                 }
             }
+            //checkIgnoreList();
             string message = "";
             foreach (changeItem item in changesCollection)
             {
                 message += (item.fileName) + "\n";
             }
             // DEBUG - this shows what the collection contains that the list is bound to
-            //MessageBox.Show(message);
+            MessageBox.Show(message);
         }
         //I would say that we keep this guy. I think its a nice feature to have.
         
@@ -284,6 +342,22 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // once the workspace is changed, load the pending changes list for that workspace
             loadPendingChangesList();
         }
+        private void toggleSelected(object sender, RoutedEventArgs e)
+        {
+            // This right here probably isnt needed
+            // when a user unchecks the checkbox it chanes the value of the selected property on its own
+            // to see that behavior in action, uncomment the loop below
+            // DEBUG
+            //foreach (changeItem item in changesCollection)
+            //{
+            //    if (item.selected == false)
+            //    {
+            //        MessageBox.Show("you unchecked " + item.fileName + "!!!");
+            //    }
+            //}
+            
+        }
+
         #endregion
         #region ignore list section
         private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
@@ -292,6 +366,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 addToIgnoreList(ignoreTextBox.Text);
                 ignoreTextBox.Text = "";
+                checkIgnoreList();
             }
             else
             {
@@ -441,37 +516,56 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
         #endregion
+
+
         #region shelve window
+
+        #endregion
+        #region unshelve window
 
         #endregion
     }
     
         
 
-    public class changeItem
+    public class changeItem : INotifyPropertyChanged
+
     {
         public changeItem()
         {
             fileName = "test name";
             changeType = "test type";
             folder = "test folder";
+            selected = true;
         }
         public changeItem(PendingChange change)
         {
             fileName = change.FileName;
             changeType = change.ChangeType.ToString();
             folder = change.LocalOrServerFolder;
+            selected = true;
         }
-        // TODO 
-        // maybe add another property for a checkbox?
-        // if that happens i can have a template for the grid that has a checkbox that is checked based on the checkbox property
-        // if there is a property like that, when checking in i can just run through the observable collection to make a newpendingchanges list that
-        // moves everything over that has a checked checkbox
-        // similarly, when we add something to the ignore list (if it doesnt exist already) we can find the element in the observable collection that 
-        // shares the same name and change that changeItem checkbox property to false.
         public string fileName { get; set; }
         public string changeType { get; set; }
         public string folder { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        private bool _selected;
+        public bool selected 
+        {
+            get
+            {
+                return _selected;
+            }
+            set
+            {
+                _selected = value;
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
+                }
+
+            }
+        }
     }
     public class Wildcard : Regex
     {

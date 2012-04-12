@@ -68,15 +68,57 @@
         </ToolBar>
         <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="commentLabel" FontSize="9"  BorderThickness="1" VerticalContentAlignment="Bottom" />
         <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" FontSize="9" Margin="4,4,4,4"/>
+        <!-- pending changes list old version -->
         <ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="Auto" Header="Name" DisplayMemberBinding="{Binding fileName}"  />
-                    <GridViewColumn Width="Auto" Header="Change" DisplayMemberBinding="{Binding changeType}" />
-                    <GridViewColumn Header="Folder" DisplayMemberBinding="{Binding folder}" />
+                    <GridViewColumn Width="Auto" Header="Name">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Path=selected, Mode=TwoWay}" Checked="toggleSelected" Unchecked="toggleSelected" Style="{x:Null}" Content="{Binding Path=fileName}" Width="Auto"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="Auto" Header="Change">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=changeType}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Folder">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=folder}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
-            </ListView.View>
+            </ListView.View>            
         </ListView>
+        
+        <!-- pending changes new way 
+        <ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="5"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <CheckBox IsChecked="{Binding Path=selected}" Grid.Column="0"/>
+                            <TextBlock Text="{Binding Path=fileName}" Grid.Column="1"/>
+                            <TextBlock Text="{Binding Path=changeType}" Grid.Column="2"/>
+                            <TextBlock Text="{Binding Path=folder}" Grid.Column="3"/>
+                        </Grid>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>-->
+        
         <ToolBar Name="ignoreListToolbar" Grid.Column="1" Grid.Row="0">
             <Button ToolTip="New Ignore List" Name="newButton" Click="newButton_Click">
                 <Image Source="Resources/newDocument.png"/>
