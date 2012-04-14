@@ -25,7 +25,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         private void cancelShelve_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            //this.Close();
+        }
+
+        private void shelve_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
         }
     }
 }

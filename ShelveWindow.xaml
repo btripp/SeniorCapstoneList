@@ -10,18 +10,35 @@
             </StackPanel>
             <Label Content="Comment:" Height="28" Name="label1" />
             <TextBox Height="23" Name="textBox1" Width="Auto"/>
-            <ListView Height="200" Name="listView1" Width="Auto">
+            <ListView Margin="4,0,4,4" ItemsSource="{Binding Path=MyControl.shelveCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="140" Header="Name" DisplayMemberBinding="{Binding fileName}"  />
-                        <GridViewColumn Width="100" Header="Change" DisplayMemberBinding="{Binding changeType}" />
-                        <GridViewColumn Width="214" Header="Folder" DisplayMemberBinding="{Binding folder}" />
+                        <GridViewColumn Width="Auto" Header="Name">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox IsChecked="{Binding Path=selected, Mode=TwoWay}" Style="{x:Null}" Content="{Binding Path=fileName}" Width="Auto"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="Auto" Header="Change">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=changeType}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Folder">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=folder}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                     </GridView>
-                    
                 </ListView.View>
             </ListView>
         </StackPanel>
-        <Button Content="Shelve" Height="23" HorizontalAlignment="Left" Margin="295,276,0,0" Name="shelve" VerticalAlignment="Top" Width="75" />
-        <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="391,276,0,0" Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" />
+        <Button Content="Shelve" Height="23" HorizontalAlignment="Left" Margin="295,276,0,0" Name="shelve" VerticalAlignment="Top" Width="75" Click="shelve_Click" IsDefault="True" />
+        <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="391,276,0,0" Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" IsEnabled="True" />
     </Grid>
 </Window>

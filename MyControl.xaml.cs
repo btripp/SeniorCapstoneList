@@ -21,6 +21,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 {
     public partial class MyControl : UserControl
     {
+        // TODO 
+        // find out how pending changes list asks for the password to connect to TFS... if we do not have that for our window it will
+        // break because we try to access something we do not have access to yet... 
         public MyControl()
         {
             InitializeComponent();
@@ -32,15 +35,21 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         #region Properties
         // TODO : does the mycontrol class need a copy of itself as a property?
         public static MyControl mc;
-        private List<RegisteredProjectCollection> projects;
-        public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } }
+        public List<string> removeFromCollection { get { return _removeFromCollection; } set { _removeFromCollection = value; } }
+        public List<string> listOfChanges { get { return _listOfChanges; } set { _listOfChanges = value; } }
+        public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } set { _changesCollection = value; } }
+        public ObservableCollection<changeItem> shelveCollection { get { return _shelveCollection; } set { _shelveCollection = value; } }
         public Workspace activeWorkspace { get; set; }
         public ShelveWindow shelvewindow { get; set; }
         public UnshelveWindow unshelvewindow { get; set; }
         #endregion
         #region Private Vars
+        private List<RegisteredProjectCollection> projects;
         // do we need this?
-        ObservableCollection<changeItem> _changesCollection = new ObservableCollection<changeItem>();
+        private List<string> _removeFromCollection = new List<string>();
+        private List<string> _listOfChanges = new List<string>();
+        private ObservableCollection<changeItem> _changesCollection = new ObservableCollection<changeItem>();
+        private ObservableCollection<changeItem> _shelveCollection = new ObservableCollection<changeItem>();
         #endregion
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         #region Tool window functions
@@ -128,6 +137,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                           where f.Contains("*")
                           select f;
 
+            
+
 
             //build changes to be checked in.
             foreach (changeItem item in changesCollection)
@@ -184,11 +195,20 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName)) 
                 {
                     // this is an ugly way to make sure that the same changeItem is not added a second time
-                    changeItem temp = new changeItem(pendingChange);
-                    if (!changesCollection.Contains(temp))
+                    // i dont think this works because maybe i dont provide the collection with a way to evaluate "contains"
+                    // rather than look up how to change this im going to go ao different way
+                    //changeItem temp = new changeItem(pendingChange);
+                    //if (!changesCollection.Contains(temp))
+                    //{
+                    //    MessageBox.Show("adding " + pendingChange.FileName);
+                    //    this.changesCollection.Add(new changeItem(pendingChange));
+                    //}
+                    // this checks the list of changes to see if it needs to be added to the collection or not
+                    // this is a workaround for the above problem
+                    if(!listOfChanges.Contains(pendingChange.FileName))
                     {
-                        MessageBox.Show("adding " + pendingChange.FileName);
-                        this.changesCollection.Add(new changeItem(pendingChange));
+                        changesCollection.Add(new changeItem(pendingChange));
+                        listOfChanges.Add(pendingChange.FileName);
                     }
                 }
             }
@@ -199,79 +219,58 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 message += (item.fileName) + "\n";
             }
             // DEBUG - this shows what the collection contains that the list is bound to
-            MessageBox.Show(message);
+            //MessageBox.Show(message);
+        }
+        public void updatePendingChangesList()
+        {
+            foreach (string remove in removeFromCollection)
+            {
+                // starting at the back because im not sure how remove works ( do all elements shift down or is it just a logical remove?) 
+                // so by starting at the end it works the same and you dont have to worry about shifting elements. 
+                // there might be an easier way to do it but i just wanted to get it done. 
+                for (int i = changesCollection.Count-1; i >= 0; i--)
+                {
+                    if(changesCollection[i].fileName.Equals(remove))
+                    {
+                        changesCollection.RemoveAt(i);
+                    }
+                }
+            }
         }
         //I would say that we keep this guy. I think its a nice feature to have.
         
         //added regex stuff
         //added stuff to make sure a change isnt added twice... not sure if it ever can.
         //TODO Need to add logic to make sure we dont try to check in nothing
+        private PendingChange[] getSelectedChanges(ObservableCollection<changeItem> collection)
+        {
+            List<PendingChange> myChanges = new List<PendingChange>();
+            PendingChange[] pendingChanges;
+
+            foreach (changeItem item in collection)
+            {
+                // DEBUG
+                //MessageBox.Show(item.selected.ToString());
+                if (item.selected)
+                {
+                    myChanges.Add(item.change);
+                    removeFromCollection.Add(item.fileName);
+                }
+            }
+            pendingChanges = myChanges.ToArray();
+            return pendingChanges;
+        }
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
-            bool found;
-            string[] ignoreListArray = new string[ignoreList.Items.Count];
-            ignoreList.Items.CopyTo(ignoreListArray,0);
-            var filters = from f in ignoreListArray
-                          where f.Contains("*")
-                          select f;
+
+
             
-            List<PendingChange> myChanges = new List<PendingChange>();
-            PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
-
-            //build changes to be checked in.
-            foreach (PendingChange pendingChange in pendingChanges)
-            {
-                found = false;
-                if (filters.Count() > 0)
-                {
-                    foreach (var filter in filters)
-                    {
-                        Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
-                        
-                        if (wildcard.IsMatch(pendingChange.FileName))
-                        {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (found == false)
-                    {
-                        if (ignoreListArray.Contains(pendingChange.FileName,StringComparer.OrdinalIgnoreCase) == false)
-                        {
-                            //add if not already added
-                            if (myChanges.Contains(pendingChange) == false)
-                            {
-                                myChanges.Add(pendingChange);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    if (ignoreListArray.Contains(pendingChange.FileName, StringComparer.OrdinalIgnoreCase) == false)
-                    {
-                        //add if not already added
-                        if (myChanges.Contains(pendingChange) == false)
-                        {
-                            myChanges.Add(pendingChange);
-                        }
-                    }
-                }
-            }
-
-            PendingChange[] arrayChanges = myChanges.ToArray();
-            // DEBUG
-            string message = "These are the files that are to be checked in: \n";
-            foreach (PendingChange change in arrayChanges)
-            {
-                message += change.FileName + "\n";
-            }
-            MessageBox.Show(message);
-            activeWorkspace.GetPendingChanges();
+            PendingChange[] arrayChanges = getSelectedChanges(changesCollection);
             if (arrayChanges.Count() > 0)
             {
                 activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
                 MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+                updatePendingChangesList();
             }
             else
             {
@@ -279,6 +278,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             commentBox.Clear();
             //commentBox.Text = "";
+            
         }
         private void ignore_Click(object sender, RoutedEventArgs e)
         {
@@ -294,16 +294,54 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             // im going to read up about shelving.. the shelve function needs a shelvset, pendingchanges[], comment
             // it seems to pretty much the same and i think i get the idea but i want to ready up on it some before i write this
-            shelvewindow.ShowDialog();
+            
             // any code after show dialog will not execute until the dialog has been closed, we can still you the things that belong
             // to that window
             //shelvewindow.shelvesetName.Text
+            shelveCollection = changesCollection;
+            string message = "";
+            foreach (changeItem item in shelveCollection)
+            {
+                message += item.fileName + "\n";
+            }
+            message += ".";
+            MessageBox.Show(message);
+            // TODO the shelvewindow cant bind to this shelveCollection because i dont have the binding path correct. shelvewindow is
+            // in a different class so i need to map it to myControl class and then it should work
+            shelvewindow = new ShelveWindow();
+            shelvewindow.ShowDialog();
+            if (shelvewindow.DialogResult.HasValue && shelvewindow.DialogResult.Value)
+            {
+                // Debug
+                MessageBox.Show("User clicked OK");
+                Shelve();
+            }
+            else
+                // Debug
+                MessageBox.Show("User clicked Cancel");
+        }
+        private void Shelve()
+        {
+            Shelveset shelveset = new Shelveset(activeWorkspace.VersionControlServer, shelvewindow.shelvesetName.Text, activeWorkspace.OwnerName);
+            //activeWorkspace.Shelve(shelveset, getSelectedChanges(shelveCollection) , ShelvingOptions.None);
+            string message = "This is what would have been shelved...\n";
+            foreach (PendingChange change in getSelectedChanges(shelveCollection))
+            {
+                message += change.FileName + "\n";
+            }
+            message += ".";
+            MessageBox.Show(message);
         }
 
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
-            unshelvewindow.ShowDialog();
+            openUnshelveWindow();
             // this one will be easy once i fully understand the shelve method
+        }
+        private void openUnshelveWindow()
+        {
+            unshelvewindow = new UnshelveWindow();
+            unshelvewindow.ShowDialog();
         }
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
         {
@@ -533,6 +571,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     {
         public changeItem()
         {
+
             fileName = "test name";
             changeType = "test type";
             folder = "test folder";
@@ -540,6 +579,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         public changeItem(PendingChange change)
         {
+            this.change = change;
             fileName = change.FileName;
             changeType = change.ChangeType.ToString();
             folder = change.LocalOrServerFolder;
@@ -548,6 +588,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public string fileName { get; set; }
         public string changeType { get; set; }
         public string folder { get; set; }
+        public PendingChange change { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
         private bool _selected;
         public bool selected 
@@ -558,12 +599,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             set
             {
-                _selected = value;
-                if (PropertyChanged != null)
+                if (_selected != value)
                 {
-                    PropertyChanged(this, new PropertyChangedEventArgs("IsChecked"));
-                }
+                    _selected = value;
+                    if (PropertyChanged != null)
+                    {
+                        PropertyChanged(this, new PropertyChangedEventArgs("selected"));
+                    }
 
+                }
             }
         }
     }
@@ -664,4 +708,89 @@ return pendingchanges;
 //    finally { }
 //    break;
 //}
+//=========================================================================
+// from checkin_click
+
+// commenting this out because when i check in i am now just going to see which items are checked for checkin
+// adding to the ignore list and other methods are going to make sure that nothing in the ignore list is checked
+// in the pending changes list
+
+
+//bool found;
+//string[] ignoreListArray = new string[ignoreList.Items.Count];
+//ignoreList.Items.CopyTo(ignoreListArray,0);
+//var filters = from f in ignoreListArray
+//              where f.Contains("*")
+//              select f;
+////build changes to be checked in.
+//foreach (PendingChange pendingChange in pendingChanges)
+//{
+//    found = false;
+//    if (filters.Count() > 0)
+//    {
+//        foreach (var filter in filters)
+//        {
+//            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+
+//            // found in the filter so false
+//            if (wildcard.IsMatch(pendingChange.FileName))
+//            {
+//                found = true;
+
+//                break;
+//            }
+//        }
+//        if (found == false)
+//        {
+//            if (ignoreListArray.Contains(pendingChange.FileName,StringComparer.OrdinalIgnoreCase) == false)
+//            {
+//                //add if not already added
+//                if (myChanges.Contains(pendingChange) == false)
+//                {
+//                    myChanges.Add(pendingChange);
+//                }
+//            }
+//        }
+//    }
+//    else
+//    {
+//        if (ignoreListArray.Contains(pendingChange.FileName, StringComparer.OrdinalIgnoreCase) == false)
+//        {
+//            //add if not already added
+//            if (myChanges.Contains(pendingChange) == false)
+//            {
+//                myChanges.Add(pendingChange);
+//            }
+//        }
+//    }
+//}
+
+// rather than look through the pending changes we are looking through the observable collection for change items selected to be checked in
+//foreach (PendingChange change in arrayChanges)
+//{
+//    message += change.FileName + "\n";
+//    // TODO this is going to be change once i change it to checking in all the checked items. 
+//    removeFromCollection.Add(change.FileName);
+//}
+//=====================================================================================
+// from check  in
+//List<PendingChange> myChanges = new List<PendingChange>();
+
+//// DEBUG
+//string message = "These are the files that are to be checked in: \n";
+
+//foreach (changeItem item in changesCollection)
+//{
+//    // DEBUG
+//    //MessageBox.Show(item.selected.ToString());
+//    if (item.selected)
+//    {
+//        message += item.fileName + "\n";
+//        myChanges.Add(item.change);
+//        removeFromCollection.Add(item.fileName);
+//    }
+//}
+
+//MessageBox.Show(message);
+//============================================================================================
 #endregion
