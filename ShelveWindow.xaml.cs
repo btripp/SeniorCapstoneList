@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -22,6 +23,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             InitializeComponent();
         }
+        public ShelveWindow(ObservableCollection<changeItem> changeCollection)
+        {
+            InitializeComponent();
+            // this is what makes sure the data bindings are pointing to this class... so i can do path=shelveCollection
+            // TODO can i just have this point to the control so i dont have to pass the collection? or would we rather pass it. 
+            this.DataContext = this;
+            shelveCollection = changeCollection;
+        }
+
+        public ObservableCollection<changeItem> shelveCollection { get { return _shelveCollection; } set { _shelveCollection = value; } }
+        private ObservableCollection<changeItem> _shelveCollection;
 
         private void cancelShelve_Click(object sender, RoutedEventArgs e)
         {

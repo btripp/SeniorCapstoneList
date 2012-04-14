@@ -9,8 +9,8 @@
                 <TextBox Height="Auto" Width="Auto" Name="shelvesetName"/>
             </StackPanel>
             <Label Content="Comment:" Height="28" Name="label1" />
-            <TextBox Height="23" Name="textBox1" Width="Auto"/>
-            <ListView Margin="4,0,4,4" ItemsSource="{Binding Path=MyControl.shelveCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <TextBox Height="23" Name="comment" Width="Auto"/>
+            <ListView Margin="4,0,4,4" ItemsSource="{Binding Path=shelveCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="Auto" Header="Name">

@@ -298,22 +298,23 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // any code after show dialog will not execute until the dialog has been closed, we can still you the things that belong
             // to that window
             //shelvewindow.shelvesetName.Text
-            shelveCollection = changesCollection;
             string message = "";
             foreach (changeItem item in shelveCollection)
             {
                 message += item.fileName + "\n";
             }
             message += ".";
-            MessageBox.Show(message);
+            // DEBUG
+            // MessageBox.Show(message);
             // TODO the shelvewindow cant bind to this shelveCollection because i dont have the binding path correct. shelvewindow is
             // in a different class so i need to map it to myControl class and then it should work
-            shelvewindow = new ShelveWindow();
+            shelvewindow = new ShelveWindow(changesCollection);
             shelvewindow.ShowDialog();
             if (shelvewindow.DialogResult.HasValue && shelvewindow.DialogResult.Value)
             {
                 // Debug
                 MessageBox.Show("User clicked OK");
+                shelveCollection = shelvewindow.shelveCollection;
                 Shelve();
             }
             else
@@ -323,14 +324,27 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private void Shelve()
         {
             Shelveset shelveset = new Shelveset(activeWorkspace.VersionControlServer, shelvewindow.shelvesetName.Text, activeWorkspace.OwnerName);
-            //activeWorkspace.Shelve(shelveset, getSelectedChanges(shelveCollection) , ShelvingOptions.None);
-            string message = "This is what would have been shelved...\n";
-            foreach (PendingChange change in getSelectedChanges(shelveCollection))
+            shelveset.Comment = shelvewindow.comment.Text;
+            PendingChange[] toShelve = getSelectedChanges(shelveCollection);
+            activeWorkspace.Shelve(shelveset, toShelve , ShelvingOptions.None);
+            // have to "UNDO" on the pending changes that were shelved in order to unshelve the set
+            activeWorkspace.Undo(toShelve);
+            // TODO is there a better way to update the list? this next thing just removes the pending changes from
+            // the collection that i dont want to be there
+            removeFromCollection.Clear();
+            foreach (PendingChange change in toShelve)
             {
-                message += change.FileName + "\n";
+                removeFromCollection.Add(change.FileName);
             }
-            message += ".";
-            MessageBox.Show(message);
+            updatePendingChangesList();
+            // DEBUG
+            //string message = "This is what would have been shelved...\n";
+            //foreach (PendingChange change in getSelectedChanges(shelveCollection))
+            //{
+            //    message += change.FileName + "\n";
+            //}
+            //message += ".";
+            //MessageBox.Show(message);
         }
 
         private void unshelve_Click(object sender, RoutedEventArgs e)
