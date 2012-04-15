@@ -8,24 +8,42 @@
                 <StackPanel Orientation="Vertical" Width="Auto" Height="Auto">
                     <Label Content="Owner _name:" Height="28" Name="label1" />
                     <StackPanel Height="Auto" Name="stackPanel2" Width="Auto" Orientation="Horizontal">
-                        <TextBox Height="23" Name="textBox1" Width="350"/>
+                        <TextBox Height="23" Name="Owner" Width="350"/>
                         <Button Content="Button" Height="23" Name="button1" Width="75" />
                     </StackPanel>
                 </StackPanel>
             </GroupBox>
             <Label Content="_Results:" Height="28" Name="label2" />
-            <ListView Height="200" Name="listView1" Width="Auto">
+            <ListView Margin="4,0,4,4" ItemsSource="{Binding Path=shelveSetCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Width="140" Header="Shelveset Name" />
-                        <GridViewColumn Width="100" Header="Date" />
-                        <GridViewColumn Width="214" Header="Comment" />
+                        <GridViewColumn Width="Auto" Header="Shelveset Name">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Name}" Width="Auto"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Width="Auto" Header="Date">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=CreationDate}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                        <GridViewColumn Header="Comment">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Comment}"/>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                     </GridView>
                 </ListView.View>
             </ListView>
         </StackPanel>
-        <Button Content="_Unshelve" Height="23" HorizontalAlignment="Left" Margin="310,276,0,0" Name="shelve" VerticalAlignment="Top" Width="75" />
-        <Button Content="Close" Height="23" HorizontalAlignment="Left" Margin="391,276,0,0" Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" />
+        <Button Content="_Unshelve" Height="23" HorizontalAlignment="Left" Margin="310,276,0,0" Name="shelve" VerticalAlignment="Top" Width="75" IsDefault="True" Click="shelve_Click" />
+        <Button Content="Close" Height="23" HorizontalAlignment="Left" Margin="391,276,0,0" Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" />
         <Button Content="_Details..." Height="23" HorizontalAlignment="Left" Margin="12,276,0,0" Name="button2" VerticalAlignment="Top" Width="75" />
         <Button Content="De_lete" Height="23" HorizontalAlignment="Left" Margin="93,276,0,0" Name="button3" VerticalAlignment="Top" Width="75" />
     </Grid>

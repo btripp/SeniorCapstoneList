@@ -39,6 +39,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public List<string> listOfChanges { get { return _listOfChanges; } set { _listOfChanges = value; } }
         public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } set { _changesCollection = value; } }
         public ObservableCollection<changeItem> shelveCollection { get { return _shelveCollection; } set { _shelveCollection = value; } }
+        public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
         public Workspace activeWorkspace { get; set; }
         public ShelveWindow shelvewindow { get; set; }
         public UnshelveWindow unshelvewindow { get; set; }
@@ -50,6 +51,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private List<string> _listOfChanges = new List<string>();
         private ObservableCollection<changeItem> _changesCollection = new ObservableCollection<changeItem>();
         private ObservableCollection<changeItem> _shelveCollection = new ObservableCollection<changeItem>();
+        private ObservableCollection<Shelveset> _shelveSetCollection = new ObservableCollection<Shelveset>();
         #endregion
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
         #region Tool window functions
@@ -321,41 +323,25 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 // Debug
                 MessageBox.Show("User clicked Cancel");
         }
-        private void Shelve()
-        {
-            Shelveset shelveset = new Shelveset(activeWorkspace.VersionControlServer, shelvewindow.shelvesetName.Text, activeWorkspace.OwnerName);
-            shelveset.Comment = shelvewindow.comment.Text;
-            PendingChange[] toShelve = getSelectedChanges(shelveCollection);
-            activeWorkspace.Shelve(shelveset, toShelve , ShelvingOptions.None);
-            // have to "UNDO" on the pending changes that were shelved in order to unshelve the set
-            activeWorkspace.Undo(toShelve);
-            // TODO is there a better way to update the list? this next thing just removes the pending changes from
-            // the collection that i dont want to be there
-            removeFromCollection.Clear();
-            foreach (PendingChange change in toShelve)
-            {
-                removeFromCollection.Add(change.FileName);
-            }
-            updatePendingChangesList();
-            // DEBUG
-            //string message = "This is what would have been shelved...\n";
-            //foreach (PendingChange change in getSelectedChanges(shelveCollection))
-            //{
-            //    message += change.FileName + "\n";
-            //}
-            //message += ".";
-            //MessageBox.Show(message);
-        }
-
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
-            openUnshelveWindow();
-            // this one will be easy once i fully understand the shelve method
-        }
-        private void openUnshelveWindow()
-        {
-            unshelvewindow = new UnshelveWindow();
+            Shelveset[] shelveSets = activeWorkspace.VersionControlServer.QueryShelvesets(null, null);
+            foreach (Shelveset set in shelveSets)
+            {
+                shelveSetCollection.Add(set);
+            }
+            unshelvewindow = new UnshelveWindow(shelveSetCollection, activeWorkspace);
             unshelvewindow.ShowDialog();
+            if (unshelvewindow.DialogResult.HasValue && unshelvewindow.DialogResult.Value)
+            {
+                // Debug
+                MessageBox.Show("User clicked OK");
+                
+                Unshelve();
+            }
+            else
+                // Debug
+                MessageBox.Show("User clicked Cancel");
         }
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
         {
@@ -570,8 +556,36 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         #endregion
 
 
-        #region shelve window
+        #region shelve/unshelve window
+        private void Shelve()
+        {
+            Shelveset shelveset = new Shelveset(activeWorkspace.VersionControlServer, shelvewindow.shelvesetName.Text, activeWorkspace.OwnerName);
+            shelveset.Comment = shelvewindow.comment.Text;
+            PendingChange[] toShelve = getSelectedChanges(shelveCollection);
+            activeWorkspace.Shelve(shelveset, toShelve, ShelvingOptions.None);
+            // have to "UNDO" on the pending changes that were shelved in order to unshelve the set
+            activeWorkspace.Undo(toShelve);
+            // TODO is there a better way to update the list? this next thing just removes the pending changes from
+            // the collection that i dont want to be there
+            removeFromCollection.Clear();
+            foreach (PendingChange change in toShelve)
+            {
+                removeFromCollection.Add(change.FileName);
+            }
+            updatePendingChangesList();
+            // DEBUG
+            //string message = "This is what would have been shelved...\n";
+            //foreach (PendingChange change in getSelectedChanges(shelveCollection))
+            //{
+            //    message += change.FileName + "\n";
+            //}
+            //message += ".";
+            //MessageBox.Show(message);
+        }
+        private void Unshelve()
+        {
 
+        }
         #endregion
         #region unshelve window
 
