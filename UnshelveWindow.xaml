@@ -14,7 +14,7 @@
                 </StackPanel>
             </GroupBox>
             <Label Content="_Results:" Height="28" Name="label2" />
-            <ListView Margin="4,0,4,4" ItemsSource="{Binding Path=shelveSetCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView Margin="4,0,4,4" ItemsSource="{Binding Path=shelveSetCollection}" Name="shelveSetList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Width="Auto" Header="Shelveset Name">

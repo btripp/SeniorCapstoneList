@@ -325,6 +325,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
+            // this is to clear the collection each time you re-open the unshelve window. 
+            shelveSetCollection.Clear();
             Shelveset[] shelveSets = activeWorkspace.VersionControlServer.QueryShelvesets(null, null);
             foreach (Shelveset set in shelveSets)
             {
@@ -584,7 +586,23 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void Unshelve()
         {
+            // TODO 
+            // if you try to unshelve something that you dont have as a pending change already this is fine... but if you try to unshelve
+            // a file that you have checked out already (that is, its already in your pending changes list) this will crash out
+            // what im going to do to fix it is undo all pending changes 
+            // this might not be the best way to do this but i imagine it will work for now. 
+            activeWorkspace.Undo(unshelvewindow.changes);
 
+
+            MessageBox.Show("About to unshelve:\n" + unshelvewindow.selectedSet.Name + "," + unshelvewindow.selectedSet.OwnerName);
+            try
+            {
+                activeWorkspace.Unshelve(unshelvewindow.selectedSet.Name, unshelvewindow.selectedSet.OwnerName);
+            }
+            catch (Microsoft.TeamFoundation.VersionControl.Client.UnshelveException err)
+            {
+                MessageBox.Show("Unshelve Exception was thrown:\n" + err.Message);
+            }
         }
         #endregion
         #region unshelve window

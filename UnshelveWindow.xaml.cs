@@ -30,8 +30,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             InitializeComponent();
             this.DataContext = this;
             // TODO i dont want to do it this way... but this splits the Workspace\owner and returns just the owner name
-            string ownerName = activeWorkspace.OwnerName.Split('\\')[1];
-            Owner.Text = ownerName;
+            this.activeWorkspace = activeWorkspace;
+            string owner = this.activeWorkspace.OwnerName.Split('\\')[1];
+            Owner.Text = owner;
             // TODO 
             // This is going to have to filter based on the name entered
             // What is bad about this is that if you want to get a shelveset from a different 
@@ -44,7 +45,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             foreach (Shelveset set in shelveSet)
             {
                 string setOwner = set.OwnerName.Split('\\')[1];
-                MessageBox.Show(setOwner);
+                // DEBUG
+                //MessageBox.Show(setOwner);
                 if(setOwner.Equals(Owner.Text))
                 {
                     shelveSetCollection.Add(set);
@@ -57,6 +59,27 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private ObservableCollection<Shelveset> _shelveSetCollection = new ObservableCollection<Shelveset>();
         public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
         public Shelveset selectedSet { get; set; }
+        public Workspace activeWorkspace { get; set; }
+
+        public PendingChange[] changes { get; set; }
+        public string owner 
+        {
+            get { return _owner; }
+
+            set
+            {
+                if(value.Contains('\\'))
+                {
+                    _owner = value;
+                }
+                else
+                {
+                    _owner = activeWorkspace + "\\" + value;
+                }
+            }
+        }
+        private string _owner;
+
         private void cancelShelve_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -64,7 +87,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         private void shelve_Click(object sender, RoutedEventArgs e)
         {
-            Object test = shelveSetList.SelectedItem;
+            // test is a Shelveset
+            selectedSet = (Shelveset)shelveSetList.SelectedItem;
+            PendingSet[] pendingSets = activeWorkspace.VersionControlServer.QueryShelvedChanges(selectedSet);
+            if (pendingSets.Length == 1)
+            {
+                this.changes = pendingSets[0].PendingChanges;
+            }
+            else
+            {
+                MessageBox.Show("it shouldnt have gotten here, says there are "+pendingSets.Length+" pending sets");
+            }
             // take the selected item and assign it to selectedSet so the control can have access to it and then use that in the
             // unshelve method
             DialogResult = true;
