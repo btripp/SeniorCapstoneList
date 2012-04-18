@@ -125,9 +125,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         #region pending Changes Section
         public void loadWorkspaces(Workspace[] workspaces)
         {
+            
             foreach (Workspace workspace in workspaces)
             {
-                workSpaces.Items.Add(workspace.Name);
+                if (!workSpaces.Items.Contains(workspace.Name))
+                {
+                    workSpaces.Items.Add(workspace.Name);
+                }
             }
         }
         public void checkIgnoreList()
