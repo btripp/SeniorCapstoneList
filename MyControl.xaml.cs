@@ -143,8 +143,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                           where f.Contains("*")
                           select f;
 
-            
-
 
             //build changes to be checked in.
             foreach (changeItem item in changesCollection)
@@ -292,6 +290,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 changeItem item = (changeItem)pendingChangesList.SelectedItem;
                 addToIgnoreList(item.fileName);
+                checkIgnoreList();
             }
         }
         private void shelve_Click(object sender, RoutedEventArgs e)

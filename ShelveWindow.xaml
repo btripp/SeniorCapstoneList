@@ -1,44 +1,52 @@
 ﻿<Window x:Class="AugustaStateUniversity.SeniorCapstoneIgnoreList.ShelveWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="ShelveWindow" Height="350" Width="500">
+        Title="ShelveWindow" MinWidth="300">
     <Grid>
-        <StackPanel Height="255" HorizontalAlignment="Left" Margin="12,12,0,0" Name="stackPanel1" VerticalAlignment="Top" Width="454">
-            <StackPanel Height="Auto" Name="stackPanel2" Width="Auto" >
-                <Label Content="Shelveset Name: " Height="Auto" Width="Auto"/>
-                <TextBox Height="Auto" Width="Auto" Name="shelvesetName"/>
-            </StackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="28" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Height="Auto" Name="stackPanel2" Width="Auto" >
+            <Label Content="Shelveset Name: " Height="Auto"/>
+            <TextBox Height="Auto" Width="Auto" Name="shelvesetName"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1">
             <Label Content="Comment:" Height="28" Name="label1" />
             <TextBox Height="23" Name="comment" Width="Auto"/>
-            <ListView Margin="4,0,4,4" ItemsSource="{Binding Path=shelveCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Width="Auto" Header="Name">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding Path=selected, Mode=TwoWay}" Style="{x:Null}" Content="{Binding Path=fileName}" Width="Auto"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Width="Auto" Header="Change">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Path=changeType}"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                        <GridViewColumn Header="Folder">
-                            <GridViewColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Path=folder}"/>
-                                </DataTemplate>
-                            </GridViewColumn.CellTemplate>
-                        </GridViewColumn>
-                    </GridView>
-                </ListView.View>
-            </ListView>
         </StackPanel>
-        <Button Content="Shelve" Height="23" HorizontalAlignment="Left" Margin="295,276,0,0" Name="shelve" VerticalAlignment="Top" Width="75" Click="shelve_Click" IsDefault="True" />
-        <Button Content="Cancel" Height="23" HorizontalAlignment="Left" Margin="391,276,0,0" Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" IsEnabled="True" />
+        <ListView Grid.Row="2" Margin="4,0,4,4" ItemsSource="{Binding Path=shelveCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="Auto" Header="Name">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Path=selected, Mode=TwoWay}" Style="{x:Null}" Content="{Binding Path=fileName}" Width="Auto"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Width="Auto" Header="Change">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=changeType}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Folder">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Path=folder}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Shelve" Height="23" HorizontalAlignment="Left"  Name="shelve" VerticalAlignment="Top" Width="75" Click="shelve_Click" IsDefault="True" />
+            <Button Content="Cancel" Height="23" HorizontalAlignment="Left"  Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" IsEnabled="True" />
+        </StackPanel>
     </Grid>
 </Window>
