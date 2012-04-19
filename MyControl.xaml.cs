@@ -608,6 +608,22 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
         #endregion
+
+        private void pendingChangesList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.I)
+            {
+                ignore_Click(this, e);
+            }
+        }
+
+        private void ignoreList_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.R)
+            {
+                RemoveButton_Click(this, e);
+            }
+        }
         #region unshelve window
 
         #endregion
