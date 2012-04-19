@@ -69,7 +69,7 @@
         <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="commentLabel" FontSize="9"  BorderThickness="1" VerticalContentAlignment="Bottom" />
         <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" ToolTip="Enter comment for check in" FontSize="9" Margin="4,4,4,4"/>
         <!-- pending changes list old version -->
-        <ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+        <!--<ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList1" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="Auto" Header="Name">
@@ -95,7 +95,34 @@
                     </GridViewColumn>
                 </GridView>
             </ListView.View>            
-        </ListView>
+        </ListView>-->
+
+        <DataGrid Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" 
+          CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Name">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Path=selected, Mode=TwoWay}" Checked="toggleSelected" Unchecked="toggleSelected" Style="{x:Null}" Content="{Binding Path=fileName}" Width="Auto"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Change">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=changeType}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Folder">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=folder}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
         
         <!-- pending changes new way 
         <ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
