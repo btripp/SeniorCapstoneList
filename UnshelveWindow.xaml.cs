@@ -21,6 +21,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     /// </summary>
     public partial class UnshelveWindow : Window
     {
+        #region constructors
         public UnshelveWindow()
         {
             InitializeComponent();
@@ -55,12 +56,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // commented out because i need to filter based on owner name
             //shelveSetCollection = shelveSet;
         }
+        #endregion
 
-        private ObservableCollection<Shelveset> _shelveSetCollection = new ObservableCollection<Shelveset>();
+        #region properties
         public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
         public Shelveset selectedSet { get; set; }
         public Workspace activeWorkspace { get; set; }
-
         public PendingChange[] changes { get; set; }
         public string owner 
         {
@@ -78,7 +79,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
+        #endregion
+
+        #region private vars
+        private ObservableCollection<Shelveset> _shelveSetCollection = new ObservableCollection<Shelveset>();
         private string _owner;
+        #endregion
 
         private void cancelShelve_Click(object sender, RoutedEventArgs e)
         {

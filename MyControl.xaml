@@ -97,7 +97,7 @@
             </ListView.View>            
         </ListView>-->
 
-        <DataGrid Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" 
+        <DataGrid Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" 
           CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True" KeyDown="pendingChangesList_KeyDown">
             <DataGrid.Columns>
                 <DataGridTemplateColumn>

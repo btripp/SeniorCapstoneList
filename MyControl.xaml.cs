@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Configuration;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,6 +30,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             InitializeComponent();
             this.DataContext = this;
+            // something about this makes me nervous
             mc = this;
             shelvewindow = new ShelveWindow();
             unshelvewindow = new UnshelveWindow();
@@ -41,6 +44,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public ObservableCollection<changeItem> shelveCollection { get { return _shelveCollection; } set { _shelveCollection = value; } }
         public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
         public Workspace activeWorkspace { get; set; }
+        public Workspace[] allWorkSpaces { get; set; }
         public ShelveWindow shelvewindow { get; set; }
         public UnshelveWindow unshelvewindow { get; set; }
         #endregion
@@ -63,6 +67,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         public static void afterUpdate(Object sender, OperationEventArgs e)
         {
+            // something about this makes me nervous
             mc.loadPendingChangesList();
         }
         public void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
@@ -74,13 +79,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // get all registered project collections (previously connected to from Team Explorer)
             projectCollections = new List<RegisteredProjectCollection>((RegisteredTfsConnections.GetProjectCollections()));
             this.projects = projectCollections;
-
             // filter down to only those collections that are currently on-line
             var onlineCollections =
                 from collection in projectCollections
                 where collection.Offline == false
                 select collection;
-
             // DEBUG
             //MessageBox.Show(onlineCollections.Count().ToString());
             // fail if there are no registered collections that are currently on-line
@@ -93,7 +96,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // is it going to act differently if there is more than one online collection?
             foreach (var registeredProjectCollection in onlineCollections)
             {
-                var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
+                var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection, new UICredentialsProvider());
+                // this is will throw out the credential window if you are not authenticated
+                projectCollection.EnsureAuthenticated();
                 try
                 {
                     // DEBUG
@@ -104,8 +109,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     if (teamProjects.Count < 1) continue;
                     Workspace workspace = versionControl.GetWorkspace(System.Environment.MachineName, System.Environment.UserName);
                     activeWorkspace = workspace;
-                    Workspace[] workspaces = versionControl.QueryWorkspaces(null, null, null);
-                    loadWorkspaces(workspaces);
+                    allWorkSpaces = versionControl.QueryWorkspaces(null, null, null);
+                    loadWorkspaces(allWorkSpaces);
                     workSpaces.SelectedItem = workspace.Name;
 
                     RegisterEventHandlers(versionControl);
@@ -122,6 +127,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //loadPendingChangesList();
         }
         #endregion
+
         #region pending Changes Section
         public void loadWorkspaces(Workspace[] workspaces)
         {
@@ -328,12 +334,18 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
+            // TODO 
+            // rather than just passing the shelvesets for the current workspace. we need to pass a bigger object
+            // in order to query all shelvesets in all workspaces. 
             // this is to clear the collection each time you re-open the unshelve window. 
             shelveSetCollection.Clear();
-            Shelveset[] shelveSets = activeWorkspace.VersionControlServer.QueryShelvesets(null, null);
-            foreach (Shelveset set in shelveSets)
+            foreach (Workspace workspace in allWorkSpaces)
             {
-                shelveSetCollection.Add(set);
+                Shelveset[] shelveSets = workspace.VersionControlServer.QueryShelvesets(null, null);
+                foreach (Shelveset set in shelveSets)
+                {
+                    shelveSetCollection.Add(set);
+                }
             }
             unshelvewindow = new UnshelveWindow(shelveSetCollection, activeWorkspace);
             unshelvewindow.ShowDialog();
@@ -401,8 +413,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             
             
         }
-
+        private void pendingChangesList_KeyDown(object sender, KeyEventArgs e)
+                {
+                    // ??
+                    // if user pushed i on the pending change list, the selected item is moved to the ignore list
+                    if (e.Key == Key.I)
+                    {
+                        ignore_Click(this, e);
+                    }
+                }
         #endregion
+
         #region ignore list section
         private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
         {
@@ -500,7 +521,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-
         private void newButton_Click(object sender, RoutedEventArgs e)
         {
             if (ignoreList.Items.Count > 0)
@@ -517,7 +537,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-
         private void hideShowComment_Click(object sender, RoutedEventArgs e)
         {
             if (commentBox.IsVisible)
@@ -531,7 +550,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 commentLabel.Visibility = Visibility.Visible;
             }
         }
-
         private void ignoreTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -539,7 +557,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 ignoreListAddButton_Click(this, e);
             }
         }
-
         private void hideShowIgnoreList_Click(object sender, RoutedEventArgs e)
         {
             if (ignoreListToolbar.IsVisible)
@@ -559,8 +576,14 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 title.Visibility = Visibility.Visible;
             }
         }
+        private void ignoreList_KeyDown(object sender, KeyEventArgs e)
+                {
+                    if (e.Key == Key.R)
+                    {
+                        RemoveButton_Click(this, e);
+                    }
+                }
         #endregion
-
 
         #region shelve/unshelve window
         private void Shelve()
@@ -597,7 +620,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // this might not be the best way to do this but i imagine it will work for now. 
             activeWorkspace.Undo(unshelvewindow.changes);
 
-
+            // TODO
+            // im going to tackle this when the problem comes up... i think you have to unshelve the shelveset from the workspace that
+            // shelved it or do you unshelve it in your activeworkspace?
             MessageBox.Show("About to unshelve:\n" + unshelvewindow.selectedSet.Name + "," + unshelvewindow.selectedSet.OwnerName);
             try
             {
@@ -610,21 +635,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         #endregion
 
-        private void pendingChangesList_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.I)
-            {
-                ignore_Click(this, e);
-            }
-        }
-
-        private void ignoreList_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.R)
-            {
-                RemoveButton_Click(this, e);
-            }
-        }
         #region unshelve window
 
         #endregion

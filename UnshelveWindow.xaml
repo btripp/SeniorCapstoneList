@@ -12,13 +12,9 @@
         <GroupBox Grid.Row="0" Header="Find shelvesets" Height="100" Name="groupBox1" Width="Auto">
             <StackPanel Orientation="Vertical" Width="Auto" Height="Auto">
                 <Label Content="Owner _name:" Height="28" Name="label1" />
-                <StackPanel Orientation="Horizontal">
-                    <StackPanel Height="Auto" Name="stackPanel2" Width="Auto" Orientation="Horizontal">
-                        <TextBox Height="23" Name="Owner" Width="Auto"/>
-                    </StackPanel>
-                    <StackPanel Height="Auto" Width="Auto" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Button" Height="23" Name="button1" Width="75"/>
-                    </StackPanel>
+                <StackPanel Orientation="Horizontal" Width="Auto">
+                    <TextBox Height="23" Name="Owner" Width="Auto"/>
+                    <Button Content="Find" Height="23" Name="button1" Width="75"/>
                 </StackPanel>
                 
             </StackPanel>
