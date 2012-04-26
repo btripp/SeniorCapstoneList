@@ -460,7 +460,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 {
                     addToIgnoreList(s);
                 }
+                checkIgnoreList();
             }
+
         }
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
