@@ -9,44 +9,24 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="28" />
         </Grid.RowDefinitions>
-        <GroupBox Grid.Row="0" Header="Find shelvesets" Height="100" Name="groupBox1" Width="Auto">
+        <GroupBox Grid.Row="0" Header="Find shelvesets" Height="100" Name="groupBox1" Width="Auto" Margin="4,0,4,4">
             <StackPanel Orientation="Vertical" Width="Auto" Height="Auto">
                 <Label Content="Owner _name:" Height="28" Name="label1" />
                 <StackPanel Orientation="Horizontal" Width="Auto">
                     <TextBox Height="23" Name="Owner" Width="Auto"/>
                     <Button Content="Find" Height="23" Name="button1" Width="75"/>
                 </StackPanel>
-                
             </StackPanel>
         </GroupBox>
         <Label Grid.Row="1" Content="_Results:" Height="28" Name="label2" />
-        <ListView Grid.Row="2" Margin="4,0,4,4" ItemsSource="{Binding Path=shelveSetCollection}" Name="shelveSetList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="Auto" Header="Shelveset Name">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Name}" Width="Auto"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Width="Auto" Header="Date">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=CreationDate}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Comment">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Comment}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
+
+        <DataGrid Grid.Row="2" Margin="4,0,4,4" ItemsSource="{Binding Path=shelveCollection}" Name="shelveSetList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Shelveset Name" Binding="{Binding Path=Name}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Date" Binding="{Binding Path=CreationDate}"/>
+                <DataGridTextColumn Header="Comment" Binding="{Binding Path=Comment}" />
+            </DataGrid.Columns>
+        </DataGrid>        
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
                 <Button Content="_Unshelve" Height="23" HorizontalAlignment="Left" Name="shelve" VerticalAlignment="Top" Width="75" IsDefault="True" Click="shelve_Click" />
                 <Button Content="Close" Height="23" HorizontalAlignment="Left"  Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" />

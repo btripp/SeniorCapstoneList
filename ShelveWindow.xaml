@@ -9,41 +9,28 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="28" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Height="Auto" Name="stackPanel2" Width="Auto" >
+        <StackPanel Grid.Row="0" Height="Auto" Name="stackPanel2" Width="Auto" Margin="4,0,4,4" >
             <Label Content="Shelveset Name: " Height="Auto"/>
             <TextBox Height="Auto" Width="Auto" Name="shelvesetName"/>
         </StackPanel>
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="1" Margin="4,0,4,4">
             <Label Content="Comment:" Height="28" Name="label1" />
             <TextBox Height="23" Name="comment" Width="Auto"/>
         </StackPanel>
-        <ListView Grid.Row="2" Margin="4,0,4,4" ItemsSource="{Binding Path=shelveCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="Auto" Header="Name">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding Path=selected, Mode=TwoWay}" Style="{x:Null}" Content="{Binding Path=fileName}" Width="Auto"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Width="Auto" Header="Change">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=changeType}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Folder">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=folder}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <DataGrid Grid.Row="2" Margin="4,0,4,4" ItemsSource="{Binding Path=shelveCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox IsChecked="{Binding Path=selected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{x:Null}" Width="Auto" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Name" Binding="{Binding Path=fileName}"></DataGridTextColumn>
+                <DataGridTextColumn Header="Change" Binding="{Binding Path=changeType}"/>
+                <DataGridTextColumn Header="Folder" Binding="{Binding Path=folder}" />
+            </DataGrid.Columns>            
+        </DataGrid>
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="Shelve" Height="23" HorizontalAlignment="Left"  Name="shelve" VerticalAlignment="Top" Width="75" Click="shelve_Click" IsDefault="True" />
             <Button Content="Cancel" Height="23" HorizontalAlignment="Left"  Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" IsEnabled="True" />
