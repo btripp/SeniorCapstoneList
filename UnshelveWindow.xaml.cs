@@ -108,5 +108,30 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // unshelve method
             DialogResult = true;
         }
+
+        private void detailsButton_Click(object sender, RoutedEventArgs e)
+        {
+            //I know we need to do stuff to this
+            DetailsWindow dw = new DetailsWindow();
+            dw.ShowDialog();
+
+        }
+
+        private void deleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show("Delete Shelveset \n\n Are you sure you want to delete the selected items? This operation is permanent.", "Delete Shelveset", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            
+            if (result == MessageBoxResult.No)
+            {
+                //do what needs to be done if they select no.
+            }
+            else
+            {
+                //do what needs to be done if they select yes.
+            }
+
+        }
+
+        
     }
 }
