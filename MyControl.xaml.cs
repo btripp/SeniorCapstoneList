@@ -590,6 +590,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         #region shelve/unshelve window
         private void Shelve()
         {
+            //need to add exception if the name already exists
             Shelveset shelveset = new Shelveset(activeWorkspace.VersionControlServer, shelvewindow.shelvesetName.Text, activeWorkspace.OwnerName);
             shelveset.Comment = shelvewindow.comment.Text;
             PendingChange[] toShelve = getSelectedChanges(shelveCollection);

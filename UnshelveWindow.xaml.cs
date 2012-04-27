@@ -112,7 +112,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private void detailsButton_Click(object sender, RoutedEventArgs e)
         {
             //I know we need to do stuff to this
-            DetailsWindow dw = new DetailsWindow();
+            selectedSet = (Shelveset)shelveSetList.SelectedItem;
+
+            DetailsWindow dw = new DetailsWindow(selectedSet);
             dw.ShowDialog();
 
         }

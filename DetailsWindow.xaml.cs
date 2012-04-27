@@ -24,15 +24,25 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             InitializeComponent();
         }
-        public DetailsWindow(ObservableCollection<Shelveset> shelveSetCollection)
+        public DetailsWindow(Shelveset selectedShelveSet)
         {
             InitializeComponent();
             this.DataContext = this;
-            shelveCollection = shelveSetCollection;
+            shelveSet = selectedShelveSet;
+
+
+            shelvesetName.Text = shelveSet.Name;
+            owner.Text = shelveSet.OwnerName;
+            date.Text = shelveSet.CreationDate.ToString();
+            comment.Text = shelveSet.Comment;
+
         }
 
-        private ObservableCollection<Shelveset> _shelveCollection;
-        public ObservableCollection<Shelveset> shelveCollection { get { return _shelveCollection; } set { _shelveCollection = value; } }
+        private Shelveset _shelveSet;
+        public Shelveset shelveSet { get { return _shelveSet; } set { _shelveSet = value; } }
+
+
+
 
     }
 }
