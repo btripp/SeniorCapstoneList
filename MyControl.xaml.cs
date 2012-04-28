@@ -279,7 +279,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
 
-
+            //TODO 
+            // prompt the user if they are about to check a file in that was on the ignore list
+            // TODO 
+            // check for conflicts... i say just show that there are conflicts and they can deal with them on their own if
+            // VS or TFS does not have an easy way to do it automatically.
             
             PendingChange[] arrayChanges = getSelectedChanges(changesCollection);
             if (arrayChanges.Count() > 0)
@@ -646,6 +650,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
         #endregion
+
+        private void refresh_click(object sender, ExceptionRoutedEventArgs e)
+        {
+            loadPendingChangesList();
+        }
 
         #region unshelve window
 

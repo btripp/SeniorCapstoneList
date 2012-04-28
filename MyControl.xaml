@@ -6,10 +6,8 @@
              xmlns:vsfx="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.10.0"
              
              mc:Ignorable="d" x:Name="MyToolWindow"
-             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}"
-             Loaded="MyToolWindow_Loaded" 
-             d:DesignHeight="287" 
-             d:DesignWidth="807" MinHeight="150" MinWidth="600">
+             Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" d:DesignHeight="287" 
+             d:DesignWidth="807" MinHeight="150" MinWidth="600" GotFocus="MyToolWindow_Loaded">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -22,8 +20,14 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <ToolBar Grid.Row="0" Grid.Column="0" Name="toolBar1" FontSize="9">
-            <Button Name="button1" ToolTip="Check In Files" Click="checkin_Click">Checkin</Button>
+        <ToolBar Grid.Row="0" Grid.Column="0" Name="toolBar1" FontSize="9" Background="#FFBCC7D8">
+            <Button Name="button1" ToolTip="Check In Files" Click="checkin_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="19" Height="20" Source="/SeniorCapstoneIgnoreList;component/images/Checkin.png">
+                    </Image>
+                    <TextBlock>Checkin</TextBlock>
+                </StackPanel>
+            </Button>
             <Separator/>
             <Button Name="button3" ToolTip="Ignore Selected File" Click="ignore_Click">
                 Ignore
@@ -37,8 +41,20 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <Button Name="shelve" ToolTip="Open Shelve Window"  Click="shelve_Click">Shelve</Button>
-            <Button Name="unshelve" ToolTip="Open UnShelve Window" Click="unshelve_Click">UnShelve</Button>
+            <Button Name="shelve" ToolTip="Open Shelve Window"  Click="shelve_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="20" Height="19" Source="/SeniorCapstoneIgnoreList;component/images/shelve.png">
+                    </Image>
+                    <TextBlock>Shelve</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Name="unshelve" ToolTip="Open UnShelve Window" Click="unshelve_Click">
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="20" Height="19" Source="/SeniorCapstoneIgnoreList;component/images/unshelve.png">
+                    </Image>
+                    <TextBlock>Unshelve</TextBlock>
+                </StackPanel>
+            </Button>
             <Separator/>
             <Button ToolTip="Hide/Show Comments" Name="hideShowComment" Click="hideShowComment_Click">
                 <Image Width="16" Height="12">
@@ -50,8 +66,20 @@
             <Button Name="folderView">f</Button>
             <Button Name="lView">l</Button>
             <Separator/>
-            <Button Name="compare">c</Button>
-            <Button Name="viewFile">v</Button>
+            <Button Name="compare">
+                <Image Width="16" Height="15">
+                    <Image.Source>
+                        <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Compare.png" SourceRect="27,35,16,15"/>
+                    </Image.Source>
+                </Image>
+            </Button>
+            <Button Name="viewFile">
+                <Image Width="16" Height="15">
+                    <Image.Source>
+                        <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Folder.png" SourceRect="1,6,29,20"/>
+                    </Image.Source>
+                </Image>
+            </Button>
             <Button Name="undo">
                 <Image Width="13" Height="13">
                     <Image.Source>
@@ -61,7 +89,7 @@
             </Button>
             <Separator/>
             <Button Name="refresh">
-                <Image Width="13" Height="15">
+                <Image Width="13" Height="15" ImageFailed="refresh_click">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Refresh.png" SourceRect="11,7,13,15"/>
                     </Image.Source>
@@ -146,7 +174,7 @@
             </ListView.ItemTemplate>
         </ListView>-->
         
-        <ToolBar Name="ignoreListToolbar" Grid.Column="1" Grid.Row="0">
+        <ToolBar Name="ignoreListToolbar" Grid.Column="1" Grid.Row="0" Background="#FFBCC7D8">
             <Button ToolTip="New Ignore List" Name="newButton" Click="newButton_Click">
                 <Image Source="Resources/newDocument.png"/>
             </Button>

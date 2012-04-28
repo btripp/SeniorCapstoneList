@@ -171,6 +171,7 @@
     <None Include="Resources\Images_24bit.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="images\Checkin.png" />
     <Resource Include="Resources\save.bmp" />
     <Resource Include="images\Add.png" />
     <Resource Include="images\Comment.png" />
@@ -184,6 +185,10 @@
     <Resource Include="Resources\hideShowComment.bmp" />
     <Resource Include="Resources\hideShowIgnoreList.png" />
     <Resource Include="Resources\newDocument.png" />
+    <Resource Include="images\Compare.png" />
+    <Resource Include="images\Folder.png" />
+    <Resource Include="images\shelve.png" />
+    <Resource Include="images\unshelve.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
