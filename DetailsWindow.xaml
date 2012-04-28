@@ -52,8 +52,8 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Grid.Column="1" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Margin="4,0,4,4" Content="Unshelve" Height="23" HorizontalAlignment="Left"  Name="unshelve" VerticalAlignment="Top" Width="75" IsDefault="True" />
-            <Button Margin="4,0,4,4" Content="Cancel" Height="23" HorizontalAlignment="Left"  Name="cancelunshelve" VerticalAlignment="Top" Width="75" IsCancel="True" IsEnabled="True" />
+            <Button Margin="4,0,4,4" Content="Unshelve" Height="23" HorizontalAlignment="Left"  Name="unshelve" VerticalAlignment="Top" Width="75" IsDefault="True" Click="unshelve_Click" />
+            <Button Margin="4,0,4,4" Content="Cancel" Height="23" HorizontalAlignment="Left"  Name="cancelunshelve" VerticalAlignment="Top" Width="75" IsCancel="True" IsEnabled="True" Click="cancelunshelve_Click" />
         </StackPanel>
     </Grid>
 </Window>

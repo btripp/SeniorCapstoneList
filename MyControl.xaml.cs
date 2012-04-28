@@ -244,6 +244,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     {
                         changesCollection.RemoveAt(i);
                     }
+                    // have to do this so something that was checked in can make it back onto the list
+                    if(listOfChanges[i].Equals(remove))
+                    {
+                        listOfChanges.RemoveAt(i);
+                    }
+
                 }
             }
         }
@@ -288,6 +294,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             commentBox.Clear();
             //commentBox.Text = "";
+            // TODO 
+            // once this is checked in... VS spits out the output in a window
             
         }
         private void ignore_Click(object sender, RoutedEventArgs e)
@@ -353,7 +361,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 // Debug
                 MessageBox.Show("User clicked OK");
-                
                 Unshelve();
             }
             else
@@ -630,6 +637,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             try
             {
                 activeWorkspace.Unshelve(unshelvewindow.selectedSet.Name, unshelvewindow.selectedSet.OwnerName);
+                // put this here becuase i want to make sure the pending changes list is updated... maybe there is a better way?
+                loadPendingChangesList();
             }
             catch (Microsoft.TeamFoundation.VersionControl.Client.UnshelveException err)
             {

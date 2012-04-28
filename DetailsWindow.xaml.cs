@@ -50,6 +50,16 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public ObservableCollection<changeItem> shelvedChanges { get { return _shelvedChanges; } set { _shelvedChanges = value; } }
         public Shelveset shelveSet { get { return _shelveSet; } set { _shelveSet = value; } }
 
+        private void unshelve_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
+
+        private void cancelunshelve_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
 
 
 

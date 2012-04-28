@@ -91,7 +91,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             this.Close();
         }
 
-        private void shelve_Click(object sender, RoutedEventArgs e)
+        private void unshelve_Click(object sender, RoutedEventArgs e)
+        {
+            unshelveSet();
+        }
+        private void unshelveSet()
         {
             // test is a Shelveset
             selectedSet = (Shelveset)shelveSetList.SelectedItem;
@@ -102,13 +106,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             else
             {
-                MessageBox.Show("it shouldnt have gotten here, says there are "+pendingSets.Length+" pending sets");
+                MessageBox.Show("it shouldnt have gotten here, says there are " + pendingSets.Length + " pending sets");
             }
             // take the selected item and assign it to selectedSet so the control can have access to it and then use that in the
             // unshelve method
             DialogResult = true;
         }
-
         private void detailsButton_Click(object sender, RoutedEventArgs e)
         {
             //I know we need to do stuff to this
@@ -116,6 +119,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
             DetailsWindow dw = new DetailsWindow(selectedSet);
             dw.ShowDialog();
+            if (dw.DialogResult.HasValue && dw.DialogResult.Value)
+            {
+                unshelveSet();
+            }
 
         }
 
@@ -129,10 +136,18 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             else
             {
-                //do what needs to be done if they select yes.
+                selectedSet = (Shelveset)shelveSetList.SelectedItem;
+                updateWindow();
+                selectedSet.VersionControlServer.DeleteShelveset(selectedSet);
+                
             }
 
         }
+        private void updateWindow()
+        {
+            shelveSetCollection.Remove(selectedSet);
+        }
+
 
         
     }

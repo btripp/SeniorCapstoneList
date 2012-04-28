@@ -32,7 +32,7 @@
             <Button Margin="4,0,4,0" Content="De_lete" Height="23" HorizontalAlignment="Left" Click="deleteButton_Click"  Name="deleteButton" VerticalAlignment="Top" Width="75"/>
             </StackPanel>
         <StackPanel Margin="4,0,4,4" Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Margin="4,0,4,0" Content="_Unshelve" Height="23" HorizontalAlignment="Left" Name="unshelve" VerticalAlignment="Top" Width="75" IsDefault="True" Click="shelve_Click" />
+            <Button Margin="4,0,4,0" Content="_Unshelve" Height="23" HorizontalAlignment="Left" Name="unshelve" VerticalAlignment="Top" Width="75" IsDefault="True" Click="unshelve_Click" />
             <Button Margin="4,0,0,0" Content="Close" Height="23" HorizontalAlignment="Left"  Name="cancelunShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" />
         </StackPanel>
     </Grid>
