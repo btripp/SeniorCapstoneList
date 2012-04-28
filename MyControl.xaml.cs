@@ -153,6 +153,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //build changes to be checked in.
             foreach (changeItem item in changesCollection)
             {
+                // DEBUG
+                //MessageBox.Show("BEFORE\nselected = " + item.selected + "\nPreviousState = " + item.previousState);
                 found = false;
                 if (filters.Count() > 0)
                 {
@@ -164,7 +166,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                         if (wildcard.IsMatch(item.fileName))
                         {
                             found = true;
-                            item.selected = false;
+                            // if the item needs to be change to false, do so and keep previous state as true
+                            if (item.selected == true)
+                            {
+                                item.selected = false;
+                                item.previousState = true;
+                            }
+                            // if the item is already false, do nothing
                             break;
                         }
                     }
@@ -176,7 +184,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                             ;
                         }
                         else
-                            item.selected = false;
+                        {
+                            if (item.selected == true)
+                            {
+                                item.selected = false;
+                                item.previousState = true;
+                            }
+                        }
                     }
                 }
                 else
@@ -187,8 +201,16 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                         ;
                     }
                     else
-                        item.selected = false;
+                    {
+                        if (item.selected == true)
+                        {
+                            item.selected = false;
+                            item.previousState = true;
+                        }
+                    }
                 }
+                // DEBUG
+                //MessageBox.Show("selected = " + item.selected + "\nPreviousState = " + item.previousState);
             }
         }
         public void loadPendingChangesList()
@@ -408,21 +430,46 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // once the workspace is changed, load the pending changes list for that workspace
             loadPendingChangesList();
         }
-        private void toggleSelected(object sender, RoutedEventArgs e)
+        private void restorePreviousState(string name)
         {
-            // This right here probably isnt needed
-            // when a user unchecks the checkbox it chanes the value of the selected property on its own
-            // to see that behavior in action, uncomment the loop below
+            // if an item is taken off the ignore list. the item in the pending changes list is returned to the last
+            // value that the user actually set it too
+            // if i could find a way to pass a change item that would be great, but since we are just getting this from the 
+            // ignore list, we just have a name to compare it too
+
+            // TODO what we are going to have to do is get a list of all the things the item that is being removed from the ignore
+            // list would find... so if you remove .exe it needs to return all the .exe files to previous state
             // DEBUG
-            //foreach (changeItem item in changesCollection)
-            //{
-            //    if (item.selected == false)
-            //    {
-            //        MessageBox.Show("you unchecked " + item.fileName + "!!!");
-            //    }
-            //}
-            
-            
+            //MessageBox.Show("You removed " + name);
+            // if its a wildcard then match with contains.
+            if (name.Contains("*"))
+            {
+                // strips out the *
+                name = name.Replace("*", "");
+                // DEBUG
+                //MessageBox.Show("matching wildcard :"+name);
+                
+                foreach (changeItem item in changesCollection)
+                {
+                    if (item.fileName.ToLower().Contains(name.ToLower()))
+                    {
+                        item.selected = item.previousState;
+                    }
+                }
+            }
+            // its not a wildcard so just match the name
+            else
+            {
+                // DEBUG
+                //MessageBox.Show("matching just the name");
+                foreach (changeItem item in changesCollection)
+                {
+                    if (item.fileName.ToLower().Equals(name.ToLower()))
+                    {
+                        item.selected = item.previousState;
+                    }
+                }
+            }
         }
         private void pendingChangesList_KeyDown(object sender, KeyEventArgs e)
                 {
@@ -498,6 +545,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
+            string item = ignoreList.Items[ignoreList.SelectedIndex].ToString();
+            restorePreviousState(item);
             if (ignoreList.SelectedIndex != -1)
             {
                 ignoreList.Items.RemoveAt(ignoreList.SelectedIndex);
@@ -656,6 +705,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             loadPendingChangesList();
         }
 
+
         #region unshelve window
 
         #endregion
@@ -682,13 +732,14 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             folder = change.LocalOrServerFolder;
             selected = true;
         }
+        
+        #region properties
         public string fileName { get; set; }
         public string changeType { get; set; }
         public string folder { get; set; }
         public PendingChange change { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
-        private bool _selected;
-        public bool selected 
+        public bool selected
         {
             get
             {
@@ -699,6 +750,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 if (_selected != value)
                 {
                     _selected = value;
+                    //this needs to always mirror the selected state
+                    previousState = value;
                     if (PropertyChanged != null)
                     {
                         PropertyChanged(this, new PropertyChangedEventArgs("selected"));
@@ -707,6 +760,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
+        public bool previousState { get; set; }
+        #endregion
+
+        #region private vars
+        private bool _selected;
+        #endregion
+        
     }
     public class Wildcard : Regex
     {

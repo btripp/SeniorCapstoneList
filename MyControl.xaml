@@ -142,7 +142,7 @@
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding Path=selected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Checked="toggleSelected" Unchecked="toggleSelected" Style="{x:Null}" Width="Auto"/>
+                            <CheckBox IsChecked="{Binding Path=selected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{x:Null}" Width="Auto"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
