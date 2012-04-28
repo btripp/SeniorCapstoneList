@@ -139,10 +139,23 @@
         <DataGrid Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" 
           CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True" KeyDown="pendingChangesList_KeyDown">
             <DataGrid.Columns>
+                <!--<DataGridCheckBoxColumn Width="Auto" Binding="{Binding selected,UpdateSourceTrigger=PropertyChanged}" />-->
+                
                 <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="DataGridColumnHeader">
+                                        <CheckBox Name="CheckBx" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="CheckBx_Checked" Unchecked="CheckBx_Unchecked"></CheckBox> 
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </DataGridTemplateColumn.HeaderStyle>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding Path=selected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Checked="toggleSelected" Unchecked="toggleSelected" Style="{x:Null}" Width="Auto"/>
+                            <CheckBox IsChecked="{Binding Path=selected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{x:Null}" Width="Auto"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

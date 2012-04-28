@@ -37,6 +37,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         #region Properties
         // TODO : does the mycontrol class need a copy of itself as a property?
+        public bool checkBoxChecked = false;
         public static MyControl mc;
         public List<string> removeFromCollection { get { return _removeFromCollection; } set { _removeFromCollection = value; } }
         public List<string> listOfChanges { get { return _listOfChanges; } set { _listOfChanges = value; } }
@@ -151,26 +152,39 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
 
             //build changes to be checked in.
-            foreach (changeItem item in changesCollection)
+            if (!checkBoxChecked)
             {
-                found = false;
-                if (filters.Count() > 0)
+                foreach (changeItem item in changesCollection)
                 {
-                    foreach (var filter in filters)
+                    found = false;
+                    if (filters.Count() > 0)
                     {
-                        Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
-
-                        // found in the filter so false
-                        if (wildcard.IsMatch(item.fileName))
+                        foreach (var filter in filters)
                         {
-                            found = true;
-                            item.selected = false;
-                            break;
+                            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+
+                            // found in the filter so false
+                            if (wildcard.IsMatch(item.fileName))
+                            {
+                                found = true;
+                                item.selected = false;
+                                break;
+                            }
+                        }
+                        if (found == false)
+                        {
+                            // not in filter and not in the ignore list
+                            if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
+                            {
+                                ;
+                            }
+                            else
+                                item.selected = false;
                         }
                     }
-                    if (found == false)
+                    else
                     {
-                        // not in filter and not in the ignore list
+                        // no filters and they are not in the ignore list
                         if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
                         {
                             ;
@@ -178,16 +192,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                         else
                             item.selected = false;
                     }
-                }
-                else
-                {
-                    // no filters and they are not in the ignore list
-                    if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
-                    {
-                        ;
-                    }
-                    else
-                        item.selected = false;
                 }
             }
         }
@@ -654,6 +658,23 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private void refresh_click(object sender, ExceptionRoutedEventArgs e)
         {
             loadPendingChangesList();
+        }
+
+        
+
+        private void CheckBx_Checked(object sender, RoutedEventArgs e)
+        {
+            foreach (var change in changesCollection)
+            {
+                change.selected = true;
+            }
+            checkBoxChecked = true;
+        }
+
+        private void CheckBx_Unchecked(object sender, RoutedEventArgs e)
+        {
+            checkBoxChecked = false;
+            checkIgnoreList();
         }
 
         #region unshelve window
