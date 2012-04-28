@@ -37,7 +37,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         #region Properties
         // TODO : does the mycontrol class need a copy of itself as a property?
-        public bool checkBoxChecked = false;
         public static MyControl mc;
         public List<string> removeFromCollection { get { return _removeFromCollection; } set { _removeFromCollection = value; } }
         public List<string> listOfChanges { get { return _listOfChanges; } set { _listOfChanges = value; } }
@@ -152,23 +151,21 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
 
             //build changes to be checked in.
-            if (!checkBoxChecked)
+            foreach (changeItem item in changesCollection)
             {
-                foreach (changeItem item in changesCollection)
-                {
                 // DEBUG
                 //MessageBox.Show("BEFORE\nselected = " + item.selected + "\nPreviousState = " + item.previousState);
-                    found = false;
-                    if (filters.Count() > 0)
+                found = false;
+                if (filters.Count() > 0)
+                {
+                    foreach (var filter in filters)
                     {
-                        foreach (var filter in filters)
-                        {
-                            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+                        Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
 
-                            // found in the filter so false
-                            if (wildcard.IsMatch(item.fileName))
-                            {
-                                found = true;
+                        // found in the filter so false
+                        if (wildcard.IsMatch(item.fileName))
+                        {
+                            found = true;
                             // if the item needs to be change to false, do so and keep previous state as true
                             if (item.selected == true)
                             {
@@ -176,17 +173,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                                 item.previousState = true;
                             }
                             // if the item is already false, do nothing
-                                break;
-                            }
+                            break;
                         }
-                        if (found == false)
+                    }
+                    if (found == false)
+                    {
+                        // not in filter and not in the ignore list
+                        if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
                         {
-                            // not in filter and not in the ignore list
-                            if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
-                            {
-                                ;
-                            }
-                            else
+                            ;
+                        }
+                        else
                         {
                             if (item.selected == true)
                             {
@@ -194,16 +191,16 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                                 item.previousState = true;
                             }
                         }
-                        }
+                    }
+                }
+                else
+                {
+                    // no filters and they are not in the ignore list
+                    if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
+                    {
+                        ;
                     }
                     else
-                    {
-                        // no filters and they are not in the ignore list
-                        if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
-                        {
-                            ;
-                        }
-                        else
                     {
                         if (item.selected == true)
                         {
@@ -211,10 +208,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                             item.previousState = true;
                         }
                     }
-                    }
+                }
                 // DEBUG
                 //MessageBox.Show("selected = " + item.selected + "\nPreviousState = " + item.previousState);
-                }
             }
         }
         public void loadPendingChangesList()
@@ -707,23 +703,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private void refresh_click(object sender, ExceptionRoutedEventArgs e)
         {
             loadPendingChangesList();
-        }
-
-        
-
-        private void CheckBx_Checked(object sender, RoutedEventArgs e)
-        {
-            foreach (var change in changesCollection)
-            {
-                change.selected = true;
-            }
-            checkBoxChecked = true;
-        }
-
-        private void CheckBx_Unchecked(object sender, RoutedEventArgs e)
-        {
-            checkBoxChecked = false;
-            checkIgnoreList();
         }
 
 

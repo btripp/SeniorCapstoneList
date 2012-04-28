@@ -154,21 +154,22 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //build changes to be checked in.
             if (!checkBoxChecked)
             {
-                foreach (changeItem item in changesCollection)
-                {
+<<<<<<< HEAD
                 // DEBUG
                 //MessageBox.Show("BEFORE\nselected = " + item.selected + "\nPreviousState = " + item.previousState);
+                found = false;
+                if (filters.Count() > 0)
+=======
+                foreach (changeItem item in changesCollection)
+>>>>>>> 73905a125de9f821fa3117cb477af048994cef6d
+                {
                     found = false;
                     if (filters.Count() > 0)
                     {
                         foreach (var filter in filters)
                         {
-                            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
-
-                            // found in the filter so false
-                            if (wildcard.IsMatch(item.fileName))
-                            {
-                                found = true;
+<<<<<<< HEAD
+                            found = true;
                             // if the item needs to be change to false, do so and keep previous state as true
                             if (item.selected == true)
                             {
@@ -176,6 +177,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                                 item.previousState = true;
                             }
                             // if the item is already false, do nothing
+                            break;
+=======
+                            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+
+                            // found in the filter so false
+                            if (wildcard.IsMatch(item.fileName))
+                            {
+                                found = true;
+                                item.selected = false;
                                 break;
                             }
                         }
@@ -187,13 +197,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                                 ;
                             }
                             else
-                        {
-                            if (item.selected == true)
-                            {
                                 item.selected = false;
-                                item.previousState = true;
-                            }
-                        }
+>>>>>>> 73905a125de9f821fa3117cb477af048994cef6d
                         }
                     }
                     else
@@ -204,6 +209,24 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                             ;
                         }
                         else
+                        {
+                            if (item.selected == true)
+                            {
+                                item.selected = false;
+                                item.previousState = true;
+                            }
+                        }
+                    }
+                }
+<<<<<<< HEAD
+                else
+                {
+                    // no filters and they are not in the ignore list
+                    if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
+                    {
+                        ;
+                    }
+                    else
                     {
                         if (item.selected == true)
                         {
@@ -211,10 +234,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                             item.previousState = true;
                         }
                     }
-                    }
+                }
                 // DEBUG
                 //MessageBox.Show("selected = " + item.selected + "\nPreviousState = " + item.previousState);
-                }
+=======
+>>>>>>> 73905a125de9f821fa3117cb477af048994cef6d
             }
         }
         public void loadPendingChangesList()
@@ -709,6 +733,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             loadPendingChangesList();
         }
 
+<<<<<<< HEAD
+=======
         
 
         private void CheckBx_Checked(object sender, RoutedEventArgs e)
@@ -725,7 +751,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             checkBoxChecked = false;
             checkIgnoreList();
         }
-
+>>>>>>> 73905a125de9f821fa3117cb477af048994cef6d
 
         #region unshelve window
 

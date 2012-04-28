@@ -37,7 +37,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         #region Properties
         // TODO : does the mycontrol class need a copy of itself as a property?
-        public bool checkBoxChecked = false;
         public static MyControl mc;
         public List<string> removeFromCollection { get { return _removeFromCollection; } set { _removeFromCollection = value; } }
         public List<string> listOfChanges { get { return _listOfChanges; } set { _listOfChanges = value; } }
@@ -152,68 +151,43 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
 
             //build changes to be checked in.
-            if (!checkBoxChecked)
+            foreach (changeItem item in changesCollection)
             {
-                foreach (changeItem item in changesCollection)
+                found = false;
+                if (filters.Count() > 0)
                 {
-                // DEBUG
-                //MessageBox.Show("BEFORE\nselected = " + item.selected + "\nPreviousState = " + item.previousState);
-                    found = false;
-                    if (filters.Count() > 0)
+                    foreach (var filter in filters)
                     {
-                        foreach (var filter in filters)
-                        {
-                            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+                        Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
 
-                            // found in the filter so false
-                            if (wildcard.IsMatch(item.fileName))
-                            {
-                                found = true;
-                            // if the item needs to be change to false, do so and keep previous state as true
-                            if (item.selected == true)
-                            {
-                                item.selected = false;
-                                item.previousState = true;
-                            }
-                            // if the item is already false, do nothing
-                                break;
-                            }
-                        }
-                        if (found == false)
+                        // found in the filter so false
+                        if (wildcard.IsMatch(item.fileName))
                         {
-                            // not in filter and not in the ignore list
-                            if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
-                            {
-                                ;
-                            }
-                            else
-                        {
-                            if (item.selected == true)
-                            {
-                                item.selected = false;
-                                item.previousState = true;
-                            }
-                        }
+                            found = true;
+                            item.selected = false;
+                            break;
                         }
                     }
-                    else
+                    if (found == false)
                     {
-                        // no filters and they are not in the ignore list
+                        // not in filter and not in the ignore list
                         if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
                         {
                             ;
                         }
                         else
-                    {
-                        if (item.selected == true)
-                        {
                             item.selected = false;
-                            item.previousState = true;
-                        }
                     }
+                }
+                else
+                {
+                    // no filters and they are not in the ignore list
+                    if (ignoreListArray.Contains(item.fileName, StringComparer.OrdinalIgnoreCase) == false)
+                    {
+                        ;
                     }
-                // DEBUG
-                //MessageBox.Show("selected = " + item.selected + "\nPreviousState = " + item.previousState);
+                    else
+                        item.selected = false;
                 }
             }
         }
@@ -434,46 +408,21 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // once the workspace is changed, load the pending changes list for that workspace
             loadPendingChangesList();
         }
-        private void restorePreviousState(string name)
+        private void toggleSelected(object sender, RoutedEventArgs e)
         {
-            // if an item is taken off the ignore list. the item in the pending changes list is returned to the last
-            // value that the user actually set it too
-            // if i could find a way to pass a change item that would be great, but since we are just getting this from the 
-            // ignore list, we just have a name to compare it too
-
-            // TODO what we are going to have to do is get a list of all the things the item that is being removed from the ignore
-            // list would find... so if you remove .exe it needs to return all the .exe files to previous state
+            // This right here probably isnt needed
+            // when a user unchecks the checkbox it chanes the value of the selected property on its own
+            // to see that behavior in action, uncomment the loop below
             // DEBUG
-            //MessageBox.Show("You removed " + name);
-            // if its a wildcard then match with contains.
-            if (name.Contains("*"))
-            {
-                // strips out the *
-                name = name.Replace("*", "");
-                // DEBUG
-                //MessageBox.Show("matching wildcard :"+name);
-                
-                foreach (changeItem item in changesCollection)
-                {
-                    if (item.fileName.ToLower().Contains(name.ToLower()))
-                    {
-                        item.selected = item.previousState;
-                    }
-                }
-            }
-            // its not a wildcard so just match the name
-            else
-            {
-                // DEBUG
-                //MessageBox.Show("matching just the name");
-                foreach (changeItem item in changesCollection)
-                {
-                    if (item.fileName.ToLower().Equals(name.ToLower()))
-                    {
-                        item.selected = item.previousState;
-                    }
-                }
-            }
+            //foreach (changeItem item in changesCollection)
+            //{
+            //    if (item.selected == false)
+            //    {
+            //        MessageBox.Show("you unchecked " + item.fileName + "!!!");
+            //    }
+            //}
+            
+            
         }
         private void pendingChangesList_KeyDown(object sender, KeyEventArgs e)
                 {
@@ -549,8 +498,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
-            string item = ignoreList.Items[ignoreList.SelectedIndex].ToString();
-            restorePreviousState(item);
             if (ignoreList.SelectedIndex != -1)
             {
                 ignoreList.Items.RemoveAt(ignoreList.SelectedIndex);
@@ -709,24 +656,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             loadPendingChangesList();
         }
 
-        
-
-        private void CheckBx_Checked(object sender, RoutedEventArgs e)
-        {
-            foreach (var change in changesCollection)
-            {
-                change.selected = true;
-            }
-            checkBoxChecked = true;
-        }
-
-        private void CheckBx_Unchecked(object sender, RoutedEventArgs e)
-        {
-            checkBoxChecked = false;
-            checkIgnoreList();
-        }
-
-
         #region unshelve window
 
         #endregion
@@ -753,14 +682,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             folder = change.LocalOrServerFolder;
             selected = true;
         }
-        
-        #region properties
         public string fileName { get; set; }
         public string changeType { get; set; }
         public string folder { get; set; }
         public PendingChange change { get; set; }
         public event PropertyChangedEventHandler PropertyChanged;
-        public bool selected
+        private bool _selected;
+        public bool selected 
         {
             get
             {
@@ -771,8 +699,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 if (_selected != value)
                 {
                     _selected = value;
-                    //this needs to always mirror the selected state
-                    previousState = value;
                     if (PropertyChanged != null)
                     {
                         PropertyChanged(this, new PropertyChangedEventArgs("selected"));
@@ -781,13 +707,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-        public bool previousState { get; set; }
-        #endregion
-
-        #region private vars
-        private bool _selected;
-        #endregion
-        
     }
     public class Wildcard : Regex
     {
