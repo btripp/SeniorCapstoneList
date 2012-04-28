@@ -29,8 +29,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             InitializeComponent();
             this.DataContext = this;
             shelveSet = selectedShelveSet;
-
-
+            // strange way of finding the pendingsets for the selected shelve set in order to get its pending changes
+            // there is always one pendingset because we query for the specific shelveset
+            PendingSet[] pendingSets = selectedShelveSet.VersionControlServer.QueryShelvedChanges(selectedShelveSet);
+            PendingChange[] pendingChanges = pendingSets[0].PendingChanges;
+            foreach (PendingChange change in pendingChanges)
+            {
+                changeItem item = new changeItem(change);
+                shelvedChanges.Add(item);
+            }
             shelvesetName.Text = shelveSet.Name;
             owner.Text = shelveSet.OwnerName;
             date.Text = shelveSet.CreationDate.ToString();
@@ -39,6 +46,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
 
         private Shelveset _shelveSet;
+        private ObservableCollection<changeItem> _shelvedChanges = new ObservableCollection<changeItem>();
+        public ObservableCollection<changeItem> shelvedChanges { get { return _shelvedChanges; } set { _shelvedChanges = value; } }
         public Shelveset shelveSet { get { return _shelveSet; } set { _shelveSet = value; } }
 
 
