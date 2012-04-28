@@ -60,8 +60,18 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             this.Close();
         }
 
-
-
-
+        public bool anyChecked()
+        {
+            bool returnValue = false;
+            foreach (var item in shelvedChanges)
+            {
+                if(item.selected == true)
+                {
+                    returnValue = true;
+                    break;
+                }                
+            }
+            return returnValue;
+        }
     }
 }

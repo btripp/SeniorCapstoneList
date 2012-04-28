@@ -25,7 +25,18 @@
         <ToolBar Grid.Row="0" Grid.Column="0" Name="toolBar1" FontSize="9">
             <Button Name="button1" ToolTip="Check In Files" Click="checkin_Click">Checkin</Button>
             <Separator/>
-            <Button Name="button3" ToolTip="Ignore Selected File" Click="ignore_Click">Ignore</Button>
+            <Button Name="button3" ToolTip="Ignore Selected File" Click="ignore_Click">
+                Ignore
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=pendingChangesList,Path=SelectedIndex}" Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Button Name="shelve" ToolTip="Open Shelve Window"  Click="shelve_Click">Shelve</Button>
             <Button Name="unshelve" ToolTip="Open UnShelve Window" Click="unshelve_Click">UnShelve</Button>
             <Separator/>
@@ -144,12 +155,39 @@
             </Button>
             <Button ToolTip="Save Ignore List" Name="saveButton" Click="saveButton_Click">
                 <Image Source="Resources/save.bmp"/>
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ignoreList,Path=Items.Count}" Value="0">
+                                <Setter Property="Button.IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
             <Button ToolTip="Remove Selected Item" Name="RemoveButton" Click="RemoveButton_Click">
                 <Image Source="Resources/delete.ico"/>
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ignoreList,Path=SelectedIndex}" Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
             <Button ToolTip="Erase List" Name="ClearButton" Click="ClearButton_Click">
                 <Image Source="Resources/Erase.png"/>
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ignoreList,Path=Items.Count}" Value="0">
+                                <Setter Property="Button.IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
             </Button>
             
         </ToolBar>
@@ -158,7 +196,26 @@
             <StackPanel Name="stackPanel4" Orientation="Horizontal" Background="{x:Null}">
                 <TextBox Height="23" Name="ignoreTextBox" Width="120" ToolTip="Enter filename or filter" KeyDown="ignoreTextBox_KeyDown" />
                 <Button ToolTip="Add Item" Height="23" Name="button2" Width="28" Click="ignoreListAddButton_Click" BorderBrush="{x:Null}" Background="{x:Null}">
-                    <Image Source="Resources/addFile.ico"/>
+                    <Image Source="Resources/addFile.ico">
+                        <Image.Style>
+                            <Style>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=ignoreTextBox,Path=Text}" Value="">
+                                        <Setter Property="Button.IsEnabled" Value="False"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                    <Button.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ignoreTextBox,Path=Text}" Value="">
+                                    <Setter Property="Button.IsEnabled" Value="False"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
                 </Button>
             </StackPanel>
         </StackPanel>

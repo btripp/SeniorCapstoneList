@@ -32,7 +32,18 @@
             </DataGrid.Columns>            
         </DataGrid>
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Margin="4,0,4,4" Content="Shelve" Height="23" HorizontalAlignment="Left"  Name="shelve" VerticalAlignment="Top" Width="75" Click="shelve_Click" IsDefault="True" />
+            <Button Margin="4,0,4,4" Content="Shelve" Height="23" HorizontalAlignment="Left"  Name="shelve" VerticalAlignment="Top" Width="75" Click="shelve_Click" IsDefault="True">
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=shelvesetName,Path=Text}" Value="">
+                                <Setter Property="Button.IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                
+            </Button>
             <Button Margin="4,0,4,4" Content="Cancel" Height="23" HorizontalAlignment="Left"  Name="cancelShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" IsEnabled="True" />
         </StackPanel>
     </Grid>

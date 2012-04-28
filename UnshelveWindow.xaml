@@ -28,11 +28,41 @@
             </DataGrid.Columns>
         </DataGrid>        
         <StackPanel Margin="4,0,4,4" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
-            <Button Margin="0,0,4,0" Content="_Details..." Height="23" HorizontalAlignment="Left" Click="detailsButton_Click"  Name="detailsButton" VerticalAlignment="Top" Width="75" />
-            <Button Margin="4,0,4,0" Content="De_lete" Height="23" HorizontalAlignment="Left" Click="deleteButton_Click"  Name="deleteButton" VerticalAlignment="Top" Width="75"/>
+            <Button Margin="0,0,4,0" Content="_Details..." Height="23" HorizontalAlignment="Left" Click="detailsButton_Click"  Name="detailsButton" VerticalAlignment="Top" Width="75">
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=shelveSetList,Path=SelectedIndex}" Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <Button Margin="4,0,4,0" Content="De_lete" Height="23" HorizontalAlignment="Left" Click="deleteButton_Click"  Name="deleteButton" VerticalAlignment="Top" Width="75">
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=shelveSetList,Path=SelectedIndex}" Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             </StackPanel>
         <StackPanel Margin="4,0,4,4" Grid.Row="3" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Margin="4,0,4,0" Content="_Unshelve" Height="23" HorizontalAlignment="Left" Name="unshelve" VerticalAlignment="Top" Width="75" IsDefault="True" Click="unshelve_Click" />
+            <Button Margin="4,0,4,0" Content="_Unshelve" Height="23" HorizontalAlignment="Left" Name="unshelve" VerticalAlignment="Top" Width="75" IsDefault="True" Click="unshelve_Click">
+                <Button.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=shelveSetList,Path=SelectedIndex}" Value="-1">
+                                <Setter Property="Button.IsEnabled" Value="False"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
             <Button Margin="4,0,0,0" Content="Close" Height="23" HorizontalAlignment="Left"  Name="cancelunShelve" VerticalAlignment="Top" Width="75" Click="cancelShelve_Click" IsCancel="True" />
         </StackPanel>
     </Grid>
