@@ -307,31 +307,83 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // TODO i am going to have to fix how i find the wildcards... it isnt exactly right
             // *.cs will match something.cs as well as something.csproj
             // will have to use regex stuff.. probably be able to use your stuff over again.
+
             bool isIgnored = false;
-            // this is going to be called for every pending change that was selected
-            // checked against every item in the ignore list
-            foreach (string item in ignoreList.Items)
+            string[] ignoreListArray = new string[ignoreList.Items.Count];
+            ignoreList.Items.CopyTo(ignoreListArray, 0);
+            var filters = from f in ignoreListArray
+                          where f.Contains("*")
+                          select f;
+
+
+            if (filters.Count() > 0)
             {
-                // if its a wildcard then match with contains.
-                if (item.ToLower().Contains("*"))
+                foreach (var filter in filters)
                 {
-                    // DEBUG
-                    //MessageBox.Show("matching wildcard :"+name);
-                    // this strips out the * to do a match, have to use a temp because you cant change item
-                    string temp = item.Replace("*", "");
-                    if (name.ToLower().Contains(temp.ToLower()))
+                    Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
+
+                    // found in the filter so ignored
+                    if (wildcard.IsMatch(name))
+                    {
                         isIgnored = true;
+                        break;
+                    }
                 }
-                // its not a wildcard so just match the name
-                else
+                if (isIgnored == false)
                 {
-                    // DEBUG
-                    //MessageBox.Show("matching just the name");
-                    if (name.ToLower().Equals(item.ToLower()))
+                    // not in filter and not in the ignore list
+                    if (ignoreListArray.Contains(name, StringComparer.OrdinalIgnoreCase) == false)
+                    {
+                        ;
+                    }
+                    else
+                    {
                         isIgnored = true;
+                    }
                 }
             }
+            else
+            {
+                // no filters and they are not in the ignore list
+                if (ignoreListArray.Contains(name, StringComparer.OrdinalIgnoreCase) == false)
+                {
+                    ;
+                }
+                else
+                {
+                    isIgnored = true;
+                }
+            }
+
             return isIgnored;
+
+
+                          
+
+            // this is going to be called for every pending change that was selected
+            // checked against every item in the ignore list
+            //foreach (string item in ignoreList.Items)
+            //{
+            //    // if its a wildcard then match with contains.
+            //    if (item.ToLower().Contains("*"))
+            //    {
+            //        // DEBUG
+            //        //MessageBox.Show("matching wildcard :"+name);
+            //        // this strips out the * to do a match, have to use a temp because you cant change item
+            //        string temp = item.Replace("*", "");
+            //        if (name.ToLower().Contains(temp.ToLower()))
+            //            isIgnored = true;
+            //    }
+            //    // its not a wildcard so just match the name
+            //    else
+            //    {
+            //        // DEBUG
+            //        //MessageBox.Show("matching just the name");
+            //        if (name.ToLower().Equals(item.ToLower()))
+            //            isIgnored = true;
+            //    }
+            //}
+            //return isIgnored;
         }
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
