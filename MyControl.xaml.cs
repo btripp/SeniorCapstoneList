@@ -302,6 +302,37 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             pendingChanges = myChanges.ToArray();
             return pendingChanges;
         }
+        private bool isIgnored(string name)
+        {
+            // TODO i am going to have to fix how i find the wildcards... it isnt exactly right
+            // *.cs will match something.cs as well as something.csproj
+            // will have to use regex stuff.. probably be able to use your stuff over again.
+            bool isIgnored = false;
+            // this is going to be called for every pending change that was selected
+            // checked against every item in the ignore list
+            foreach (string item in ignoreList.Items)
+            {
+                // if its a wildcard then match with contains.
+                if (item.ToLower().Contains("*"))
+                {
+                    // DEBUG
+                    //MessageBox.Show("matching wildcard :"+name);
+                    // this strips out the * to do a match, have to use a temp because you cant change item
+                    string temp = item.Replace("*", "");
+                    if (name.ToLower().Contains(temp.ToLower()))
+                        isIgnored = true;
+                }
+                // its not a wildcard so just match the name
+                else
+                {
+                    // DEBUG
+                    //MessageBox.Show("matching just the name");
+                    if (name.ToLower().Equals(item.ToLower()))
+                        isIgnored = true;
+                }
+            }
+            return isIgnored;
+        }
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
 
@@ -310,19 +341,55 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // TODO 
             // check for conflicts... i say just show that there are conflicts and they can deal with them on their own if
             // VS or TFS does not have an easy way to do it automatically.
-            
             PendingChange[] arrayChanges = getSelectedChanges(changesCollection);
-            if (arrayChanges.Count() > 0)
+            List<PendingChange> confirmChanges = new List<PendingChange>();
+            foreach (PendingChange change in arrayChanges)
             {
-                activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
-                MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
-                updatePendingChangesList();
+                if (isIgnored(change.FileName))
+                {
+                    confirmChanges.Add(change);
+                }
             }
+            string message = "The following files are on the ignore list:\n";
+            foreach (PendingChange change in confirmChanges)
+            {
+                message += change.FileName + "\n";
+            }
+            message += "Are you sure you want to check them in?";
+            // if there is a file the user has to confirm
+            if (confirmChanges.Count > 0)
+            {
+                if (MessageBox.Show(message, "Attention", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+                {
+                    if (arrayChanges.Count() > 0)
+                    {
+                        activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
+                        MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+                        updatePendingChangesList();
+                    }
+                    else
+                    {
+                        MessageBox.Show("0 Files checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    commentBox.Clear();
+                }
+                confirmChanges.Clear();
+            }
+            // nothing the user has to confirm so go ahead
             else
             {
-                MessageBox.Show("0 Files checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (arrayChanges.Count() > 0)
+                {
+                    activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
+                    MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+                    updatePendingChangesList();
+                }
+                else
+                {
+                    MessageBox.Show("0 Files checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                commentBox.Clear();
             }
-            commentBox.Clear();
             //commentBox.Text = "";
             // TODO 
             // once this is checked in... VS spits out the output in a window
