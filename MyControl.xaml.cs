@@ -481,13 +481,26 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             if (shelvewindow.DialogResult.HasValue && shelvewindow.DialogResult.Value)
             {
                 // Debug
-                MessageBox.Show("User clicked OK");
+                //MessageBox.Show("User clicked OK");
                 shelveCollection = shelvewindow.shelveCollection;
-                Shelve();
+
+                int count = activeWorkspace.VersionControlServer.QueryShelvesets(shelvewindow.shelvesetName.Text, activeWorkspace.OwnerName).Count();
+                if (count == 0)
+                {
+                    Shelve();
+                }
+                else
+                {
+                    MessageBox.Show("The shelveset name already exists. Please rename the shelveset.", "Already exists", MessageBoxButton.OK, MessageBoxImage.Error);
+                    shelvewindow = new ShelveWindow(changesCollection);
+                    shelvewindow.ShowDialog();
+                }
             }
             else
+            {
                 // Debug
-                MessageBox.Show("User clicked Cancel");
+                //MessageBox.Show("User clicked Cancel");
+            }
         }
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
