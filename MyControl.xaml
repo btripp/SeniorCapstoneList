@@ -137,8 +137,8 @@
             </ListView.View>            
         </ListView>-->
 
-        <DataGrid Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" AllowDrop="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" 
-          CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True" KeyDown="pendingChangesList_KeyDown">
+        <DataGrid Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" 
+          CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True" KeyDown="pendingChangesList_KeyDown" MouseMove="myDataGrid_MouseMove">
             <DataGrid.Columns>
                 <!--<DataGridCheckBoxColumn Width="Auto" Binding="{Binding selected,UpdateSourceTrigger=PropertyChanged}" />-->
                 
@@ -250,7 +250,21 @@
                 </Button>
             </StackPanel>
         </StackPanel>
-        <ListView Margin="0,4,4,4" Grid.Column="1" Grid.Row="2" Grid.RowSpan="2" ToolTip="Files to be Ignored" Name="ignoreList" SelectionMode="Single" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" KeyDown="ignoreList_KeyDown" />
+        <ListView Name="ignoreList"
+                  Margin="0,4,4,4" 
+                  Grid.Column="1" 
+                  Grid.Row="2" 
+                  Grid.RowSpan="2" 
+                  ToolTip="Files to be Ignored" 
+                  SelectionMode="Single" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                  ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                  KeyDown="ignoreList_KeyDown" 
+                  PreviewDrop="ignoreList_Drop" 
+                  Drop="ignoreList_Drop"
+                  DragEnter="DataGrid_CheckDropTarget" 
+                  AllowDrop="True" 
+                  />
         
     </Grid>
 </UserControl>

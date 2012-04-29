@@ -17,7 +17,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
+using Microsoft.TeamFoundation.VersionControl.Common;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 {
@@ -48,6 +50,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public Workspace[] allWorkSpaces { get; set; }
         public ShelveWindow shelvewindow { get; set; }
         public UnshelveWindow unshelvewindow { get; set; }
+
+        //public Point startPoint { get; set; }
+
         #endregion
         #region Private Vars
         private List<RegisteredProjectCollection> projects;
@@ -98,8 +103,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             foreach (var registeredProjectCollection in onlineCollections)
             {
                 var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection, new UICredentialsProvider());
+                
                 // this is will throw out the credential window if you are not authenticated
+                // TODO
+                // is there some way to pass default credentials?
                 projectCollection.EnsureAuthenticated();
+                
                 try
                 {
                     // DEBUG
@@ -127,6 +136,39 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //this alone will not work anymore.
             //loadPendingChangesList();
         }
+            #region dragDrop Code
+        private void myDataGrid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                changeItem moving = (changeItem)pendingChangesList.SelectedItem;
+                string name = moving.fileName;
+                // DEBUG
+                //MessageBox.Show(moving.fileName);
+                object selectedItem = pendingChangesList.SelectedItem;
+                if (selectedItem != null)
+                {
+                    DataGridRow container = (DataGridRow)pendingChangesList.ItemContainerGenerator.ContainerFromItem(selectedItem);
+                    DragDropEffects finalDropEffect = DragDrop.DoDragDrop(container, name, DragDropEffects.Move);
+                }
+            }
+        }
+        private void DataGrid_CheckDropTarget(object sender, DragEventArgs e)
+        {
+            e.Effects = DragDropEffects.Move;
+            e.Handled = true;
+            addToIgnoreList((string)e.Data.GetData(DataFormats.Text));
+            checkIgnoreList();
+        }
+        private void ignoreList_Drop(object sender, DragEventArgs e)
+        {
+            //DOESNT WORK
+            e.Effects = DragDropEffects.Move;
+            e.Handled = true;
+            ignoreList.Items.Add(e.Data.GetData(DataFormats.Text));
+        }
+        #endregion
+
         #endregion
 
         #region pending Changes Section
@@ -385,9 +427,53 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //}
             //return isIgnored;
         }
+        private void checkForConflicts()
+        {
+            // DONT WORK
+            // TODO in order to go anywhere we this we need to be able to get those first 2 strings
+            // first one is local path, second is serverpath 
+            // I am worried about this. if we get the working folders thats great. but is it going to check it all back in? 
+            // i just dont know enough about it yet
+            WorkingFolder[] Folders = activeWorkspace.Folders;
+            GetStatus status = activeWorkspace.Merge(Folders[1].LocalItem,
+                        Folders[1].ServerItem,
+                        null,
+                        null,
+                        LockLevel.None,
+                        RecursionType.Full,
+                        MergeOptions.None);
+            MessageBox.Show(status.ToString());
+            Conflict[] conflicts = activeWorkspace.QueryConflicts(new string[] { Folders[0].ServerItem }, true);
+            MessageBox.Show("there are " + conflicts.Length + " conflicts");
+            foreach (Conflict conflict in conflicts)
+            {
+                MessageBox.Show(conflict.ToString());
+                if (activeWorkspace.MergeContent(conflict, true))
+                {
+                    conflict.Resolution = Resolution.AcceptMerge;
+                    activeWorkspace.ResolveConflict(conflict);
+                }
+                if (conflict.IsResolved)
+                {
+                    activeWorkspace.PendEdit(conflict.TargetLocalItem);
+                    File.Copy(conflict.MergedFileName, conflict.TargetLocalItem,
+                        true);
+                }
+            }
+            string message = "";
+            message += "There are " + Folders.Length + " folders in the workspace";
+            for (int i = 0; i < Folders.Length; i++)
+            {
+                message += "folder[" + i + "] is: " + Folders[i].LocalItem;
+            }
+            message+="\nFolder[0] localItem : "+Folders[0].LocalItem;
+            message+="\nFolder[0] serverItem : "+Folders[0].ServerItem;
+            MessageBox.Show(message);
+        }
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
-
+            // DEBUG
+            //checkForConflicts();
             //TODO 
             // prompt the user if they are about to check a file in that was on the ignore list
             // TODO 
@@ -407,7 +493,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 message += change.FileName + "\n";
             }
-            message += "Are you sure you want to check them in?";
+            message += "\nAre you sure you want to check them in?";
             // if there is a file the user has to confirm
             if (confirmChanges.Count > 0)
             {
@@ -415,6 +501,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 {
                     if (arrayChanges.Count() > 0)
                     {
+                        
                         activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
                         MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
                         updatePendingChangesList();
@@ -855,6 +942,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             checkBoxChecked = false;
             checkIgnoreList();
         }
+
+        private void pendingChangesList_MouseMove(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        
 
 
         #region unshelve window
