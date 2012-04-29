@@ -41,6 +41,7 @@
                     </Style>
                 </Button.Style>
             </Button>
+            <CheckBox Name="overide" ToolTip="Override ignore list" Checked="overide_Checked" Unchecked="overide_Unchecked">Override</CheckBox>
             <Button Name="shelve" ToolTip="Open Shelve Window"  Click="shelve_Click">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="20" Height="19" Source="/SeniorCapstoneIgnoreList;component/images/shelve.png">
@@ -56,13 +57,13 @@
                 </StackPanel>
             </Button>
             <Separator/>
-            <Button ToolTip="Hide/Show Comments" Name="hideShowComment" Click="hideShowComment_Click">
+            <CheckBox ToolTip="Hide/Show Comments" Name="hideShowComment" Click="hideShowComment_Click">
                 <Image Width="16" Height="12">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Comment.png" SourceRect="8,10,16,12"/>
                     </Image.Source>
                 </Image>
-            </Button>
+            </CheckBox>
             <Button Name="folderView">f</Button>
             <Button Name="lView">l</Button>
             <Separator/>
@@ -101,9 +102,9 @@
             <Label FontSize="9">Workspace:</Label>
             <ComboBox Name="workSpaces" ToolTip="Current Workspace" SelectionChanged="changeWorkspace">
             </ComboBox>         
-            <Button Name="hideShowIgnoreList" ToolTip="Hide/Show Ignore List" Click="hideShowIgnoreList_Click" >
+            <CheckBox Name="hideShowIgnoreList" ToolTip="Hide/Show Ignore List" Click="hideShowIgnoreList_Click" >
                 <Image Source="Resources/hideShowIgnoreList.png"/>
-            </Button>
+            </CheckBox>
         </ToolBar>
         <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="commentLabel" FontSize="9"  BorderThickness="1" VerticalContentAlignment="Bottom" />
         <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" ToolTip="Enter comment for check in" FontSize="9" Margin="4,4,4,4"/>
@@ -142,17 +143,6 @@
                 <!--<DataGridCheckBoxColumn Width="Auto" Binding="{Binding selected,UpdateSourceTrigger=PropertyChanged}" />-->
                 
                 <DataGridTemplateColumn>
-                    <DataGridTemplateColumn.HeaderStyle>
-                        <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate TargetType="DataGridColumnHeader">
-                                        <CheckBox Name="CheckBx" HorizontalAlignment="Center" VerticalAlignment="Center" Checked="CheckBx_Checked" Unchecked="CheckBx_Unchecked"></CheckBox> 
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </DataGridTemplateColumn.HeaderStyle>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding Path=selected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Style="{x:Null}" Width="Auto"/>

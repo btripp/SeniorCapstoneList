@@ -828,9 +828,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             loadPendingChangesList();
         }
 
-        
-
-        private void CheckBx_Checked(object sender, RoutedEventArgs e)
+        private void overide_Checked(object sender, RoutedEventArgs e)
         {
             foreach (var change in changesCollection)
             {
@@ -839,7 +837,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             checkBoxChecked = true;
         }
 
-        private void CheckBx_Unchecked(object sender, RoutedEventArgs e)
+        private void overide_Unchecked(object sender, RoutedEventArgs e)
         {
             checkBoxChecked = false;
             checkIgnoreList();
