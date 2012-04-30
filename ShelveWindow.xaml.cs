@@ -20,6 +20,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     /// </summary>
     public partial class ShelveWindow : Window
     {
+    #region constructors
         public ShelveWindow()
         {
             InitializeComponent();
@@ -33,11 +34,16 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             shelveCollection = changeCollection;
             this.activeWorkspace = activeWorkspace;
         }
+    #endregion
 
+    #region properties
         public Workspace activeWorkspace { get; set; }
         public ObservableCollection<changeItem> shelveCollection { get { return _shelveCollection; } set { _shelveCollection = value; } }
+    #endregion
 
+    #region private vars
         private ObservableCollection<changeItem> _shelveCollection;
+    #endregion
 
         private void cancelShelve_Click(object sender, RoutedEventArgs e)
         {

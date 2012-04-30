@@ -130,6 +130,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 // this is will throw out the credential window if you are not authenticated
                 // TODO
                 // is there some way to pass default credentials?
+                // i think the best way to get around this would be to have stuff configured
+                //correctly on tfs... so having the user entercredentials is good. if they are 
+                // setup correctly they wont have to
                 projectCollection.EnsureAuthenticated();
                 
                 try
@@ -205,16 +208,47 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             ignoreList.Items.Add(e.Data.GetData(DataFormats.Text));
         }
         #endregion
+
         /// <summary>
         /// refreshes the pendingchanges list to show any changes that may have been made elsewhere
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void refresh_click(object sender, ExceptionRoutedEventArgs e)
+        private void refresh_click(object sender, RoutedEventArgs e)
         {
-            // TODO
-            // check this
-            loadPendingChangesList();
+            refreshPendingChangesList();
+        }
+        /// <summary>
+        /// basically the same as loadpendingchangeslist but it clears the changescollection and listofchanges
+        /// </summary>
+        public void refreshPendingChangesList()
+        {
+            changesCollection.Clear();
+            listOfChanges.Clear();
+            PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
+            foreach (PendingChange pendingChange in pendingChanges)
+            {
+                // i have this next thing there to make sure that you dont add the same file twice if we keep this
+                // onload
+                if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName))
+                {
+                    // this checks the list of changes to see if it needs to be added to the collection or not
+                    if (!listOfChanges.Contains(pendingChange.FileName))
+                    {
+                        changesCollection.Add(new changeItem(pendingChange));
+                        listOfChanges.Add(pendingChange.FileName);
+                    }
+                }
+
+                checkIgnoreList();
+                string message = "";
+                foreach (changeItem item in changesCollection)
+                {
+                    message += (item.fileName) + "\n";
+                }
+                // DEBUG - this shows what the collection contains that the list is bound to
+                //MessageBox.Show(message);
+            }
         }
         /// <summary>
         /// allows user to force all pending changes to be checked in the pending changes list, overriding the ignore list
@@ -341,12 +375,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// </summary>
         public void loadPendingChangesList()
         {
-            // TODO 
-            // if user changes workspace, how will the collectin handle it? will it renew or just add the new changes to it.
-
-            // this clear is to clear the observableCollection
-            // TODO work on this
-            // this.changesCollection.Clear();
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             foreach (PendingChange pendingChange in pendingChanges)
             {
@@ -362,10 +390,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     }
                 }
             }
-            // TODO this was commented out.. does it effect anything being there? i think it should be there. for when
-            // the list is loaded on initialize, the PC window is initially all checked, but if we checkIgnoreList it will 
-            // uncheck what needs to be. if we dont have this then we will have the ignore list already filled out and THEN the 
-            // PC list will be populated and all will be checked. so they would have to uncheck or add something to the ignore list
             checkIgnoreList();
             string message = "";
             foreach (changeItem item in changesCollection)
@@ -400,7 +424,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-        //TODO Need to add logic to make sure we dont try to check in nothing
         /// <summary>
         /// iterates through the changes collection to find all items that are checked, returns pendingChanges[] for check in
         /// </summary>
@@ -535,8 +558,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             // DEBUG
             //checkForConflicts();
-            //TODO 
-            // prompt the user if they are about to check a file in that was on the ignore list
             // TODO 
             // check for conflicts... i say just show that there are conflicts and they can deal with them on their own if
             // VS or TFS does not have an easy way to do it automatically.
@@ -682,7 +703,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
         /// <summary>
-        /// switches the workspace based on the dropdown, and then calls loadPendingChangesList
+        /// switches the workspace based on the dropdown, and then calls refreshPendingChangesList
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -729,8 +750,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // this gets the versioncontrolserver from the activeworkspace and then finds the selected workspace based on the name
             // from the workspace dropdown
             activeWorkspace = activeWorkspace.VersionControlServer.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
-            // once the workspace is changed, load the pending changes list for that workspace
-            loadPendingChangesList();
+            // once the workspace is changed, refresh the pending changes list for that workspace
+            refreshPendingChangesList();
         }
         /// <summary>
         /// called when an item is taken off the ignore list. returns the pendingchange checkbox back to the last state
@@ -739,8 +760,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// <param name="name"></param>
         private void restorePreviousState(string name)
         {
-            // TODO brandon
-            // need to do the wildcard stuff here -- actually dont think we need to do wildcard stuff
             // DEBUG
             //MessageBox.Show("You removed " + name);
             // if its a wildcard then match with contains.
@@ -1015,13 +1034,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             activeWorkspace.Shelve(shelveset, toShelve, ShelvingOptions.None);
             // have to "UNDO" on the pending changes that were shelved in order to unshelve the set
             activeWorkspace.Undo(toShelve);
-            // TODO is there a better way to update the list? this next thing just removes the pending changes from
-            // the collection that i dont want to be there
             removeFromCollection.Clear();
             foreach (PendingChange change in toShelve)
             {
                 removeFromCollection.Add(change.FileName);
             }
+            // removes all the pendingchanges tht are in removefromcollection
             updatePendingChangesList();
             // DEBUG
             //string message = "This is what would have been shelved...\n";

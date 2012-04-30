@@ -28,7 +28,7 @@
                     <TextBlock>Checkin</TextBlock>
                 </StackPanel>
             </Button>
-            <Separator/>
+            <Separator Background="Black" />
             <Button Name="button3" ToolTip="Ignore Selected File" Click="ignore_Click">
                 Ignore
                 <Button.Style>
@@ -56,7 +56,7 @@
                     <TextBlock>Unshelve</TextBlock>
                 </StackPanel>
             </Button>
-            <Separator/>
+            <Separator Background="Black"/>
             <CheckBox ToolTip="Hide/Show Comments" Name="hideShowComment" Click="hideShowComment_Click">
                 <Image Width="16" Height="12">
                     <Image.Source>
@@ -66,7 +66,7 @@
             </CheckBox>
             <Button Name="folderView">f</Button>
             <Button Name="lView">l</Button>
-            <Separator/>
+            <Separator Background="Black"/>
             <Button Name="compare">
                 <Image Width="16" Height="15">
                     <Image.Source>
@@ -88,15 +88,15 @@
                     </Image.Source>
                 </Image>
             </Button>
-            <Separator/>
-            <Button Name="refresh">
-                <Image Width="13" Height="15" ImageFailed="refresh_click">
+            <Separator Background="Black"/>
+            <Button Name="refresh" Click="refresh_click">
+                <Image Width="13" Height="15">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Refresh.png" SourceRect="11,7,13,15"/>
                     </Image.Source>
                 </Image>
             </Button>
-            <Separator/>
+            <Separator Background="Black"/>
             <Button Name="filterBySolution">f</Button>
             <Separator/>
             <Label FontSize="9">Workspace:</Label>

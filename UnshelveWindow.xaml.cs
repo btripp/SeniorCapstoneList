@@ -21,7 +21,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     /// </summary>
     public partial class UnshelveWindow : Window
     {
-        #region constructors
+    #region constructors
         public UnshelveWindow()
         {
             InitializeComponent();
@@ -39,9 +39,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             loadShelvesets();
             
         }
-        #endregion
+    #endregion
 
-        #region properties
+    #region properties
         public ObservableCollection<Shelveset> allShelveSets { get; set; }
         public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
         public List<String> filteredSets { get; set; }
@@ -64,12 +64,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-        #endregion
+    #endregion
 
-        #region private vars
+    #region private vars
         private ObservableCollection<Shelveset> _shelveSetCollection = new ObservableCollection<Shelveset>();
         private string _owner;
-        #endregion
+    #endregion
 
         private void cancelShelve_Click(object sender, RoutedEventArgs e)
         {

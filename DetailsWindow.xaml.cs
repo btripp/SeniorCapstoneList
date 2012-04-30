@@ -20,6 +20,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     /// </summary>
     public partial class DetailsWindow : Window
     {
+    #region constructors
         public DetailsWindow()
         {
             InitializeComponent();
@@ -44,11 +45,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             comment.Text = shelveSet.Comment;
 
         }
-
-        private Shelveset _shelveSet;
-        private ObservableCollection<changeItem> _shelvedChanges = new ObservableCollection<changeItem>();
+    #endregion
+    #region properties
         public ObservableCollection<changeItem> shelvedChanges { get { return _shelvedChanges; } set { _shelvedChanges = value; } }
         public Shelveset shelveSet { get { return _shelveSet; } set { _shelveSet = value; } }
+    #endregion
+    #region private vars
+        private Shelveset _shelveSet;
+        private ObservableCollection<changeItem> _shelvedChanges = new ObservableCollection<changeItem>();
+    #endregion
+        
+        
 
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
@@ -62,6 +69,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         public bool anyChecked()
         {
+            // TODO where is this used?
             bool returnValue = false;
             foreach (var item in shelvedChanges)
             {
