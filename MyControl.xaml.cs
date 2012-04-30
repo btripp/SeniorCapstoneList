@@ -179,7 +179,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// <param name="e"></param>
         private void toolWindow_unloaded(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("unloaded");
+            //MessageBox.Show("unloaded");
             // this can be used to save the ignore list
             // this is called everytime the window is unloaded, if its tabbed and you close the tab for example
         }
@@ -867,23 +867,65 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             dlg.Filter = "Text documents (.txt)|*.txt"; // Filter files by extension
             dlg.Title = "Load Ignore List";
             // Show open file dialog box
-            Nullable<bool> result = dlg.ShowDialog();
+            Nullable<bool> loadResult;
+            bool itemsOnList = ignoreList.Items.Count > 0;
 
-            // Process open file dialog box results
-            if (result == true)
+            if (itemsOnList)
             {
-                ignoreList.Items.Clear();
-                string[] ignoreListItems;
-                string filename = dlg.FileName;
-                ignoreListItems = System.IO.File.ReadAllLines(filename);
-
-                foreach (string s in ignoreListItems)
+                var saveResult = MessageBox.Show("Do you want to save first?", "Unsaved List", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (saveResult == MessageBoxResult.Cancel)
                 {
-                    addToIgnoreList(s);
+                    ;//do nothing because they pushed cancel
                 }
-                checkIgnoreList();
-            }
+                else
+                {
+                    // if they pushed yes, save it
+                    if (saveResult == MessageBoxResult.Yes)
+                    {
+                        saveButton_Click(this, e);
+                    }
 
+                    //load dialog stuff
+                    loadResult = dlg.ShowDialog();
+                    if (loadResult == true)
+                    {
+                        var appendResult = MessageBox.Show("Do you want to append to the current ignore list?", "Append to list", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                        if (appendResult == MessageBoxResult.No)
+                        {
+                            foreach (string item in ignoreList.Items)
+                            {
+                                restorePreviousState(item);
+                            }
+                            ignoreList.Items.Clear();
+                        }
+                        string[] ignoreListItems;
+                        string filename = dlg.FileName;
+                        ignoreListItems = System.IO.File.ReadAllLines(filename);
+
+                        foreach (string s in ignoreListItems)
+                        {
+                            addToIgnoreList(s);
+                        }
+                        checkIgnoreList();
+                    }
+                }
+            }
+            else
+            {
+                loadResult = dlg.ShowDialog();
+                if (loadResult == true)
+                {
+                    string[] ignoreListItems;
+                    string filename = dlg.FileName;
+                    ignoreListItems = System.IO.File.ReadAllLines(filename);
+
+                    foreach (string s in ignoreListItems)
+                    {
+                        addToIgnoreList(s);
+                    }
+                    checkIgnoreList();
+                }
+            }
         }
         /// <summary>
         /// save the ignore list
