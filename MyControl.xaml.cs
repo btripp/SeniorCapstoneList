@@ -21,13 +21,17 @@ using Microsoft.TeamFoundation.VersionControl.Common;
 using System.Text.RegularExpressions;
 using System.IO;
 
+// TODO
+// what if someone calls undo pending changes or checks in stuff from a different window?
+// maybe the refresh button we have shouldnt just loadpendingchanges list again but do its own
+// method that really refreshes everything.. clears all the lists and querys the pending changes again?
+// or maybe loadpendingchanges can be tweaked to allow for that functionality.
+
 namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 {
     public partial class MyControl : UserControl
     {
-        // TODO 
-        // find out how pending changes list asks for the password to connect to TFS... if we do not have that for our window it will
-        // break because we try to access something we do not have access to yet... 
+        
         public MyControl()
         {
             InitializeComponent();
@@ -37,38 +41,54 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             shelvewindow = new ShelveWindow();
             unshelvewindow = new UnshelveWindow();
         }
-        #region Properties
+    #region Properties
+        // Tool window properties
+        //========================
         // TODO : does the mycontrol class need a copy of itself as a property?
-        public bool checkBoxChecked = false;
         public static MyControl mc;
-        public List<string> removeFromCollection { get { return _removeFromCollection; } set { _removeFromCollection = value; } }
-        public List<string> listOfChanges { get { return _listOfChanges; } set { _listOfChanges = value; } }
-        public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } set { _changesCollection = value; } }
-        public ObservableCollection<changeItem> shelveCollection { get { return _shelveCollection; } set { _shelveCollection = value; } }
-        public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
-        public Workspace activeWorkspace { get; set; }
-        public Workspace[] allWorkSpaces { get; set; }
+
         public ShelveWindow shelvewindow { get; set; }
         public UnshelveWindow unshelvewindow { get; set; }
 
-        //public Point startPoint { get; set; }
+        //use for the override button
+        public bool checkBoxChecked = false;
+        //used for all checkins and to populate pendingchanges list
+        public Workspace activeWorkspace { get; set; }
+        // list populated by all the checked items on the pendingchanges list. list is used to remove the checked in changes from the pending changes list
+        public List<string> removeFromCollection { get { return _removeFromCollection; } set { _removeFromCollection = value; } }
+        // this list is used to make sure that there are no duplicates on the pending changes list. 
+        public List<string> listOfChanges { get { return _listOfChanges; } set { _listOfChanges = value; } }
+        // the pending changes list is bound to this collection.
+        public ObservableCollection<changeItem> changesCollection { get { return _changesCollection; } set { _changesCollection = value; } }
 
-        #endregion
-        #region Private Vars
+        // Shelve/Unshelve Window properties
+        //===========================
+        // collection of pending changes that is passed to the shelveset window to populate what will be shelved
+        public ObservableCollection<changeItem> shelveCollection { get { return _shelveCollection; } set { _shelveCollection = value; } }
+        
+        // used for the unshelve window to populate all shelvsets across all workspaces
+        public Workspace[] allWorkSpaces { get; set; }
+        // collection of shelvesets that is passed to the unshelve window
+        public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
+    #endregion
+
+    #region Private Vars
         private List<RegisteredProjectCollection> projects;
-        // do we need this?
         private List<string> _removeFromCollection = new List<string>();
         private List<string> _listOfChanges = new List<string>();
         private ObservableCollection<changeItem> _changesCollection = new ObservableCollection<changeItem>();
         private ObservableCollection<changeItem> _shelveCollection = new ObservableCollection<changeItem>();
         private ObservableCollection<Shelveset> _shelveSetCollection = new ObservableCollection<Shelveset>();
-        #endregion
+    #endregion
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
-        #region Tool window functions
+    #region Tool window functions
         public static void RegisterEventHandlers(VersionControlServer versionControl)
         {
             // DEBUG 
             //MessageBox.Show("registering event handlers");
+
+            //this updates pendingchanges
             versionControl.OperationFinished += afterUpdate;
         }
         public static void afterUpdate(Object sender, OperationEventArgs e)
@@ -80,6 +100,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             // DEBUG
             //MessageBox.Show("it got into the load");
+
             List<RegisteredProjectCollection> projectCollections;
 
             // get all registered project collections (previously connected to from Team Explorer)
@@ -90,8 +111,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 from collection in projectCollections
                 where collection.Offline == false
                 select collection;
+
             // DEBUG
             //MessageBox.Show(onlineCollections.Count().ToString());
+
             // fail if there are no registered collections that are currently on-line
             if (onlineCollections.Count() < 1)
             {
@@ -113,6 +136,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 {
                     // DEBUG
                     //MessageBox.Show("finding workspaces");
+
                     var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
                     var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
                     //if there are no team projects in this collection, skip it
@@ -133,12 +157,21 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         // do we use onLoad or onInitialize?
         private void MyToolWindow_Init(object sender, EventArgs e)
         {
-            //this alone will not work anymore.
-            //loadPendingChangesList();
+            // this can be used to load the ignore list from the computer
+            // it is only called once
+            // we have to make sure that loading the list has nothing to do with tfs though, or it will crap out
+            // from not having permission
         }
-            #region dragDrop Code
+        private void toolWindow_unloaded(object sender, RoutedEventArgs e)
+        {
+            // this can be used to save the ignore list
+            // this is called everytime the window is unloaded, if its tabbed and you close the tab for example
+        }
+        #region dragDrop Code
         private void myDataGrid_MouseMove(object sender, MouseEventArgs e)
         {
+            // TODO 
+            // make a custom move cursor so the user knows he is moving something
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 changeItem moving = (changeItem)pendingChangesList.SelectedItem;
@@ -157,24 +190,65 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
+            // im using this to add to the ignore list because i cant get drop to work
             addToIgnoreList((string)e.Data.GetData(DataFormats.Text));
             checkIgnoreList();
         }
         private void ignoreList_Drop(object sender, DragEventArgs e)
         {
             //DOESNT WORK
+            // i dont know why i couldnt get this to work.
+            // is it because im trying to drop something that the list doenst like?
+            // this even is never fired
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
             ignoreList.Items.Add(e.Data.GetData(DataFormats.Text));
         }
         #endregion
+        /// <summary>
+        /// refreshes the pendingchanges list to show any changes that may have been made elsewhere
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void refresh_click(object sender, ExceptionRoutedEventArgs e)
+        {
+            // TODO
+            // check this
+            loadPendingChangesList();
+        }
+        /// <summary>
+        /// allows user to force all pending changes to be checked in the pending changes list, overriding the ignore list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void overide_Checked(object sender, RoutedEventArgs e)
+        {
+            foreach (var change in changesCollection)
+            {
+                change.selected = true;
+            }
+            checkBoxChecked = true;
+        }
+        /// <summary>
+        /// turns off the override, enabling the ignorelist again
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void overide_Unchecked(object sender, RoutedEventArgs e)
+        {
+            checkBoxChecked = false;
+            checkIgnoreList();
+        }
 
-        #endregion
+    #endregion
 
-        #region pending Changes Section
+    #region pending Changes Section
+        /// <summary>
+        /// Used for the pending changes list workspace drop down
+        /// </summary>
+        /// <param name="workspaces"></param>
         public void loadWorkspaces(Workspace[] workspaces)
         {
-            
             foreach (Workspace workspace in workspaces)
             {
                 if (!workSpaces.Items.Contains(workspace.Name))
@@ -183,6 +257,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
+        /// <summary>
+        /// Compares pending changes to ignore list. if pending change matches an item in ignore list, uncheck the pending change
+        /// </summary>
         public void checkIgnoreList()
         {
             bool found;
@@ -259,9 +336,14 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
+        /// <summary>
+        /// loads pending changes for the selected workspace into the pending changes list
+        /// </summary>
         public void loadPendingChangesList()
         {
-            // because i pass the workspace... this will only have pending changes for the current workspace
+            // TODO 
+            // if user changes workspace, how will the collectin handle it? will it renew or just add the new changes to it.
+
             // this clear is to clear the observableCollection
             // TODO work on this
             // this.changesCollection.Clear();
@@ -272,17 +354,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 // onload
                 if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName)) 
                 {
-                    // this is an ugly way to make sure that the same changeItem is not added a second time
-                    // i dont think this works because maybe i dont provide the collection with a way to evaluate "contains"
-                    // rather than look up how to change this im going to go ao different way
-                    //changeItem temp = new changeItem(pendingChange);
-                    //if (!changesCollection.Contains(temp))
-                    //{
-                    //    MessageBox.Show("adding " + pendingChange.FileName);
-                    //    this.changesCollection.Add(new changeItem(pendingChange));
-                    //}
                     // this checks the list of changes to see if it needs to be added to the collection or not
-                    // this is a workaround for the above problem
                     if(!listOfChanges.Contains(pendingChange.FileName))
                     {
                         changesCollection.Add(new changeItem(pendingChange));
@@ -290,7 +362,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     }
                 }
             }
-            //checkIgnoreList();
+            // TODO this was commented out.. does it effect anything being there? i think it should be there. for when
+            // the list is loaded on initialize, the PC window is initially all checked, but if we checkIgnoreList it will 
+            // uncheck what needs to be. if we dont have this then we will have the ignore list already filled out and THEN the 
+            // PC list will be populated and all will be checked. so they would have to uncheck or add something to the ignore list
+            checkIgnoreList();
             string message = "";
             foreach (changeItem item in changesCollection)
             {
@@ -299,6 +375,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // DEBUG - this shows what the collection contains that the list is bound to
             //MessageBox.Show(message);
         }
+        /// <summary>
+        /// uses the removeFromCollection in order to remove all the pending changes that were checked in from the list
+        /// </summary>
         public void updatePendingChangesList()
         {
             foreach (string remove in removeFromCollection)
@@ -321,11 +400,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-        //I would say that we keep this guy. I think its a nice feature to have.
-        
-        //added regex stuff
-        //added stuff to make sure a change isnt added twice... not sure if it ever can.
         //TODO Need to add logic to make sure we dont try to check in nothing
+        /// <summary>
+        /// iterates through the changes collection to find all items that are checked, returns pendingChanges[] for check in
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
         private PendingChange[] getSelectedChanges(ObservableCollection<changeItem> collection)
         {
             List<PendingChange> myChanges = new List<PendingChange>();
@@ -344,12 +424,59 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             pendingChanges = myChanges.ToArray();
             return pendingChanges;
         }
+        /// <summary>
+        /// called from checkin_click(). will be used for conflicts
+        /// </summary>
+        private void checkForConflicts()
+        {
+            // DONT WORK
+            // TODO in order to go anywhere we this we need to be able to get those first 2 strings
+            // first one is local path, second is serverpath 
+            // I am worried about this. if we get the working folders thats great. but is it going to check it all back in? 
+            // i just dont know enough about it yet
+            WorkingFolder[] Folders = activeWorkspace.Folders;
+            GetStatus status = activeWorkspace.Merge(Folders[1].LocalItem,
+                        Folders[1].ServerItem,
+                        null,
+                        null,
+                        LockLevel.None,
+                        RecursionType.Full,
+                        MergeOptions.None);
+            MessageBox.Show(status.ToString());
+            Conflict[] conflicts = activeWorkspace.QueryConflicts(new string[] { Folders[0].ServerItem }, true);
+            MessageBox.Show("there are " + conflicts.Length + " conflicts");
+            foreach (Conflict conflict in conflicts)
+            {
+                MessageBox.Show(conflict.ToString());
+                if (activeWorkspace.MergeContent(conflict, true))
+                {
+                    conflict.Resolution = Resolution.AcceptMerge;
+                    activeWorkspace.ResolveConflict(conflict);
+                }
+                if (conflict.IsResolved)
+                {
+                    activeWorkspace.PendEdit(conflict.TargetLocalItem);
+                    File.Copy(conflict.MergedFileName, conflict.TargetLocalItem,
+                        true);
+                }
+            }
+            string message = "";
+            message += "There are " + Folders.Length + " folders in the workspace";
+            for (int i = 0; i < Folders.Length; i++)
+            {
+                message += "folder[" + i + "] is: " + Folders[i].LocalItem;
+            }
+            message+="\nFolder[0] localItem : "+Folders[0].LocalItem;
+            message+="\nFolder[0] serverItem : "+Folders[0].ServerItem;
+            MessageBox.Show(message);
+        }
+        /// <summary>
+        /// called from checkin_click(). it checks to see if a checked item for checkin is on the ignore list
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         private bool isIgnored(string name)
         {
-            // TODO i am going to have to fix how i find the wildcards... it isnt exactly right
-            // *.cs will match something.cs as well as something.csproj
-            // will have to use regex stuff.. probably be able to use your stuff over again.
-
             bool isIgnored = false;
             string[] ignoreListArray = new string[ignoreList.Items.Count];
             ignoreList.Items.CopyTo(ignoreListArray, 0);
@@ -398,78 +525,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
 
             return isIgnored;
-
-
-                          
-
-            // this is going to be called for every pending change that was selected
-            // checked against every item in the ignore list
-            //foreach (string item in ignoreList.Items)
-            //{
-            //    // if its a wildcard then match with contains.
-            //    if (item.ToLower().Contains("*"))
-            //    {
-            //        // DEBUG
-            //        //MessageBox.Show("matching wildcard :"+name);
-            //        // this strips out the * to do a match, have to use a temp because you cant change item
-            //        string temp = item.Replace("*", "");
-            //        if (name.ToLower().Contains(temp.ToLower()))
-            //            isIgnored = true;
-            //    }
-            //    // its not a wildcard so just match the name
-            //    else
-            //    {
-            //        // DEBUG
-            //        //MessageBox.Show("matching just the name");
-            //        if (name.ToLower().Equals(item.ToLower()))
-            //            isIgnored = true;
-            //    }
-            //}
-            //return isIgnored;
         }
-        private void checkForConflicts()
-        {
-            // DONT WORK
-            // TODO in order to go anywhere we this we need to be able to get those first 2 strings
-            // first one is local path, second is serverpath 
-            // I am worried about this. if we get the working folders thats great. but is it going to check it all back in? 
-            // i just dont know enough about it yet
-            WorkingFolder[] Folders = activeWorkspace.Folders;
-            GetStatus status = activeWorkspace.Merge(Folders[1].LocalItem,
-                        Folders[1].ServerItem,
-                        null,
-                        null,
-                        LockLevel.None,
-                        RecursionType.Full,
-                        MergeOptions.None);
-            MessageBox.Show(status.ToString());
-            Conflict[] conflicts = activeWorkspace.QueryConflicts(new string[] { Folders[0].ServerItem }, true);
-            MessageBox.Show("there are " + conflicts.Length + " conflicts");
-            foreach (Conflict conflict in conflicts)
-            {
-                MessageBox.Show(conflict.ToString());
-                if (activeWorkspace.MergeContent(conflict, true))
-                {
-                    conflict.Resolution = Resolution.AcceptMerge;
-                    activeWorkspace.ResolveConflict(conflict);
-                }
-                if (conflict.IsResolved)
-                {
-                    activeWorkspace.PendEdit(conflict.TargetLocalItem);
-                    File.Copy(conflict.MergedFileName, conflict.TargetLocalItem,
-                        true);
-                }
-            }
-            string message = "";
-            message += "There are " + Folders.Length + " folders in the workspace";
-            for (int i = 0; i < Folders.Length; i++)
-            {
-                message += "folder[" + i + "] is: " + Folders[i].LocalItem;
-            }
-            message+="\nFolder[0] localItem : "+Folders[0].LocalItem;
-            message+="\nFolder[0] serverItem : "+Folders[0].ServerItem;
-            MessageBox.Show(message);
-        }
+        /// <summary>
+        /// check in process
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
             // DEBUG
@@ -481,13 +542,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // VS or TFS does not have an easy way to do it automatically.
             PendingChange[] arrayChanges = getSelectedChanges(changesCollection);
             List<PendingChange> confirmChanges = new List<PendingChange>();
+
+            // checks to see if any item to be checked in is on the ignore list
             foreach (PendingChange change in arrayChanges)
             {
+                // if it is on the ignore list, add file to a list for user prompt
                 if (isIgnored(change.FileName))
                 {
                     confirmChanges.Add(change);
                 }
             }
+            //user prompt about checking in files that are ignored
             string message = "The following files are on the ignore list:\n";
             foreach (PendingChange change in confirmChanges)
             {
@@ -529,11 +594,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
                 commentBox.Clear();
             }
-            //commentBox.Text = "";
             // TODO 
-            // once this is checked in... VS spits out the output in a window
+            // once this is checked in... VS spits out the output in a window. do we want to do that? do we need to do that?
             
         }
+        /// <summary>
+        /// ignore selected item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ignore_Click(object sender, RoutedEventArgs e)
         {
             if (pendingChangesList.SelectedItem != null)
@@ -543,16 +612,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 checkIgnoreList();
             }
         }
+        /// <summary>
+        /// opens the shelve dialog and calls the shelve method based on the dialog results
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void shelve_Click(object sender, RoutedEventArgs e)
-        {
-            //List<PendingChange> myChanges = new List<PendingChange>();
-            //PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
-            // im going to read up about shelving.. the shelve function needs a shelvset, pendingchanges[], comment
-            // it seems to pretty much the same and i think i get the idea but i want to ready up on it some before i write this
-            
-            // any code after show dialog will not execute until the dialog has been closed, we can still you the things that belong
-            // to that window
-            //shelvewindow.shelvesetName.Text
+        {   
             string message = "";
             foreach (changeItem item in shelveCollection)
             {
@@ -561,27 +627,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             message += ".";
             // DEBUG
             // MessageBox.Show(message);
-            // TODO the shelvewindow cant bind to this shelveCollection because i dont have the binding path correct. shelvewindow is
-            // in a different class so i need to map it to myControl class and then it should work
-            shelvewindow = new ShelveWindow(changesCollection);
+
+            // pass the shelve window the collection of pending changes so they can select what to shelve
+            shelvewindow = new ShelveWindow(changesCollection, activeWorkspace);
             shelvewindow.ShowDialog();
             if (shelvewindow.DialogResult.HasValue && shelvewindow.DialogResult.Value)
             {
                 // Debug
                 //MessageBox.Show("User clicked OK");
                 shelveCollection = shelvewindow.shelveCollection;
-
-                int count = activeWorkspace.VersionControlServer.QueryShelvesets(shelvewindow.shelvesetName.Text, activeWorkspace.OwnerName).Count();
-                if (count == 0)
-                {
-                    Shelve();
-                }
-                else
-                {
-                    MessageBox.Show("The shelveset name already exists. Please rename the shelveset.", "Already exists", MessageBoxButton.OK, MessageBoxImage.Error);
-                    shelvewindow = new ShelveWindow(changesCollection);
-                    shelvewindow.ShowDialog();
-                }
+                // error checking is done in the shelvewindow
+                Shelve();
             }
             else
             {
@@ -589,13 +645,20 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 //MessageBox.Show("User clicked Cancel");
             }
         }
+        /// <summary>
+        /// opens the unshelve dialog and calls the unshelve method based on the dialog results
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
-            // TODO 
-            // rather than just passing the shelvesets for the current workspace. we need to pass a bigger object
-            // in order to query all shelvesets in all workspaces. 
+            // TODO
+            // im not 100% this is how unshelve is supposed to work
+
             // this is to clear the collection each time you re-open the unshelve window. 
             shelveSetCollection.Clear();
+
+            // passes all the shelvesets in all the workspaces
             foreach (Workspace workspace in allWorkSpaces)
             {
                 Shelveset[] shelveSets = workspace.VersionControlServer.QueryShelvesets(null, null);
@@ -609,59 +672,75 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             if (unshelvewindow.DialogResult.HasValue && unshelvewindow.DialogResult.Value)
             {
                 // Debug
-                MessageBox.Show("User clicked OK");
+                //MessageBox.Show("User clicked OK");
                 Unshelve();
             }
             else
+            {
                 // Debug
-                MessageBox.Show("User clicked Cancel");
+                //MessageBox.Show("User clicked Cancel");
+            }
         }
+        /// <summary>
+        /// switches the workspace based on the dropdown, and then calls loadPendingChangesList
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
         {
-            // TODO abstract this so its not so messy
-            var onlineCollections =
-                from collection in projects
-                where collection.Offline == false
-                select collection;
-            // fail if there are no registered collections that are currently on-line
-            if (onlineCollections.Count() < 1)
-            {
-                Console.Error.WriteLine("Error: There are no on-line registered project collections");
-                Environment.Exit(1);
-            }
-            // find a project collection with at least one team project
-            // is it going to act differently if there is more than one online collection?
-            // TODO is there ever going to be more than one project collection? if there is. i dont think that my way of finding the current workspace would work
-            // or maybe it would work but we dont need to have a version control for each registered project collection... if we dont need to foreach through this
-            // then we could have versioncontrol be a property as well.. if versioncontrol was a property we could switch between workspace much easier
-            foreach (var registeredProjectCollection in onlineCollections)
-            {
-                var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
-                try
-                {
-                    var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
-                    var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
-                    //if there are no team projects in this collection, skip it
-                    if (teamProjects.Count < 1) continue;
-                    // ----------------> all of that was just to get at this versioncontrol in order to get the workspace with the dropdowns selected items name
-                    Workspace workspace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
-                    activeWorkspace = workspace;
-                }
-                finally { }
-                break;
-            }
+            // TODO
+            // not exactly sure how workspaces and versioncontrolservers work... 
+            #region not sure if we need
+            //// TODO abstract this so its not so messy
+            //var onlineCollections =
+            //    from collection in projects
+            //    where collection.Offline == false
+            //    select collection;
+            //// fail if there are no registered collections that are currently on-line
+            //if (onlineCollections.Count() < 1)
+            //{
+            //    Console.Error.WriteLine("Error: There are no on-line registered project collections");
+            //    Environment.Exit(1);
+            //}
+            //// find a project collection with at least one team project
+            //// is it going to act differently if there is more than one online collection?
+            //// TODO is there ever going to be more than one project collection? if there is. i dont think that my way of finding the current workspace would work
+            //// or maybe it would work but we dont need to have a version control for each registered project collection... if we dont need to foreach through this
+            //// then we could have versioncontrol be a property as well.. if versioncontrol was a property we could switch between workspace much easier
+            //foreach (var registeredProjectCollection in onlineCollections)
+            //{
+            //    var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
+            //    try
+            //    {
+            //        var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
+            //        var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
+            //        //if there are no team projects in this collection, skip it
+            //        if (teamProjects.Count < 1) continue;
+            //        // ----------------> all of that was just to get at this versioncontrol in order to get the workspace with the dropdowns selected items name
+                    
+            //        Workspace workspace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
+            //        activeWorkspace = workspace;
+            //    }
+            //    finally { }
+            //    break;
+            //}
+            #endregion
+
+            // this gets the versioncontrolserver from the activeworkspace and then finds the selected workspace based on the name
+            // from the workspace dropdown
+            activeWorkspace = activeWorkspace.VersionControlServer.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
             // once the workspace is changed, load the pending changes list for that workspace
             loadPendingChangesList();
         }
+        /// <summary>
+        /// called when an item is taken off the ignore list. returns the pendingchange checkbox back to the last state
+        /// the user selected for it
+        /// </summary>
+        /// <param name="name"></param>
         private void restorePreviousState(string name)
         {
-            // if an item is taken off the ignore list. the item in the pending changes list is returned to the last
-            // value that the user actually set it too
-            // if i could find a way to pass a change item that would be great, but since we are just getting this from the 
-            // ignore list, we just have a name to compare it too
-
-            // TODO what we are going to have to do is get a list of all the things the item that is being removed from the ignore
-            // list would find... so if you remove .exe it needs to return all the .exe files to previous state
+            // TODO brandon
+            // need to do the wildcard stuff here -- actually dont think we need to do wildcard stuff
             // DEBUG
             //MessageBox.Show("You removed " + name);
             // if its a wildcard then match with contains.
@@ -694,18 +773,39 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
+        /// <summary>
+        /// if user pushed 'i' on the pending change list, the selected item is moved to the ignore list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void pendingChangesList_KeyDown(object sender, KeyEventArgs e)
                 {
-                    // ??
-                    // if user pushed i on the pending change list, the selected item is moved to the ignore list
                     if (e.Key == Key.I)
                     {
                         ignore_Click(this, e);
                     }
                 }
-        #endregion
+        /// <summary>
+        /// toggles the pending changes list comment box
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void hideShowComment_Click(object sender, RoutedEventArgs e)
+        {
+            if (commentBox.IsVisible)
+            {
+                commentBox.Visibility = Visibility.Collapsed;
+                commentLabel.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                commentBox.Visibility = Visibility.Visible;
+                commentLabel.Visibility = Visibility.Visible;
+            }
+        }
+    #endregion
 
-        #region ignore list section
+    #region ignore list section
         private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
         {
             if (ignoreTextBox.Text != null && ignoreTextBox.Text != "")
@@ -719,6 +819,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 MessageBox.Show("You must enter something to ignore.", "Add to list", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
+        /// <summary>
+        /// load a ignorelist
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void loadButton_Click(object sender, RoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
@@ -745,6 +850,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
 
         }
+        /// <summary>
+        /// save the ignore list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
             // Configure save file dialog box
@@ -766,6 +876,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 System.IO.File.WriteAllLines(filename, ignoreListItems);                
             }
         }
+        /// <summary>
+        /// remove item from ignore list, calls restore previous state on the removed item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
             string item = ignoreList.Items[ignoreList.SelectedIndex].ToString();
@@ -775,6 +890,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 ignoreList.Items.RemoveAt(ignoreList.SelectedIndex);
             }
         }
+        /// <summary>
+        /// clears the entire ignore list, calls restore previous state on all items
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ClearButton_Click(object sender, RoutedEventArgs e)
         {
             if (ignoreList.Items.Count > 0)
@@ -782,11 +902,19 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 var result = MessageBox.Show("Are you sure you want to clear the ignore list?", "Clear List", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
+                    foreach (string item in ignoreList.Items)
+                    {
+                        restorePreviousState(item);
+                    }
                     ignoreList.Items.Clear();
                 }
             }
             
         }
+        /// <summary>
+        /// the method that is called whenever an item is added to the ignorelist
+        /// </summary>
+        /// <param name="fileName"></param>
         public void addToIgnoreList(string fileName)
         {
             if(fileName.Contains("*")) //regex or wildcard dont ignore case
@@ -806,6 +934,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
+        /// <summary>
+        /// Create New List
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void newButton_Click(object sender, RoutedEventArgs e)
         {
             if (ignoreList.Items.Count > 0)
@@ -822,19 +955,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
             }
         }
-        private void hideShowComment_Click(object sender, RoutedEventArgs e)
-        {
-            if (commentBox.IsVisible)
-            {
-                commentBox.Visibility = Visibility.Collapsed;
-                commentLabel.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                commentBox.Visibility = Visibility.Visible;
-                commentLabel.Visibility = Visibility.Visible;
-            }
-        }
+        /// <summary>
+        /// allows user to push enter to add item to ignore list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ignoreTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -842,6 +967,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 ignoreListAddButton_Click(this, e);
             }
         }
+        /// <summary>
+        /// toggles the ignore list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void hideShowIgnoreList_Click(object sender, RoutedEventArgs e)
         {
             if (ignoreListToolbar.IsVisible)
@@ -861,6 +991,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 title.Visibility = Visibility.Visible;
             }
         }
+        /// <summary>
+        /// pressing r when an item is selected in the ignore list will remove it from the ignore list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ignoreList_KeyDown(object sender, KeyEventArgs e)
                 {
                     if (e.Key == Key.R)
@@ -868,9 +1003,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                         RemoveButton_Click(this, e);
                     }
                 }
-        #endregion
+    #endregion
 
-        #region shelve/unshelve window
+    #region shelve/unshelve window
         private void Shelve()
         {
             //need to add exception if the name already exists
@@ -921,39 +1056,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 MessageBox.Show("Unshelve Exception was thrown:\n" + err.Message);
             }
         }
-        #endregion
-
-        private void refresh_click(object sender, ExceptionRoutedEventArgs e)
-        {
-            loadPendingChangesList();
-        }
-
-        private void overide_Checked(object sender, RoutedEventArgs e)
-        {
-            foreach (var change in changesCollection)
-            {
-                change.selected = true;
-            }
-            checkBoxChecked = true;
-        }
-
-        private void overide_Unchecked(object sender, RoutedEventArgs e)
-        {
-            checkBoxChecked = false;
-            checkIgnoreList();
-        }
-
-        private void pendingChangesList_MouseMove(object sender, MouseEventArgs e)
-        {
-
-        }
-
-        
-
-
-        #region unshelve window
-
-        #endregion
+    #endregion
     }
     
         

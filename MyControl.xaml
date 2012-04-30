@@ -7,7 +7,7 @@
              
              mc:Ignorable="d" x:Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" d:DesignHeight="287" 
-             d:DesignWidth="807" MinHeight="150" MinWidth="600" GotFocus="MyToolWindow_Loaded">
+             d:DesignWidth="807" MinHeight="150" MinWidth="600" GotFocus="MyToolWindow_Loaded" Initialized="MyToolWindow_Init" Unloaded="toolWindow_unloaded">
     
     <Grid>
         <Grid.RowDefinitions>

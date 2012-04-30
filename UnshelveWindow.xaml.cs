@@ -34,32 +34,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             this.activeWorkspace = activeWorkspace;
             string owner = this.activeWorkspace.OwnerName.Split('\\')[1];
             Owner.Text = owner;
-            // TODO 
-            // This is going to have to filter based on the name entered
-            // What is bad about this is that if you want to get a shelveset from a different 
-            // workspace (not sure if thats something that you would do or not) then the way im stripping the workspace name 
-            // out of the text box wont work... what i should do is keep the ownername in its entirety but only show the stripped version.
-            // but then when you ENTER in a different name i need to make sure i either tack on the workspace\ if they only enter
-            // in the user name... but then be able to accept workspace\username if they wish to get at another workspace
-            // and there-in lies another problem because i only pass the active workspace to work with...
-            // this can be fixed but will take a little work. will leave this way for now until we know more about how this will be used
-            foreach (Shelveset set in shelveSet)
-            {
-                string setOwner = set.OwnerName.Split('\\')[1];
-                // DEBUG
-                //MessageBox.Show(setOwner);
-                if(setOwner.Equals(Owner.Text))
-                {
-                    shelveSetCollection.Add(set);
-                }
-            }
-            // commented out because i need to filter based on owner name
-            //shelveSetCollection = shelveSet;
+            allShelveSets = shelveSet;
+            filteredSets = new List<String>();
+            loadShelvesets();
+            
         }
         #endregion
 
         #region properties
+        public ObservableCollection<Shelveset> allShelveSets { get; set; }
         public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
+        public List<String> filteredSets { get; set; }
         public Shelveset selectedSet { get; set; }
         public Workspace activeWorkspace { get; set; }
         public PendingChange[] changes { get; set; }
@@ -97,7 +82,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
         private void unshelveSet()
         {
-            // test is a Shelveset
+            // take the selected item and assign it to selectedSet so the control can have access to it and then use that in the
+            // unshelve method
             selectedSet = (Shelveset)shelveSetList.SelectedItem;
             PendingSet[] pendingSets = activeWorkspace.VersionControlServer.QueryShelvedChanges(selectedSet);
             if (pendingSets.Length == 1)
@@ -108,13 +94,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 MessageBox.Show("it shouldnt have gotten here, says there are " + pendingSets.Length + " pending sets");
             }
-            // take the selected item and assign it to selectedSet so the control can have access to it and then use that in the
-            // unshelve method
             DialogResult = true;
         }
         private void detailsButton_Click(object sender, RoutedEventArgs e)
         {
-            //I know we need to do stuff to this
             selectedSet = (Shelveset)shelveSetList.SelectedItem;
 
             DetailsWindow dw = new DetailsWindow(selectedSet);
@@ -139,13 +122,50 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 selectedSet = (Shelveset)shelveSetList.SelectedItem;
                 updateWindow();
                 selectedSet.VersionControlServer.DeleteShelveset(selectedSet);
-                
             }
 
         }
         private void updateWindow()
         {
             shelveSetCollection.Remove(selectedSet);
+        }
+
+        private void findButton_Click(object sender, RoutedEventArgs e)
+        {
+            //repopulates it based on the new owner name
+            loadShelvesets();
+        }
+        public void loadShelvesets()
+        {
+            //clears the shelveset list
+            shelveSetCollection.Clear();
+            filteredSets.Clear();
+            // TODO 
+            // not sure exactly how the unshelve works
+            // are you supposed to be able to unshelve from someone elses workspace? 
+            // are shelved set available to all workspace already?
+            foreach (Shelveset set in allShelveSets)
+            {
+                // DEBUG
+                //string message = "";
+                //foreach (String item in filteredSets)
+                //{
+                //    message += item+"\n";
+                //}
+                //MessageBox.Show(message);
+                string setOwner = set.OwnerName.Split('\\')[1];
+                // DEBUG
+                //MessageBox.Show(setOwner);
+                if (setOwner.ToLower().Equals(Owner.Text.ToLower()))
+                {
+                    if (!filteredSets.Contains(set.Name))
+                    {
+                        MessageBox.Show(filteredSets.Contains(set.Name)+"\nadding " + set.Name);
+                        shelveSetCollection.Add(set);
+                        filteredSets.Add(set.Name);
+                    }
+                }
+            }
         }
 
 
