@@ -197,10 +197,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 // DEBUG
                 //MessageBox.Show(moving.fileName);
                 object selectedItem = pendingChangesList.SelectedItem;
+                DataGridRow row = (DataGridRow)pendingChangesList.ItemContainerGenerator.ContainerFromItem(selectedItem);
                 if (selectedItem != null)
                 {
                     DataGridRow container = (DataGridRow)pendingChangesList.ItemContainerGenerator.ContainerFromItem(selectedItem);
-                    DragDropEffects finalDropEffect = DragDrop.DoDragDrop(pendingChangesList, name, DragDropEffects.Move);
+                    DragDropEffects finalDropEffect = DragDrop.DoDragDrop(row, name, DragDropEffects.Move);
                 }
             }
         }
@@ -220,8 +221,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // this even is never fired
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
-            MessageBox.Show("HELL FUCKIN YA");
-            //ignoreList.Items.Add(e.Data.GetData(DataFormats.Text));
+            //MessageBox.Show("HELL FUCKIN YA");
+            ignoreList.Items.Add(e.Data.GetData(DataFormats.Text));
         }
         #endregion
 
