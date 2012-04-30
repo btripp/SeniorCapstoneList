@@ -107,7 +107,7 @@
             </CheckBox>
         </ToolBar>
         <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="commentLabel" FontSize="9"  BorderThickness="1" VerticalContentAlignment="Bottom" />
-        <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" ToolTip="Enter comment for check in" FontSize="9" Margin="4,4,4,4"/>
+        <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" ToolTip="Enter comment for check in" FontSize="9" Margin="4,4,4,4" AllowDrop="True" Drop="ignoreList_Drop"/>
         <!-- pending changes list old version -->
         <!--<ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList1" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" >
             <ListView.View>
@@ -251,6 +251,7 @@
             </StackPanel>
         </StackPanel>
         <ListView Name="ignoreList"
+                  AllowDrop="True"
                   Margin="0,4,4,4" 
                   Grid.Column="1" 
                   Grid.Row="2" 
@@ -261,10 +262,10 @@
                   ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   KeyDown="ignoreList_KeyDown" 
                   PreviewDrop="ignoreList_Drop" 
-                  Drop="ignoreList_Drop"
-                  DragEnter="DataGrid_CheckDropTarget" 
-                  AllowDrop="True" 
-                  />
+                  Drop="ignoreList_Drop"          
+                  DragEnter="DataGrid_CheckDropTarget" />
         
+
+
     </Grid>
 </UserControl>

@@ -158,15 +158,28 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             loadPendingChangesList();
         }
         // do we use onLoad or onInitialize?
+        /// <summary>
+        /// ran when the window is initialized. loads the last state of the ignore list
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MyToolWindow_Init(object sender, EventArgs e)
         {
             // this can be used to load the ignore list from the computer
             // it is only called once
             // we have to make sure that loading the list has nothing to do with tfs though, or it will crap out
             // from not having permission
+            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            //MessageBox.Show(path);
         }
+        /// <summary>
+        /// whenever the toolwindow is closed the list is saved to the computer for loading next time the list is initialized
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void toolWindow_unloaded(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show("unloaded");
             // this can be used to save the ignore list
             // this is called everytime the window is unloaded, if its tabbed and you close the tab for example
         }
@@ -179,13 +192,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 changeItem moving = (changeItem)pendingChangesList.SelectedItem;
                 string name = moving.fileName;
+                ListView testView = new ListView();
+                object test = new ListViewItem();
                 // DEBUG
                 //MessageBox.Show(moving.fileName);
                 object selectedItem = pendingChangesList.SelectedItem;
                 if (selectedItem != null)
                 {
                     DataGridRow container = (DataGridRow)pendingChangesList.ItemContainerGenerator.ContainerFromItem(selectedItem);
-                    DragDropEffects finalDropEffect = DragDrop.DoDragDrop(container, name, DragDropEffects.Move);
+                    DragDropEffects finalDropEffect = DragDrop.DoDragDrop(pendingChangesList, name, DragDropEffects.Move);
                 }
             }
         }
@@ -194,7 +209,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
             // im using this to add to the ignore list because i cant get drop to work
-            addToIgnoreList((string)e.Data.GetData(DataFormats.Text));
+            //addToIgnoreList((string)e.Data.GetData(DataFormats.Text));
             checkIgnoreList();
         }
         private void ignoreList_Drop(object sender, DragEventArgs e)
@@ -205,7 +220,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // this even is never fired
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
-            ignoreList.Items.Add(e.Data.GetData(DataFormats.Text));
+            MessageBox.Show("HELL FUCKIN YA");
+            //ignoreList.Items.Add(e.Data.GetData(DataFormats.Text));
         }
         #endregion
 
@@ -962,14 +978,23 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             if (ignoreList.Items.Count > 0)
             {
-                var result = MessageBox.Show("Do you want to save first?", "Unsaved List", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.No)
+                var result = MessageBox.Show("Do you want to save first?", "Unsaved List", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+                if (result == MessageBoxResult.Cancel)
                 {
-                    ignoreList.Items.Clear();
+                    ;//do nothing because they pushed cancel
                 }
                 else
                 {
-                    saveButton_Click(this, e);
+                    // if they pushed yes, save it
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        saveButton_Click(this, e);
+                    }
+                    // whether they pushed yes or no: restore previous states and clear the list
+                    foreach (string item in ignoreList.Items)
+                    {
+                        restorePreviousState(item);
+                    }
                     ignoreList.Items.Clear();
                 }
             }
@@ -1075,6 +1100,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
     #endregion
+
     }
     
         
