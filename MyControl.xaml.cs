@@ -674,7 +674,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     message += conflict.Message + "\n";
                     message += "------------\n";
                 }
-                MessageBox.Show(message);
+                MessageBox.Show(message,"Problem Checking In...",MessageBoxButton.OK,MessageBoxImage.Warning);
             }
             
             
