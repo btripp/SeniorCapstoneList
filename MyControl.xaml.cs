@@ -159,12 +159,37 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// <param name="e"></param>
         private void MyToolWindow_Init(object sender, EventArgs e)
         {
-            // this can be used to load the ignore list from the computer
-            // it is only called once
-            // we have to make sure that loading the list has nothing to do with tfs though, or it will crap out
-            // from not having permission
-            string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            //MessageBox.Show(path);
+            // this saves to users local app data
+            //C:\Users\user\AppData\Local\Microsoft\VisualStudio\10.0\Extensions\Augusta State University\SeniorCapstoneIgnoreList\1.0
+
+            string path;
+            path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            path+="\\IgnoreList.txt";
+            path = path.Replace("file:\\","");
+            try
+            {
+                if (System.IO.File.Exists(path))
+                {
+                    string[] ignoreListItems = System.IO.File.ReadAllLines(path);
+
+                    foreach (string s in ignoreListItems)
+                    {
+                        addToIgnoreList(s);
+                    }
+                    checkIgnoreList();
+                }
+                else
+                {
+                    System.IO.File.Create(path);
+                }
+                // DEBUG
+                //MessageBox.Show(path);
+            }
+            catch
+            {
+                //DEBUG
+
+            }
         }
         /// <summary>
         /// whenever the toolwindow is closed the list is saved to the computer for loading next time the list is initialized
@@ -173,9 +198,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// <param name="e"></param>
         private void toolWindow_unloaded(object sender, RoutedEventArgs e)
         {
-            //MessageBox.Show("unloaded");
-            // this can be used to save the ignore list
-            // this is called everytime the window is unloaded, if its tabbed and you close the tab for example
+            // TODO 
+            // tool window unloaded isnt a good event to call this. maybe everytime the listview is edited?
+            string path;
+            path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+            path+="\\IgnoreList.txt";
+            path = path.Replace("file:\\", "");
+            string[] ignoreListItems = new string[ignoreList.Items.Count];
+            ignoreList.Items.CopyTo(ignoreListItems, 0);
+            System.IO.File.WriteAllLines(path, ignoreListItems);
         }
         #region dragDrop Code
         private void myDataGrid_MouseMove(object sender, MouseEventArgs e)
@@ -184,18 +215,17 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // make a custom move cursor so the user knows he is moving something
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                changeItem moving = (changeItem)pendingChangesList.SelectedItem;
-                string name = moving.fileName;
-                ListView testView = new ListView();
-                object test = new ListViewItem();
-                // DEBUG
-                //MessageBox.Show(moving.fileName);
-                object selectedItem = pendingChangesList.SelectedItem;
-                DataGridRow row = (DataGridRow)pendingChangesList.ItemContainerGenerator.ContainerFromItem(selectedItem);
+                DataGrid grid = sender as DataGrid;
+                object selectedItem = grid.SelectedItem;
                 if (selectedItem != null)
                 {
-                    DataGridRow container = (DataGridRow)pendingChangesList.ItemContainerGenerator.ContainerFromItem(selectedItem);
-                    DragDropEffects finalDropEffect = DragDrop.DoDragDrop(row, name, DragDropEffects.Move);
+                    DataGridRow row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromItem(selectedItem);
+                    changeItem item = (changeItem)row.Item;
+                    DataObject dragData = new DataObject("changeItem", item);
+                    if (row != null)
+                    {
+                        DragDropEffects finalDropEffect = DragDrop.DoDragDrop(row, dragData, DragDropEffects.Move);
+                    }
                 }
             }
         }
@@ -204,8 +234,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
             // im using this to add to the ignore list because i cant get drop to work
-            //addToIgnoreList((string)e.Data.GetData(DataFormats.Text));
-            checkIgnoreList();
+            if (e.Data.GetDataPresent("changeItem"))
+            {
+                changeItem item = e.Data.GetData("changeItem") as changeItem;
+                addToIgnoreList(item.fileName);
+                checkIgnoreList();
+            }
         }
         private void ignoreList_Drop(object sender, DragEventArgs e)
         {
@@ -215,8 +249,12 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // this even is never fired
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
-            //MessageBox.Show("HELL FUCKIN YA");
-            ignoreList.Items.Add(e.Data.GetData(DataFormats.Text));
+            //if (e.Data.GetDataPresent("changeItem"))
+            //{
+            //    changeItem item = e.Data.GetData("changeItem") as changeItem;
+            //    addToIgnoreList(item.fileName);
+            //    checkIgnoreList();
+            //}
         }
         #endregion
 
@@ -1139,8 +1177,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     #endregion
 
     }
-    
-        
+
+
 
     public class changeItem : INotifyPropertyChanged
 
