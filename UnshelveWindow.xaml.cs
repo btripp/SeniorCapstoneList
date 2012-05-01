@@ -78,7 +78,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
-            unshelveSet();
+            if (MessageBox.Show("Unshelving will cause any local pending changes for files contained " +
+                            "in the shelveset to be undone.\nDo you wish to continue?", "Attention",
+                            MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                unshelveSet();
+            }
+            
         }
         private void unshelveSet()
         {
@@ -160,7 +166,9 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 {
                     if (!filteredSets.Contains(set.Name))
                     {
-                        MessageBox.Show(filteredSets.Contains(set.Name)+"\nadding " + set.Name);
+
+                        // DEBUG
+                        //MessageBox.Show(filteredSets.Contains(set.Name)+"\nadding " + set.Name);
                         shelveSetCollection.Add(set);
                         filteredSets.Add(set.Name);
                     }

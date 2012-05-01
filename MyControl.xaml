@@ -7,7 +7,7 @@
              
              mc:Ignorable="d" x:Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" d:DesignHeight="287" 
-             d:DesignWidth="807" MinHeight="150" MinWidth="600" GotFocus="MyToolWindow_Loaded" Initialized="MyToolWindow_Init" Unloaded="toolWindow_unloaded">
+             d:DesignWidth="807" MinHeight="150" MinWidth="600" GotFocus="MyToolWindow_Loaded" Initialized="MyToolWindow_Init" LostFocus="toolWindow_unloaded">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -111,6 +111,23 @@
 
         <DataGrid Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" 
           CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True" KeyDown="pendingChangesList_KeyDown" MouseMove="myDataGrid_MouseMove">
+            <DataGrid.Resources>
+                <ContextMenu  x:Key="RowMenu">
+                    <MenuItem Header="Ignore" Click="RowMenuClick" >
+                        <MenuItem.Icon>
+                            <Image Source="Resources/delete.ico" Width="15" Height="15"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+                <Style x:Key="DefaultRowStyle" TargetType="{x:Type DataGridRow}">
+                    <Setter Property="ContextMenu" Value="{StaticResource RowMenu}" />
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="ContextMenu" Value="{StaticResource RowMenu}"/>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>

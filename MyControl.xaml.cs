@@ -607,36 +607,51 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             // DEBUG
             //checkForConflicts();
-            // TODO 
-            // check for conflicts... i say just show that there are conflicts and they can deal with them on their own if
-            // VS or TFS does not have an easy way to do it automatically.
-            PendingChange[] arrayChanges = getSelectedChanges(changesCollection);
-            List<PendingChange> confirmChanges = new List<PendingChange>();
-
-            // checks to see if any item to be checked in is on the ignore list
-            foreach (PendingChange change in arrayChanges)
+            try
             {
-                // if it is on the ignore list, add file to a list for user prompt
-                if (isIgnored(change.FileName))
+                PendingChange[] arrayChanges = getSelectedChanges(changesCollection);
+                List<PendingChange> confirmChanges = new List<PendingChange>();
+                // checks to see if any item to be checked in is on the ignore list
+                foreach (PendingChange change in arrayChanges)
                 {
-                    confirmChanges.Add(change);
+                    // if it is on the ignore list, add file to a list for user prompt
+                    if (isIgnored(change.FileName))
+                    {
+                        confirmChanges.Add(change);
+                    }
                 }
-            }
-            //user prompt about checking in files that are ignored
-            string message = "The following files are on the ignore list:\n";
-            foreach (PendingChange change in confirmChanges)
-            {
-                message += change.FileName + "\n";
-            }
-            message += "\nAre you sure you want to check them in?";
-            // if there is a file the user has to confirm
-            if (confirmChanges.Count > 0)
-            {
-                if (MessageBox.Show(message, "Attention", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+                //user prompt about checking in files that are ignored
+                string message = "The following files are on the ignore list:\n";
+                foreach (PendingChange change in confirmChanges)
+                {
+                    message += change.FileName + "\n";
+                }
+                message += "\nAre you sure you want to check them in?";
+                // if there is a file the user has to confirm
+                if (confirmChanges.Count > 0)
+                {
+                    if (MessageBox.Show(message, "Attention", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No) == MessageBoxResult.Yes)
+                    {
+                        if (arrayChanges.Count() > 0)
+                        {
+
+                            activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
+                            MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+                            updatePendingChangesList();
+                        }
+                        else
+                        {
+                            MessageBox.Show("0 Files checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        commentBox.Clear();
+                    }
+                    confirmChanges.Clear();
+                }
+                // nothing the user has to confirm so go ahead
+                else
                 {
                     if (arrayChanges.Count() > 0)
                     {
-                        
                         activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
                         MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
                         updatePendingChangesList();
@@ -647,25 +662,21 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     }
                     commentBox.Clear();
                 }
-                confirmChanges.Clear();
             }
-            // nothing the user has to confirm so go ahead
-            else
+            catch (Microsoft.TeamFoundation.VersionControl.Client.CheckinException err)
             {
-                if (arrayChanges.Count() > 0)
+                
+                CheckinConflict[] conflicts = err.Conflicts;
+                string message = "Could not complete Check In\nPlease resolve the following issues:\n";
+                foreach (CheckinConflict conflict in conflicts)
                 {
-                    activeWorkspace.CheckIn(arrayChanges, commentBox.Text);
-                    MessageBox.Show(arrayChanges.Count() + " File(s) checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
-                    updatePendingChangesList();
+                    message += "------------\n";
+                    message += conflict.Message + "\n";
+                    message += "------------\n";
                 }
-                else
-                {
-                    MessageBox.Show("0 Files checked in.", "Files Checked in...", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                commentBox.Clear();
+                MessageBox.Show(message);
             }
-            // TODO 
-            // once this is checked in... VS spits out the output in a window. do we want to do that? do we need to do that?
+            
             
         }
         /// <summary>
@@ -871,6 +882,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 commentLabel.Visibility = Visibility.Visible;
             }
         }
+        private void RowMenuClick(object sender, RoutedEventArgs e)
+        {
+            ignore_Click(sender, e);
+        }
     #endregion
 
     #region ignore list section
@@ -1022,7 +1037,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             
         }
         /// <summary>
-        /// the method that is called whenever an item is added to the ignorelist
+        /// this method that is called whenever an item is added to the ignorelist
         /// </summary>
         /// <param name="fileName"></param>
         public void addToIgnoreList(string fileName)
@@ -1162,7 +1177,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // TODO
             // im going to tackle this when the problem comes up... i think you have to unshelve the shelveset from the workspace that
             // shelved it or do you unshelve it in your activeworkspace?
-            MessageBox.Show("About to unshelve:\n" + unshelvewindow.selectedSet.Name + "," + unshelvewindow.selectedSet.OwnerName);
+            // MessageBox.Show("About to unshelve:\n" + unshelvewindow.selectedSet.Name + "," + unshelvewindow.selectedSet.OwnerName);
             try
             {
                 activeWorkspace.Unshelve(unshelvewindow.selectedSet.Name, unshelvewindow.selectedSet.OwnerName);
@@ -1175,6 +1190,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
     #endregion
+
+        
+
+        
 
     }
 
