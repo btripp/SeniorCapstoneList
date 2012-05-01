@@ -107,41 +107,11 @@
             </CheckBox>
         </ToolBar>
         <Label Grid.Column="0" Grid.Row="1" Content="Comment:" Name="commentLabel" FontSize="9"  BorderThickness="1" VerticalContentAlignment="Bottom" />
-        <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" ToolTip="Enter comment for check in" FontSize="9" Margin="4,4,4,4" AllowDrop="True" Drop="ignoreList_Drop"/>
-        <!-- pending changes list old version -->
-        <!--<ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList1" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" >
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn Width="Auto" Header="Name">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <CheckBox IsChecked="{Binding Path=selected, Mode=TwoWay}" Checked="toggleSelected" Unchecked="toggleSelected" Style="{x:Null}" Content="{Binding Path=fileName}" Width="Auto"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Width="Auto" Header="Change">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=changeType}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                    <GridViewColumn Header="Folder">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=folder}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-                </GridView>
-            </ListView.View>            
-        </ListView>-->
+        <TextBox Grid.Row="2" Grid.Column="0" Height="56" Name="commentBox" ToolTip="Enter comment for check in" FontSize="9" Margin="4,4,4,4" AllowDrop="True" Drop="ignoreList_Drop" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap" AcceptsReturn="True" />
 
         <DataGrid Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ToolTip="Pending Changes" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" AutoGenerateColumns="False" CanUserReorderColumns="True" CanUserResizeColumns="True" 
           CanUserResizeRows="False" CanUserSortColumns="True" GridLinesVisibility="None" Background="White" IsReadOnly="True" KeyDown="pendingChangesList_KeyDown" MouseMove="myDataGrid_MouseMove">
             <DataGrid.Columns>
-                <!--<DataGridCheckBoxColumn Width="Auto" Binding="{Binding selected,UpdateSourceTrigger=PropertyChanged}" />-->
-                
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -154,28 +124,6 @@
                 <DataGridTextColumn Header="Folder" Binding="{Binding Path=folder}" />
             </DataGrid.Columns>
         </DataGrid>
-        
-        <!-- pending changes new way 
-        <ListView Margin="4,0,4,4" Grid.Column="0" Grid.Row="3" ItemsSource="{Binding Path=changesCollection}" Name="pendingChangesList" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="5"/>
-                                <ColumnDefinition Width="200"/>
-                                <ColumnDefinition Width="50"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <CheckBox IsChecked="{Binding Path=selected}" Grid.Column="0"/>
-                            <TextBlock Text="{Binding Path=fileName}" Grid.Column="1"/>
-                            <TextBlock Text="{Binding Path=changeType}" Grid.Column="2"/>
-                            <TextBlock Text="{Binding Path=folder}" Grid.Column="3"/>
-                        </Grid>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>-->
         
         <ToolBar Name="ignoreListToolbar" Grid.Column="1" Grid.Row="0" Background="#FFBCC7D8">
             <Button ToolTip="New Ignore List" Name="newButton" Click="newButton_Click">
@@ -264,8 +212,5 @@
                   PreviewDrop="ignoreList_Drop" 
                   Drop="ignoreList_Drop"          
                   DragEnter="DataGrid_CheckDropTarget" />
-        
-
-
     </Grid>
 </UserControl>
