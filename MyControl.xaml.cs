@@ -21,11 +21,6 @@ using Microsoft.TeamFoundation.VersionControl.Common;
 using System.Text.RegularExpressions;
 using System.IO;
 
-// TODO
-// what if someone calls undo pending changes or checks in stuff from a different window?
-// maybe the refresh button we have shouldnt just loadpendingchanges list again but do its own
-// method that really refreshes everything.. clears all the lists and querys the pending changes again?
-// or maybe loadpendingchanges can be tweaked to allow for that functionality.
 
 namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 {
@@ -36,7 +31,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             InitializeComponent();
             this.DataContext = this;
-            // something about this makes me nervous
             mc = this;
             shelvewindow = new ShelveWindow();
             unshelvewindow = new UnshelveWindow();
