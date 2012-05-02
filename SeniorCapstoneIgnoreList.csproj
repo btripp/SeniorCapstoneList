@@ -126,6 +126,7 @@
     <Resource Include="images\Folder.png" />
     <Resource Include="images\shelve.png" />
     <Resource Include="images\unshelve.png" />
+    <Resource Include="images\Ignore.png" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>

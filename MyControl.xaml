@@ -7,7 +7,7 @@
              
              mc:Ignorable="d" x:Name="MyToolWindow"
              Background="{DynamicResource {x:Static vsfx:VsBrushes.ToolWindowBackgroundKey}}" d:DesignHeight="287" 
-             d:DesignWidth="807" MinHeight="150" MinWidth="600" GotFocus="MyToolWindow_Loaded" Initialized="MyToolWindow_Init" LostFocus="toolWindow_unloaded">
+             d:DesignWidth="807" MinHeight="150" MinWidth="600" Initialized="MyToolWindow_Init" LostFocus="toolWindow_unloaded" Loaded="MyToolWindow_Loaded">
     
     <Grid>
         <Grid.RowDefinitions>
@@ -64,8 +64,8 @@
                     </Image.Source>
                 </Image>
             </CheckBox>
-            <Button Name="folderView">f</Button>
-            <Button Name="lView">l</Button>
+            <!--<Button Name="folderView">f</Button>-->
+            <!--<Button Name="lView">l</Button>-->
             <Separator Background="Black"/>
             <Button Name="compare">
                 <Image Width="16" Height="15">
@@ -97,7 +97,7 @@
                 </Image>
             </Button>
             <Separator Background="Black"/>
-            <Button Name="filterBySolution">f</Button>
+            <!--<Button Name="filterBySolution">f</Button>-->
             <Separator/>
             <Label FontSize="9">Workspace:</Label>
             <ComboBox Name="workSpaces" ToolTip="Current Workspace" SelectionChanged="changeWorkspace">
@@ -115,7 +115,7 @@
                 <ContextMenu  x:Key="RowMenu">
                     <MenuItem Header="Ignore" Click="RowMenuClick" >
                         <MenuItem.Icon>
-                            <Image Source="Resources/delete.ico" Width="15" Height="15"/>
+                            <Image Source="images/ignore.png" Width="15" Height="15"/>
                         </MenuItem.Icon>
                     </MenuItem>
                 </ContextMenu>

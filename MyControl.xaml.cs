@@ -79,22 +79,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     #region Tool window functions
         public static void RegisterEventHandlers(VersionControlServer versionControl)
         {
-            // DEBUG 
-            //MessageBox.Show("registering event handlers");
-
             //this updates pendingchanges
             versionControl.OperationFinished += afterUpdate;
         }
         public static void afterUpdate(Object sender, OperationEventArgs e)
         {
-            // something about this makes me nervous
             mc.loadPendingChangesList();
         }
         public void MyToolWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // DEBUG
-            //MessageBox.Show("it got into the load");
-
             List<RegisteredProjectCollection> projectCollections;
 
             // get all registered project collections (previously connected to from Team Explorer)
@@ -106,8 +99,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 where collection.Offline == false
                 select collection;
 
-            // DEBUG
-            //MessageBox.Show(onlineCollections.Count().ToString());
 
             // fail if there are no registered collections that are currently on-line
             if (onlineCollections.Count() < 1)
@@ -116,24 +107,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 Environment.Exit(1);
             }
             // find a project collection with at least one team project
-            // is it going to act differently if there is more than one online collection?
             foreach (var registeredProjectCollection in onlineCollections)
             {
                 var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection, new UICredentialsProvider());
                 
                 // this is will throw out the credential window if you are not authenticated
-                // TODO
-                // is there some way to pass default credentials?
-                // i think the best way to get around this would be to have stuff configured
-                //correctly on tfs... so having the user entercredentials is good. if they are 
-                // setup correctly they wont have to
                 projectCollection.EnsureAuthenticated();
                 
                 try
                 {
-                    // DEBUG
-                    //MessageBox.Show("finding workspaces");
-
                     var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
                     var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
                     //if there are no team projects in this collection, skip it
@@ -151,7 +133,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             loadPendingChangesList();
         }
-        // do we use onLoad or onInitialize?
         /// <summary>
         /// ran when the window is initialized. loads the last state of the ignore list
         /// </summary>
@@ -182,24 +163,19 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 {
                     System.IO.File.Create(path);
                 }
-                // DEBUG
-                //MessageBox.Show(path);
             }
             catch
             {
-                //DEBUG
-
+                MessageBox.Show("Error with loading the ignore list from:\n" + path);
             }
         }
         /// <summary>
-        /// whenever the toolwindow is closed the list is saved to the computer for loading next time the list is initialized
+        /// whenever the toolwindow loses focus the list is saved to the computer for loading next time the list is initialized
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void toolWindow_unloaded(object sender, RoutedEventArgs e)
         {
-            // TODO 
-            // tool window unloaded isnt a good event to call this. maybe everytime the listview is edited?
             string path;
             path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
             path+="\\IgnoreList.txt";
@@ -1191,13 +1167,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
     #endregion
 
-        
-
-        
-
     }
-
-
 
     public class changeItem : INotifyPropertyChanged
 
@@ -1271,169 +1241,3 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         }
     }
 }
-#region commented out stuff
-//=============================================================================================================
-//this was commented out from ---  private void ignoreListAddButton_Click(object sender, RoutedEventArgs e)
-/* 
- * public static PendingChange[] GetPendingChangesInTheWorkspace(string workspaceName, string userName, string compName)
-{
-var tfs = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(new Uri(ConfigurationManager.AppSettings["TfsUri"]));
-var service = tfs.GetService<VersionControlServer>();
-
-Workspace workspace = service.QueryWorkspaces(string.IsNullOrEmpty(workspaceName) ? null : workspaceName, 
-                                                string.IsNullOrEmpty(userName) ? null : userName, 
-                                                string.IsNullOrEmpty(compName) ? null : compName).First();
-
-var pendingchanges = workspace.GetPendingChanges();
-
-return pendingchanges;
-}*/
-//var tfs = 
-
-//if (ignoreListTextBox.Text != "")
-//{
-//    string file;
-//    ignoreList.Items.Add(ignoreListTextBox.Text);
-//    file = ignoreListTextBox.Text;
-//    ignoreListTextBox.Clear();
-//    MessageBox.Show("\"" + file + "\"" + " was added to the ignore list", "File Added");
-//}
-//else
-//{
-//    MessageBox.Show("You must enter something in the textbox.", "Nothing Added");
-//}
-//=============================================================================================================
-// this was taken from the checkin method
-// TODO is there someway to abstract this part where you drill down to online collections and then go through each registered collection?
-// im not sure how all the collections and stuff work? can you have multiple collections in one workspace? 
-// i think a workspace is just the specific computer/username that you are using
-//var onlineCollections =
-//    from collection in this.projects
-//    where collection.Offline == false
-//    select collection;
-//if (onlineCollections.Count() < 1)
-//{
-//    Console.Error.WriteLine("Error: There are no on-line registered project collections");
-//    Environment.Exit(1);
-//}
-//List<PendingChange> myChanges = new List<PendingChange>();
-//foreach (var registeredProjectCollection in onlineCollections)
-//{
-//    var projectCollection =
-//        TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
-//    try
-//    {
-//        var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
-
-//        // the following code gets the workspace based on the workspace dropwdown
-
-//        Workspace workSpace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
-//        PendingChange[] pendingChanges = workSpace.GetPendingChanges();
-//        foreach (PendingChange pendingChange in pendingChanges)
-//        {
-//            if (!this.ignoreList.Items.Contains(pendingChange.FileName))
-//            {
-//                myChanges.Add(pendingChange);
-//            }
-//        }
-//        PendingChange[] arrayChanges = myChanges.ToArray();
-//        // DEBUG
-//        string message = "These are the files that are to be checked in: \n";
-//        foreach (PendingChange change in arrayChanges)
-//        {
-//            message += change.FileName + "\n";
-//        }
-//        MessageBox.Show(message);
-//        workSpace.GetPendingChanges();
-//        workSpace.CheckIn(arrayChanges, "");
-
-//    }
-//    finally { }
-//    break;
-//}
-//=========================================================================
-// from checkin_click
-
-// commenting this out because when i check in i am now just going to see which items are checked for checkin
-// adding to the ignore list and other methods are going to make sure that nothing in the ignore list is checked
-// in the pending changes list
-
-
-//bool found;
-//string[] ignoreListArray = new string[ignoreList.Items.Count];
-//ignoreList.Items.CopyTo(ignoreListArray,0);
-//var filters = from f in ignoreListArray
-//              where f.Contains("*")
-//              select f;
-////build changes to be checked in.
-//foreach (PendingChange pendingChange in pendingChanges)
-//{
-//    found = false;
-//    if (filters.Count() > 0)
-//    {
-//        foreach (var filter in filters)
-//        {
-//            Wildcard wildcard = new Wildcard(filter, RegexOptions.IgnoreCase);
-
-//            // found in the filter so false
-//            if (wildcard.IsMatch(pendingChange.FileName))
-//            {
-//                found = true;
-
-//                break;
-//            }
-//        }
-//        if (found == false)
-//        {
-//            if (ignoreListArray.Contains(pendingChange.FileName,StringComparer.OrdinalIgnoreCase) == false)
-//            {
-//                //add if not already added
-//                if (myChanges.Contains(pendingChange) == false)
-//                {
-//                    myChanges.Add(pendingChange);
-//                }
-//            }
-//        }
-//    }
-//    else
-//    {
-//        if (ignoreListArray.Contains(pendingChange.FileName, StringComparer.OrdinalIgnoreCase) == false)
-//        {
-//            //add if not already added
-//            if (myChanges.Contains(pendingChange) == false)
-//            {
-//                myChanges.Add(pendingChange);
-//            }
-//        }
-//    }
-//}
-
-// rather than look through the pending changes we are looking through the observable collection for change items selected to be checked in
-//foreach (PendingChange change in arrayChanges)
-//{
-//    message += change.FileName + "\n";
-//    // TODO this is going to be change once i change it to checking in all the checked items. 
-//    removeFromCollection.Add(change.FileName);
-//}
-//=====================================================================================
-// from check  in
-//List<PendingChange> myChanges = new List<PendingChange>();
-
-//// DEBUG
-//string message = "These are the files that are to be checked in: \n";
-
-//foreach (changeItem item in changesCollection)
-//{
-//    // DEBUG
-//    //MessageBox.Show(item.selected.ToString());
-//    if (item.selected)
-//    {
-//        message += item.fileName + "\n";
-//        myChanges.Add(item.change);
-//        removeFromCollection.Add(item.fileName);
-//    }
-//}
-
-//MessageBox.Show(message);
-//============================================================================================
-#endregion
