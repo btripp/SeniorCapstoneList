@@ -28,8 +28,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public ShelveWindow(ObservableCollection<changeItem> changeCollection, Workspace activeWorkspace)
         {
             InitializeComponent();
-            // this is what makes sure the data bindings are pointing to this class... so i can do path=shelveCollection
-            // TODO can i just have this point to the control so i dont have to pass the collection? or would we rather pass it. 
             this.DataContext = this;
             shelveCollection = changeCollection;
             this.activeWorkspace = activeWorkspace;

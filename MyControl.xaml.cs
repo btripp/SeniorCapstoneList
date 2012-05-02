@@ -391,8 +391,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             foreach (PendingChange pendingChange in pendingChanges)
             {
-                // i have this next thing there to make sure that you dont add the same file twice if we keep this
-                // onload
+                // make sure you dont add the same item twice
                 if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName)) 
                 {
                     // this checks the list of changes to see if it needs to be added to the collection or not
@@ -418,10 +417,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public void updatePendingChangesList()
         {
             foreach (string remove in removeFromCollection)
-            {
-                // starting at the back because im not sure how remove works ( do all elements shift down or is it just a logical remove?) 
-                // so by starting at the end it works the same and you dont have to worry about shifting elements. 
-                // there might be an easier way to do it but i just wanted to get it done. 
+            { 
                 for (int i = changesCollection.Count-1; i >= 0; i--)
                 {
                     if(changesCollection[i].fileName.Equals(remove))
@@ -449,8 +445,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
             foreach (changeItem item in collection)
             {
-                // DEBUG
-                //MessageBox.Show(item.selected.ToString());
                 if (item.selected)
                 {
                     myChanges.Add(item.change);
@@ -465,11 +459,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// </summary>
         private void checkForConflicts()
         {
-            // DONT WORK
-            // TODO in order to go anywhere we this we need to be able to get those first 2 strings
-            // first one is local path, second is serverpath 
-            // I am worried about this. if we get the working folders thats great. but is it going to check it all back in? 
-            // i just dont know enough about it yet
+            // this is currently not being used
+            // implementing this will allow for merging and launching of a diff tool through the ignore list tool window
             WorkingFolder[] Folders = activeWorkspace.Folders;
             GetStatus status = activeWorkspace.Merge(Folders[1].LocalItem,
                         Folders[1].ServerItem,
@@ -569,7 +560,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// <param name="e"></param>
         private void checkin_Click(object sender, RoutedEventArgs e)
         {
-            // DEBUG
             //checkForConflicts();
             try
             {
@@ -627,7 +617,8 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                     commentBox.Clear();
                 }
             }
-            catch (Microsoft.TeamFoundation.VersionControl.Client.CheckinException err)
+            // there is a conflict of some kind and could not checkin
+            catch (CheckinException err)
             {
                 
                 CheckinConflict[] conflicts = err.Conflicts;
@@ -670,24 +661,19 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 message += item.fileName + "\n";
             }
             message += ".";
-            // DEBUG
-            // MessageBox.Show(message);
 
             // pass the shelve window the collection of pending changes so they can select what to shelve
             shelvewindow = new ShelveWindow(changesCollection, activeWorkspace);
             shelvewindow.ShowDialog();
             if (shelvewindow.DialogResult.HasValue && shelvewindow.DialogResult.Value)
             {
-                // Debug
-                //MessageBox.Show("User clicked OK");
                 shelveCollection = shelvewindow.shelveCollection;
                 // error checking is done in the shelvewindow
                 Shelve();
             }
             else
             {
-                // Debug
-                //MessageBox.Show("User clicked Cancel");
+                // user pushed cancel
             }
         }
         /// <summary>
@@ -697,8 +683,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// <param name="e"></param>
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
-            // TODO
-            // im not 100% this is how unshelve is supposed to work
 
             // this is to clear the collection each time you re-open the unshelve window. 
             shelveSetCollection.Clear();
@@ -716,14 +700,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             unshelvewindow.ShowDialog();
             if (unshelvewindow.DialogResult.HasValue && unshelvewindow.DialogResult.Value)
             {
-                // Debug
-                //MessageBox.Show("User clicked OK");
                 Unshelve();
             }
             else
             {
-                // Debug
-                //MessageBox.Show("User clicked Cancel");
+                //user clicked cancel
             }
         }
         /// <summary>
@@ -733,44 +714,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// <param name="e"></param>
         private void changeWorkspace(object sender, SelectionChangedEventArgs e)
         {
-            // TODO
-            // not exactly sure how workspaces and versioncontrolservers work... 
-            #region not sure if we need
-            //// TODO abstract this so its not so messy
-            //var onlineCollections =
-            //    from collection in projects
-            //    where collection.Offline == false
-            //    select collection;
-            //// fail if there are no registered collections that are currently on-line
-            //if (onlineCollections.Count() < 1)
-            //{
-            //    Console.Error.WriteLine("Error: There are no on-line registered project collections");
-            //    Environment.Exit(1);
-            //}
-            //// find a project collection with at least one team project
-            //// is it going to act differently if there is more than one online collection?
-            //// TODO is there ever going to be more than one project collection? if there is. i dont think that my way of finding the current workspace would work
-            //// or maybe it would work but we dont need to have a version control for each registered project collection... if we dont need to foreach through this
-            //// then we could have versioncontrol be a property as well.. if versioncontrol was a property we could switch between workspace much easier
-            //foreach (var registeredProjectCollection in onlineCollections)
-            //{
-            //    var projectCollection = TfsTeamProjectCollectionFactory.GetTeamProjectCollection(registeredProjectCollection);
-            //    try
-            //    {
-            //        var versionControl = (VersionControlServer)projectCollection.GetService(typeof(VersionControlServer));
-            //        var teamProjects = new List<TeamProject>(versionControl.GetAllTeamProjects(false));
-            //        //if there are no team projects in this collection, skip it
-            //        if (teamProjects.Count < 1) continue;
-            //        // ----------------> all of that was just to get at this versioncontrol in order to get the workspace with the dropdowns selected items name
-                    
-            //        Workspace workspace = versionControl.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
-            //        activeWorkspace = workspace;
-            //    }
-            //    finally { }
-            //    break;
-            //}
-            #endregion
-
             // this gets the versioncontrolserver from the activeworkspace and then finds the selected workspace based on the name
             // from the workspace dropdown
             activeWorkspace = activeWorkspace.VersionControlServer.GetWorkspace(workSpaces.SelectedItem.ToString(), System.Environment.UserName);
@@ -784,15 +727,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         /// <param name="name"></param>
         private void restorePreviousState(string name)
         {
-            // DEBUG
-            //MessageBox.Show("You removed " + name);
             // if its a wildcard then match with contains.
             if (name.Contains("*"))
             {
                 // strips out the *
                 name = name.Replace("*", "");
-                // DEBUG
-                //MessageBox.Show("matching wildcard :"+name);
                 
                 foreach (changeItem item in changesCollection)
                 {
@@ -805,8 +744,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             // its not a wildcard so just match the name
             else
             {
-                // DEBUG
-                //MessageBox.Show("matching just the name");
                 foreach (changeItem item in changesCollection)
                 {
                     if (item.fileName.ToLower().Equals(name.ToLower()))
@@ -1106,7 +1043,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
     #region shelve/unshelve window
         private void Shelve()
         {
-            //need to add exception if the name already exists
             Shelveset shelveset = new Shelveset(activeWorkspace.VersionControlServer, shelvewindow.shelvesetName.Text, activeWorkspace.OwnerName);
             shelveset.Comment = shelvewindow.comment.Text;
             PendingChange[] toShelve = getSelectedChanges(shelveCollection);
@@ -1120,32 +1056,15 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
             // removes all the pendingchanges tht are in removefromcollection
             updatePendingChangesList();
-            // DEBUG
-            //string message = "This is what would have been shelved...\n";
-            //foreach (PendingChange change in getSelectedChanges(shelveCollection))
-            //{
-            //    message += change.FileName + "\n";
-            //}
-            //message += ".";
-            //MessageBox.Show(message);
         }
         private void Unshelve()
         {
-            // TODO 
-            // if you try to unshelve something that you dont have as a pending change already this is fine... but if you try to unshelve
-            // a file that you have checked out already (that is, its already in your pending changes list) this will crash out
-            // what im going to do to fix it is undo all pending changes 
-            // this might not be the best way to do this but i imagine it will work for now. 
+            //undo any local pending changes for the files you are going to unshelve
             activeWorkspace.Undo(unshelvewindow.changes);
 
-            // TODO
-            // im going to tackle this when the problem comes up... i think you have to unshelve the shelveset from the workspace that
-            // shelved it or do you unshelve it in your activeworkspace?
-            // MessageBox.Show("About to unshelve:\n" + unshelvewindow.selectedSet.Name + "," + unshelvewindow.selectedSet.OwnerName);
             try
             {
                 activeWorkspace.Unshelve(unshelvewindow.selectedSet.Name, unshelvewindow.selectedSet.OwnerName);
-                // put this here becuase i want to make sure the pending changes list is updated... maybe there is a better way?
                 loadPendingChangesList();
             }
             catch (Microsoft.TeamFoundation.VersionControl.Client.UnshelveException err)

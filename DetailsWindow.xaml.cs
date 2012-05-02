@@ -30,8 +30,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             InitializeComponent();
             this.DataContext = this;
             shelveSet = selectedShelveSet;
-            // strange way of finding the pendingsets for the selected shelve set in order to get its pending changes
-            // there is always one pendingset because we query for the specific shelveset
             PendingSet[] pendingSets = selectedShelveSet.VersionControlServer.QueryShelvedChanges(selectedShelveSet);
             PendingChange[] pendingChanges = pendingSets[0].PendingChanges;
             foreach (PendingChange change in pendingChanges)
@@ -54,9 +52,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private Shelveset _shelveSet;
         private ObservableCollection<changeItem> _shelvedChanges = new ObservableCollection<changeItem>();
     #endregion
-        
-        
-
         private void unshelve_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
@@ -69,7 +64,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
         public bool anyChecked()
         {
-            // TODO where is this used?
             bool returnValue = false;
             foreach (var item in shelvedChanges)
             {

@@ -30,7 +30,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         {
             InitializeComponent();
             this.DataContext = this;
-            // TODO i dont want to do it this way... but this splits the Workspace\owner and returns just the owner name
             this.activeWorkspace = activeWorkspace;
             string owner = this.activeWorkspace.OwnerName.Split('\\')[1];
             Owner.Text = owner;
@@ -146,37 +145,18 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //clears the shelveset list
             shelveSetCollection.Clear();
             filteredSets.Clear();
-            // TODO 
-            // not sure exactly how the unshelve works
-            // are you supposed to be able to unshelve from someone elses workspace? 
-            // are shelved set available to all workspace already?
             foreach (Shelveset set in allShelveSets)
             {
-                // DEBUG
-                //string message = "";
-                //foreach (String item in filteredSets)
-                //{
-                //    message += item+"\n";
-                //}
-                //MessageBox.Show(message);
                 string setOwner = set.OwnerName.Split('\\')[1];
-                // DEBUG
-                //MessageBox.Show(setOwner);
                 if (setOwner.ToLower().Equals(Owner.Text.ToLower()))
                 {
                     if (!filteredSets.Contains(set.Name))
                     {
-
-                        // DEBUG
-                        //MessageBox.Show(filteredSets.Contains(set.Name)+"\nadding " + set.Name);
                         shelveSetCollection.Add(set);
                         filteredSets.Add(set.Name);
                     }
                 }
             }
         }
-
-
-        
     }
 }

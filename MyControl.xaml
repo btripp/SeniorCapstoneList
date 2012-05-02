@@ -71,27 +71,27 @@
             <!--<Button Name="folderView">f</Button>-->
             <!--<Button Name="lView">l</Button>-->
             <Separator Background="Black"/>
-            <Button Name="compare">
+            <!--<Button Name="compare" IsEnabled="False">
                 <Image Width="16" Height="15">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Compare.png" SourceRect="27,35,16,15"/>
                     </Image.Source>
                 </Image>
             </Button>
-            <Button Name="viewFile">
+            <Button Name="viewFile" IsEnabled="False">
                 <Image Width="16" Height="15">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Folder.png" SourceRect="1,6,29,20"/>
                     </Image.Source>
                 </Image>
             </Button>
-            <Button Name="undo">
+            <Button Name="undo" IsEnabled="False">
                 <Image Width="13" Height="13">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Undo_Redo.png" SourceRect="87,6,13,13"/>
                     </Image.Source>
                 </Image>
-            </Button>
+            </Button>-->
             <Separator Background="Black"/>
             <Button Name="refresh" Click="refresh_click">
                 <Image Width="13" Height="15">
