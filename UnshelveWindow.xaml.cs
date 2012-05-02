@@ -133,6 +133,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private void updateWindow()
         {
             shelveSetCollection.Remove(selectedSet);
+            allShelveSets.Remove(selectedSet);
         }
 
         private void findButton_Click(object sender, RoutedEventArgs e)

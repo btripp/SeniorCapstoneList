@@ -64,6 +64,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         public Workspace[] allWorkSpaces { get; set; }
         // collection of shelvesets that is passed to the unshelve window
         public ObservableCollection<Shelveset> shelveSetCollection { get { return _shelveSetCollection; } set { _shelveSetCollection = value; } }
+        public List<string> listOfShelveSets { get { return _listOfShelveSets; } set { _listOfShelveSets = value; } }
     #endregion
 
     #region Private Vars
@@ -73,6 +74,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private ObservableCollection<changeItem> _changesCollection = new ObservableCollection<changeItem>();
         private ObservableCollection<changeItem> _shelveCollection = new ObservableCollection<changeItem>();
         private ObservableCollection<Shelveset> _shelveSetCollection = new ObservableCollection<Shelveset>();
+        private List<string> _listOfShelveSets = new List<string>();
     #endregion
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1300:SpecifyMessageBoxOptions")]
@@ -693,7 +695,11 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 Shelveset[] shelveSets = workspace.VersionControlServer.QueryShelvesets(null, null);
                 foreach (Shelveset set in shelveSets)
                 {
-                    shelveSetCollection.Add(set);
+                    if (!listOfShelveSets.Contains(set.Name))
+                    {
+                        listOfShelveSets.Add(set.Name);
+                        shelveSetCollection.Add(set);
+                    }
                 }
             }
             unshelvewindow = new UnshelveWindow(shelveSetCollection, activeWorkspace);
