@@ -21,11 +21,11 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <ToolBar Grid.Row="0" Grid.Column="0" Name="toolBar1" FontSize="9" Background="#FFBCC7D8">
-            <Button Name="button1" ToolTip="Check In Files" Click="checkin_Click">
+            <Button Name="button1" ToolTip="Check In Files" Click="checkin_Click" Focusable="False">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="19" Height="20" Source="/SeniorCapstoneIgnoreList;component/images/Checkin.png">
                     </Image>
-                    <TextBlock>Checkin</TextBlock>
+                    <TextBlock Focusable="False">Checkin</TextBlock>
                 </StackPanel>
             </Button>
             <Separator Background="Black" />
