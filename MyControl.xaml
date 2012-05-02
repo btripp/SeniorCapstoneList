@@ -30,7 +30,11 @@
             </Button>
             <Separator Background="Black" />
             <Button Name="button3" ToolTip="Ignore Selected File" Click="ignore_Click">
-                Ignore
+                <StackPanel Orientation="Horizontal">
+                    <Image Width="16" Height="16" Source="/SeniorCapstoneIgnoreList;component/images/Ignore.png">
+                    </Image>
+                    <TextBlock>Ignore</TextBlock>
+                </StackPanel>
                 <Button.Style>
                     <Style>
                         <Style.Triggers>

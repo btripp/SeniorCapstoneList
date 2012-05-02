@@ -188,7 +188,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
         private void myDataGrid_MouseMove(object sender, MouseEventArgs e)
         {
             // TODO 
-            // make a custom move cursor so the user knows he is moving something
+            // implement a custom move cursor
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 DataGrid grid = sender as DataGrid;
@@ -222,7 +222,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             //DOESNT WORK
             // i dont know why i couldnt get this to work.
             // is it because im trying to drop something that the list doenst like?
-            // this even is never fired
+            // this event is never fired
             e.Effects = DragDropEffects.Move;
             e.Handled = true;
             //if (e.Data.GetDataPresent("changeItem"))
@@ -253,8 +253,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             PendingChange[] pendingChanges = activeWorkspace.GetPendingChanges();
             foreach (PendingChange pendingChange in pendingChanges)
             {
-                // i have this next thing there to make sure that you dont add the same file twice if we keep this
-                // onload
+                // ensures the same things isnt added twice
                 if (!mc.pendingChangesList.Items.Contains(pendingChange.FileName))
                 {
                     // this checks the list of changes to see if it needs to be added to the collection or not
@@ -266,13 +265,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                 }
 
                 checkIgnoreList();
-                string message = "";
-                foreach (changeItem item in changesCollection)
-                {
-                    message += (item.fileName) + "\n";
-                }
-                // DEBUG - this shows what the collection contains that the list is bound to
-                //MessageBox.Show(message);
             }
         }
         /// <summary>
@@ -334,8 +326,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             {
                 foreach (changeItem item in changesCollection)
                 {
-                // DEBUG
-                //MessageBox.Show("BEFORE\nselected = " + item.selected + "\nPreviousState = " + item.previousState);
                     found = false;
                     if (filters.Count() > 0)
                     {
@@ -365,13 +355,13 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                                 ;
                             }
                             else
-                        {
-                            if (item.selected == true)
                             {
-                                item.selected = false;
-                                item.previousState = true;
+                                if (item.selected == true)
+                                {
+                                    item.selected = false;
+                                    item.previousState = true;
+                                }
                             }
-                        }
                         }
                     }
                     else
@@ -382,16 +372,14 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
                             ;
                         }
                         else
-                    {
-                        if (item.selected == true)
                         {
-                            item.selected = false;
-                            item.previousState = true;
+                            if (item.selected == true)
+                            {
+                                item.selected = false;
+                                item.previousState = true;
+                            }
                         }
                     }
-                    }
-                // DEBUG
-                //MessageBox.Show("selected = " + item.selected + "\nPreviousState = " + item.previousState);
                 }
             }
         }
