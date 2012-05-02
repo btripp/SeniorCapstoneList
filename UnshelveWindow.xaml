@@ -13,7 +13,7 @@
             <StackPanel Orientation="Vertical" Width="Auto" Height="Auto">
                 <Label Content="Owner _name:" Height="28" Name="label1" />
                 <StackPanel Orientation="Horizontal" Width="Auto">
-                    <TextBox Height="23" Name="Owner" Width="Auto"/>
+                    <TextBox Height="23" Name="Owner" Width="378"/>
                     <Button Margin="4,0,4,0"  Content="Find" Height="23" Name="findButton" Width="75" Click="findButton_Click" />
                 </StackPanel>
             </StackPanel>

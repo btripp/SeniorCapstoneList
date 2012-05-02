@@ -20,7 +20,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <ToolBar Grid.Row="0" Grid.Column="0" Name="toolBar1" FontSize="9" Background="#FFBCC7D8">
+        <ToolBar Grid.Row="0" Grid.Column="0" Name="toolBar1" FontSize="9" Background="#FFBCC7D8" >
             <Button Name="button1" ToolTip="Check In Files" Click="checkin_Click" Focusable="False">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="19" Height="20" Source="/SeniorCapstoneIgnoreList;component/images/Checkin.png">
@@ -29,7 +29,7 @@
                 </StackPanel>
             </Button>
             <Separator Background="Black" />
-            <Button Name="button3" ToolTip="Ignore Selected File" Click="ignore_Click">
+            <Button Name="Ignore" ToolTip="Ignore Selected File" Click="ignore_Click" Focusable="False">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="16" Height="16" Source="/SeniorCapstoneIgnoreList;component/images/Ignore.png">
                     </Image>
@@ -45,15 +45,15 @@
                     </Style>
                 </Button.Style>
             </Button>
-            <CheckBox Name="overide" ToolTip="Override ignore list" Checked="overide_Checked" Unchecked="overide_Unchecked">Override</CheckBox>
-            <Button Name="shelve" ToolTip="Open Shelve Window"  Click="shelve_Click">
+            <CheckBox Name="overide" ToolTip="Override ignore list" Checked="overide_Checked" Unchecked="overide_Unchecked" Focusable="False">Override</CheckBox>
+            <Button Name="shelve" ToolTip="Open Shelve Window"  Click="shelve_Click" Focusable="False">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="20" Height="19" Source="/SeniorCapstoneIgnoreList;component/images/shelve.png">
                     </Image>
                     <TextBlock>Shelve</TextBlock>
                 </StackPanel>
             </Button>
-            <Button Name="unshelve" ToolTip="Open UnShelve Window" Click="unshelve_Click">
+            <Button Name="unshelve" ToolTip="Open UnShelve Window" Click="unshelve_Click" Focusable="False">
                 <StackPanel Orientation="Horizontal">
                     <Image Width="20" Height="19" Source="/SeniorCapstoneIgnoreList;component/images/unshelve.png">
                     </Image>
@@ -61,7 +61,7 @@
                 </StackPanel>
             </Button>
             <Separator Background="Black"/>
-            <CheckBox ToolTip="Hide/Show Comments" Name="hideShowComment" Click="hideShowComment_Click">
+            <CheckBox ToolTip="Hide/Show Comments" Name="hideShowComment" Click="hideShowComment_Click" Focusable="False">
                 <Image Width="16" Height="12">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Comment.png" SourceRect="8,10,16,12"/>
@@ -93,7 +93,7 @@
                 </Image>
             </Button>-->
             <Separator Background="Black"/>
-            <Button Name="refresh" Click="refresh_click" ToolTip="Refresh">
+            <Button Name="refresh" Click="refresh_click" ToolTip="Refresh" Focusable="False">
                 <Image Width="13" Height="15">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Refresh.png" SourceRect="11,7,13,15"/>
@@ -104,9 +104,9 @@
             <!--<Button Name="filterBySolution">f</Button>-->
             <Separator/>
             <Label FontSize="9">Workspace:</Label>
-            <ComboBox Name="workSpaces" ToolTip="Current Workspace" SelectionChanged="changeWorkspace">
+            <ComboBox Name="workSpaces" ToolTip="Current Workspace" SelectionChanged="changeWorkspace" Focusable="False">
             </ComboBox>         
-            <CheckBox Name="hideShowIgnoreList" ToolTip="Hide/Show Ignore List" Click="hideShowIgnoreList_Click" >
+            <CheckBox Name="hideShowIgnoreList" ToolTip="Hide/Show Ignore List" Click="hideShowIgnoreList_Click" Focusable="False" >
                 <Image Source="Resources/hideShowIgnoreList.png"/>
             </CheckBox>
         </ToolBar>
