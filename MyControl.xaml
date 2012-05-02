@@ -93,7 +93,7 @@
                 </Image>
             </Button>-->
             <Separator Background="Black"/>
-            <Button Name="refresh" Click="refresh_click">
+            <Button Name="refresh" Click="refresh_click" ToolTip="Refresh">
                 <Image Width="13" Height="15">
                     <Image.Source>
                         <CroppedBitmap Source="/SeniorCapstoneIgnoreList;component/images/Refresh.png" SourceRect="11,7,13,15"/>
