@@ -127,9 +127,8 @@
     <Resource Include="images\shelve.png" />
     <Resource Include="images\unshelve.png" />
     <Resource Include="images\Ignore.png" />
-    <EmbeddedResource Include="Resources\DDIcon.cur" />
-    <EmbeddedResource Include="DDIcon.cur" />
     <EmbeddedResource Include="Move.cur" />
+    <Resource Include="Resources\Annotate_Blocked_small.ico" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +151,9 @@
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\Annotate_Blocked_small.ico</ApplicationIcon>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" />
