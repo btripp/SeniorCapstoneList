@@ -187,17 +187,43 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             System.IO.File.WriteAllLines(path, ignoreListItems);
         }
         #region dragDrop Code
+        /// <summary>
+        /// this is for the custom cursoer... to change cursor add as a embeded resource
+        /// to take the custom cursor off.. comment out feedback handler in mousemove method
+        /// </summary>
+        private Cursor _allOpsCursor;
+        void DragSource_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+            try
+            {
+                //This loads the cursor from a stream .. 
+                if (_allOpsCursor == null)
+                {
+                    using (Stream cursorStream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream("AugustaStateUniversity.SeniorCapstoneIgnoreList.Move.cur"))
+                    {
+                        _allOpsCursor = new Cursor(cursorStream);
+                    }
+                }
+                Mouse.SetCursor(_allOpsCursor);
+
+                e.UseDefaultCursors = false;
+                e.Handled = true;
+            }
+            finally { }
+        }
         private void myDataGrid_MouseMove(object sender, MouseEventArgs e)
         {
-            // TODO 
-            // implement a custom move cursor
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                GiveFeedbackEventHandler handler = new GiveFeedbackEventHandler(DragSource_GiveFeedback);
+                
                 DataGrid grid = sender as DataGrid;
                 object selectedItem = grid.SelectedItem;
                 if (selectedItem != null)
                 {
                     DataGridRow row = (DataGridRow)grid.ItemContainerGenerator.ContainerFromItem(selectedItem);
+                    //comment out this wiring to feedback handler to take off custom cursor
+                    row.GiveFeedback += handler;
                     changeItem item = (changeItem)row.Item;
                     DataObject dragData = new DataObject("changeItem", item);
                     if (row != null)
@@ -1079,7 +1105,6 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             }
         }
     #endregion
-
     }
 
     public class changeItem : INotifyPropertyChanged

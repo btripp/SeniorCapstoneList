@@ -127,6 +127,9 @@
     <Resource Include="images\shelve.png" />
     <Resource Include="images\unshelve.png" />
     <Resource Include="images\Ignore.png" />
+    <EmbeddedResource Include="Resources\DDIcon.cur" />
+    <EmbeddedResource Include="DDIcon.cur" />
+    <EmbeddedResource Include="Move.cur" />
     <Content Include="Resources\Package.ico" />
   </ItemGroup>
   <ItemGroup>
