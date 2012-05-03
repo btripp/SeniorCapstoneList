@@ -183,6 +183,10 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
             path+="\\IgnoreList.txt";
             path = path.Replace("file:\\", "");
             string[] ignoreListItems = new string[ignoreList.Items.Count];
+            bool something = false;
+            if (true == something)
+            { }
+
             ignoreList.Items.CopyTo(ignoreListItems, 0);
             System.IO.File.WriteAllLines(path, ignoreListItems);
         }
@@ -714,6 +718,7 @@ namespace AugustaStateUniversity.SeniorCapstoneIgnoreList
 
             // this is to clear the collection each time you re-open the unshelve window. 
             shelveSetCollection.Clear();
+            listOfShelveSets.Clear();
 
             // passes all the shelvesets in all the workspaces
             foreach (Workspace workspace in allWorkSpaces)
